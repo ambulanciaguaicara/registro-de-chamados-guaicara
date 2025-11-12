@@ -1,0 +1,228 @@
+<!<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Registro de Chamados de ambulância - Guaicara</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo="/>
+<style>
+:root{--samu:#b71c1c;--bg:#f6f7f8;--card:#fff;--muted:#6b7280;--ok:#10b981}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:#0b1220}
+.header{background:linear-gradient(90deg,var(--samu),#910000);color:#fff;padding:14px 18px}
+.header h1{margin:0;font-size:20px}
+.container{max-width:1200px;margin:18px auto;padding:12px}
+.panel{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 1px 6px rgba(2,6,23,0.06);margin-bottom:12px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.button{background:var(--samu);color:#fff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+.button.ghost{background:transparent;color:var(--samu);border:1px solid rgba(183,28,28,0.12);padding:8px 10px;border-radius:8px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #f1f1f1;text-align:left;vertical-align:top}
+th{background:rgba(183,28,28,0.06);color:var(--samu)}
+tr.urgencia{background:#fff7eb}
+tr.emergencia{background:#fff0f0}
+tr.normal{background:#f3fdf6}
+.select-small{width:100%;padding:6px;border-radius:6px;border:1px solid #e6eefc}
+.input-small{padding:6px;border-radius:6px;border:1px solid #e6eefc;width:100%}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:12px}
+.chat{display:flex;flex-direction:column;height:420px;border-radius:8px;overflow:hidden}
+.chat-messages{flex:1;padding:8px;overflow:auto;background:linear-gradient(180deg,#fbfdff,#fff)}
+.small{font-size:13px;color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:12px}
+@media(max-width:900px){.grid{grid-template-columns:1fr} .controls{flex-direction:column}}
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <h1>Registro de Chamados – Ambulância Municipal – Guaicara/SP</h1>
+      <div class="small">Tema SAMU — vermelho escuro • Salvar automaticamente na planilha</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="panel controls">
+      <input id="searchInput" class="input-small" placeholder="🔎 Buscar paciente..." style="width:48%" oninput="doSearch()"/>
+      <button class="button" onclick="addRow()">➕ Novo chamado</button>
+      <button class="button ghost" onclick="exportCSV()">📤 Exportar CSV</button>
+      <button class="button ghost" onclick="downloadHTML()">⬇️ Baixar HTML</button>
+      <button class="button ghost" id="connectButton" onclick="handleSignIn()">🔗 Conectar ao Google</button>
+      <div style="margin-left:auto" class="small">Site: <strong>Registro de Chamados de ambulância</strong></div>
+    </div>
+
+    <div class="grid">
+      <main class="panel">
+        <div style="margin-bottom:8px;display:flex;gap:8px;align-items:center;">
+          <label style="display:flex;gap:8px;align-items:center;"><strong>Importar CSV:</strong> <input id="importFile" type="file" accept=".csv" onchange="importCSV(event)"></label>
+          <button class="button ghost" onclick="pasteJsonPrompt()">Colar JSON</button>
+        </div>
+
+        <div class="table-wrap" style="max-height:520px;overflow:auto;">
+          <table id="chamadosTable">
+            <thead>
+              <tr>
+                <th>Sel</th><th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Telefone</th>
+                <th>Tipo</th><th>Destino <button onclick="addDestino()" title="Adicionar destino" style="margin-left:6px">➕</button></th>
+                <th>Prioridade <button onclick="addPrioridade()" title="Adicionar prioridade" style="margin-left:6px">➕</button></th>
+                <th>Atendente</th><th>Motorista</th><th>Observações</th><th>Replicar</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="relatorios" style="margin-top:12px" class="panel">
+          <h3>📊 Relatório Mensal</h3>
+          <div id="relatorioConteudo" class="small">Nenhum dado disponível.</div>
+          <canvas id="graficoChamados" style="max-width:720px;margin-top:8px"></canvas>
+        </div>
+      </main>
+
+      <aside style="display:flex;flex-direction:column;gap:12px">
+        <div class="panel">
+          <h4>Usuário</h4>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span id="usernameDisplay" class="small"></span>
+            <button class="button ghost" onclick="promptUser()">Trocar nome</button>
+          </div>
+          <div class="small" style="margin-top:6px">Nome obrigatório para postar no chat.</div>
+        </div>
+
+        <div class="panel chat">
+          <div style="padding:8px;border-bottom:1px solid #eef2ff"><strong>Chat interno</strong> <span class="small"> (salvo na aba "Chat")</span></div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input" style="display:flex;gap:8px;padding:8px;border-top:1px solid #eef2ff;background:#fff">
+            <input id="chatInput" placeholder="Escreva uma mensagem..." onkeydown="if(event.key==='Enter') sendChat()" style="flex:1;padding:8px;border-radius:6px;border:1px solid #e6eefc" />
+            <button class="button" onclick="sendChat()">Enviar</button>
+            <button class="button ghost" onclick="exportChat()">Exportar Chat</button>
+          </div>
+        </div>
+
+        <div class="panel small">
+          <strong>Ajuda rápida</strong>
+          <ul>
+            <li>Use a busca para localizar um paciente rapidamente</li>
+            <li>Adicione destinos/prioridades com o botão ➕</li>
+            <li>Para sincronizar com a planilha: Conectar → Carregar → Salvar</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">Desenvolvido para Prefeitura Municipal de Guaicara • Versão pronta para publicar</div>
+  </div>
+
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const CLIENT_ID = "864225953887-s8vg683v8t3lesrsdmcd5rd77hmafl5f.apps.googleusercontent.com";
+const API_KEY = "";
+const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
+const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
+const spreadsheetId = "1M9ZTOHGIvcZcqLw5i6Z6ZVhe3RS73qCnxDeVYuy_SbQ";
+const SHEET_NAME = "Sheet1";
+const CHAT_SHEET_NAME = "Chat";
+
+/* listas iniciais */
+let destinosList = JSON.parse(localStorage.getItem('destinosList')||'null') || ["CSIII","COHAB","DOM BOSCO","VILA SAÚDE","HGP","Santa Casa","AME","HEMODIÁLISE","CTA","HAPVIDA","UNIMED","FISIOTERAPIA","CAPS","AGAR-Gestante alto risco","CANJARANA","TARAMA","NÁUTICA BRANDA","IML"];
+let prioridadesList = JSON.parse(localStorage.getItem('prioridadesList')||'null') || ["Nenhuma","Curativo","Doenças crônicas ou complicações","AUTISTA","DEFICIÊNTE","FIBROMIALGIA","GESTANTE","IDOSO","ACAMADO","MOBILIDADE REDUZIDA","PEDIATRA","ACIDENTE"];
+let chart = null;
+
+function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* TABELA */
+function addRow(){ const tbody=document.querySelector('#chamadosTable tbody'); const row=tbody.insertRow(); row.innerHTML = `<td><input type="checkbox" class="sel"></td>
+    <td><input value=""></td>
+    <td><input value=""></td>
+    <td><input value=""></td>
+    <td><input value=""></td>
+    <td><input value=""></td>
+    <td><select><option>Normal</option><option>Urgência</option><option>Emergência</option></select></td>
+    <td><select>${destinosList.map(x=>`<option>${escapeHtml(x)}</option>`).join('')}</select></td>
+    <td><select>${prioridadesList.map(x=>`<option>${escapeHtml(x)}</option>`).join('')}</select></td>
+    <td><input value=""></td>
+    <td><input value=""></td>
+    <td><textarea></textarea></td>
+    <td><button onclick="replicar(this)">🔁</button></td>`;
+  row.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{ saveLocal(); updateReport(); }));
+  updateReport();
+}
+
+function addRowFromData(d){ const tbody=document.querySelector('#chamadosTable tbody'); const row=tbody.insertRow(); row.innerHTML = `<td><input type="checkbox" class="sel"></td>
+    <td><input value="${escapeHtml(d.data||'')}"></td>
+    <td><input value="${escapeHtml(d.hora||'')}"></td>
+    <td><input value="${escapeHtml(d.paciente||'')}"></td>
+    <td><input value="${escapeHtml(d.endereco||'')}"></td>
+    <td><input value="${escapeHtml(d.telefone||'')}"></td>
+    <td><select><option ${d.tipo==='Normal'?'selected':''}>Normal</option><option ${d.tipo==='Urgência'?'selected':''}>Urgência</option><option ${d.tipo==='Emergência'?'selected':''}>Emergência</option></select></td>
+    <td><select>${destinosList.map(x=>`<option ${x===d.destino?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select></td>
+    <td><select>${prioridadesList.map(x=>`<option ${x===d.prioridade?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select></td>
+    <td><input value="${escapeHtml(d.atendente||'')}"></td>
+    <td><input value="${escapeHtml(d.motorista||'')}"></td>
+    <td><textarea>${escapeHtml(d.observacoes||'')}</textarea></td>
+    <td><button onclick="replicar(this)">🔁</button></td>`;
+  row.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{ saveLocal(); updateReport(); }));
+}
+
+function getAllRows(){ return Array.from(document.querySelectorAll('#chamadosTable tbody tr')).map(tr=>{ const inputs=tr.querySelectorAll('input,select,textarea'); return { data:inputs[1].value,hora:inputs[2].value,paciente:inputs[3].value,endereco:inputs[4].value,telefone:inputs[5].value,tipo:inputs[6].value,destino:inputs[7].value,prioridade:inputs[8].value,atendente:inputs[9].value,motorista:inputs[10].value,observacoes:inputs[11].value }; }); }
+
+function replicar(btn){ const tr=btn.closest('tr'); const idx=Array.from(tr.parentElement.children).indexOf(tr); const data=getAllRows()[idx]; const tbody=tr.parentElement; addRowFromData(data); const newTr=tbody.children[idx+1]; newTr.classList.add('agrupado'); saveLocal(); updateReport(); }
+
+/* Busca */
+function doSearch(){ const q=(document.getElementById('searchInput').value||'').toLowerCase(); document.querySelectorAll('#chamadosTable tbody tr').forEach(r=>{ const name=(r.querySelectorAll('input')[3]||{value:''}).value.toLowerCase(); r.style.display = name.includes(q) ? '' : 'none'; }); }
+
+/* Import/Export CSV */
+function exportCSV(){ const rows=getAllRows(); if(!rows.length) return alert('Nada para exportar'); const lines=rows.map(r=>[r.data,r.hora,r.paciente,r.endereco,r.telefone,r.tipo,r.destino,r.prioridade,r.atendente,r.motorista,r.observacoes].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')); const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='chamados_export.csv'; a.click(); }
+function importCSV(e){ const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ const text=r.result; const lines=text.split(/\r?\n/).filter(l=>l.trim()); lines.forEach(line=>{ const parts=parseCsvLine(line); addRowFromData({data:parts[0]||'',hora:parts[1]||'',paciente:parts[2]||'',endereco:parts[3]||'',telefone:parts[4]||'',tipo:parts[5]||'Normal',destino:parts[6]||'',prioridade:parts[7]||'',atendente:parts[8]||'',motorista:parts[9]||'',observacoes:parts[10]||''}); }); updateReport(); saveLocal(); alert('Importação concluída — revise e Salve na planilha.'); }; r.readAsText(f,'UTF-8'); e.target.value=''; }
+function parseCsvLine(line){ const out=[]; let cur='', inQuotes=false; for(let i=0;i<line.length;i++){ const ch=line[i]; if(inQuotes){ if(ch==='\"'){ if(line[i+1]==='\"'){ cur+='\"'; i++; } else inQuotes=false; } else cur+=ch; } else { if(ch==='\"'){ inQuotes=true; } else if(ch===','){ out.push(cur); cur=''; } else cur+=ch; } } out.push(cur); return out; }
+
+/* Destino/Prioridade dinâmicos */
+function addPrioridade(){ const v=prompt('Nova prioridade:'); if(!v) return; if(!prioridadesList.includes(v)){ prioridadesList.push(v); localStorage.setItem('prioridadesList',JSON.stringify(prioridadesList)); document.querySelectorAll('#chamadosTable tbody tr').forEach(tr=>{ const sel=tr.querySelectorAll('select')[1]; const opt=document.createElement('option'); opt.textContent=v; sel.appendChild(opt); }); alert('Prioridade adicionada'); } }
+function addDestino(){ const v=prompt('Novo destino:'); if(!v) return; if(!destinosList.includes(v)){ destinosList.push(v); localStorage.setItem('destinosList',JSON.stringify(destinosList)); document.querySelectorAll('#chamadosTable tbody tr').forEach(tr=>{ const sel=tr.querySelectorAll('select')[0]; const opt=document.createElement('option'); opt.textContent=v; sel.appendChild(opt); }); alert('Destino adicionado'); } }
+
+/* Relatório e gráfico */
+function updateReport(){ const data=getAllRows(); if(!data.length){ document.getElementById('relatorioConteudo').innerText='Nenhum dado disponível.'; if(chart){ chart.destroy(); chart=null; } return; } const tipos={Normal:0,'Urgência':0,'Emergência':0}; const prioridades={}; let pos=0; data.forEach(d=>{ tipos[d.tipo]=(tipos[d.tipo]||0)+1; if(d.prioridade) prioridades[d.prioridade]=(prioridades[d.prioridade]||0)+1; }); document.querySelectorAll('#chamadosTable tbody tr').forEach(r=>{ if(r.classList.contains('agrupado')) pos++; }); let html = `<b>Total geral:</b> ${data.length}<br> <b>Normal:</b> ${tipos.Normal} | <b>Urgência:</b> ${tipos['Urgência']} | <b>Emergência:</b> ${tipos['Emergência']}<br> <b>Pós-consulta:</b> ${pos}<br><br> <b>Prioridades:</b><br>`; if(Object.keys(prioridades).length===0) html+='Nenhuma prioridade registrada.<br>'; else Object.keys(prioridades).forEach(p=>{ html+=`• ${p}: ${prioridades[p]}<br>`; }); document.getElementById('relatorioConteudo').innerHTML=html; const labels=['Normal','Urgência','Emergência','Pós-consulta']; const values=[tipos.Normal,tipos['Urgência'],tipos['Emergência'],pos]; const ctx=document.getElementById('graficoChamados').getContext('2d'); if(chart) chart.destroy(); chart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Chamados',data:values,backgroundColor:['#10b981','#fff59d','#f1948a','#93c5fd']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}}); }
+
+/* Chat interno (local + planilha) */
+function promptUser(){ const cur=localStorage.getItem('chat_username')||''; const name=prompt('Digite seu nome (será exibido no chat):',cur); if(name){ localStorage.setItem('chat_username',name); document.getElementById('usernameDisplay').textContent=name; } }
+function ensureUser(){ const name=localStorage.getItem('chat_username'); if(!name) promptUser(); else document.getElementById('usernameDisplay').textContent=name; }
+function loadChatLocal(){ const msgs=JSON.parse(localStorage.getItem('chat_local')||'[]'); renderChat(msgs); }
+function renderChat(msgs){ const el=document.getElementById('chatMessages'); el.innerHTML=''; msgs.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.user===localStorage.getItem('chat_username')?'me':'other'); d.innerHTML=`<div><strong>${escapeHtml(m.user)}</strong> <span class="small"> - ${escapeHtml(m.time)}</span></div><div style="margin-top:6px">${escapeHtml(m.text)}</div>`; el.appendChild(d); }); el.scrollTop=el.scrollHeight; }
+function sendChat(){ const text=document.getElementById('chatInput').value.trim(); if(!text) return; ensureUser(); const user=localStorage.getItem('chat_username'); const time=new Date().toLocaleString(); const msgs=JSON.parse(localStorage.getItem('chat_local')||'[]'); msgs.push({user,text,time}); localStorage.setItem('chat_local',JSON.stringify(msgs)); renderChat(msgs); document.getElementById('chatInput').value=''; if(window.gapi && gapi.auth2 && gapi.auth2.getAuthInstance && gapi.auth2.getAuthInstance().isSignedIn.get()){ appendChatToSheet({user,text,time}); } }
+function appendChatToSheet(msg){ try{ const values=[[msg.time,msg.user,msg.text]]; gapi.client.sheets.spreadsheets.values.append({ spreadsheetId, range:`${CHAT_SHEET_NAME}!A:C`, valueInputOption:'RAW', insertDataOption:'INSERT_ROWS', resource:{values} }).then(()=>{}).catch(e=>console.warn('Erro append chat to sheet',e)); }catch(e){ console.warn(e); } }
+function loadChatFromSheet(){ try{ gapi.client.sheets.spreadsheets.values.get({ spreadsheetId, range:`${CHAT_SHEET_NAME}!A1:C10000` }).then(resp=>{ const values=resp.result.values||[]; const msgs=values.map(r=>({time:r[0]||'',user:r[1]||'',text:r[2]||''})); localStorage.setItem('chat_local',JSON.stringify(msgs)); renderChat(msgs); }).catch(e=>console.warn('Erro ao carregar chat da planilha',e)); }catch(e){ console.warn(e); } }
+
+/* Google Sheets: carregar e salvar */
+function handleSignIn(){ if(!window.gapi){ alert('Google API não carregada ainda. Aguarde e tente novamente.'); return; } gapi.load('client:auth2', async ()=>{ try{ await gapi.client.init({ apiKey: API_KEY||undefined, clientId: CLIENT_ID, discoveryDocs: DISCOVERY_DOCS, scope: SCOPES }); const auth = gapi.auth2.getAuthInstance(); if(!auth.isSignedIn.get()) await auth.signIn(); document.getElementById('connectButton').textContent='🔗 Conectado'; await loadFromSheet(); await loadChatFromSheet(); }catch(e){ console.error(e); alert('Erro ao conectar: veja console.'); } }); }
+
+function loadFromSheet(){ if(!gapi.client) return alert('Clique em Conectar ao Google'); return gapi.client.sheets.spreadsheets.values.get({ spreadsheetId, range:`${SHEET_NAME}!A1:K10000` }).then(resp=>{ const values=resp.result.values||[]; document.querySelector('#chamadosTable tbody').innerHTML=''; values.forEach((r,idx)=>{ if(idx===0 && (String(r[0]).toLowerCase().includes('data')||String(r[2]).toLowerCase().includes('paciente'))) return; while(r.length<11) r.push(''); addRowFromData({data:r[0]||'',hora:r[1]||'',paciente:r[2]||'',endereco:r[3]||'',telefone:r[4]||'',tipo:r[5]||'Normal',destino:r[6]||'',prioridade:r[7]||'',atendente:r[8]||'',motorista:r[9]||'',observacoes:r[10]||''}); }); updateReport(); return Promise.resolve(); }).catch(e=>{ console.error(e); alert('Erro ao carregar da planilha — veja console.'); }); }
+
+function saveToSheet(){ if(!gapi.client) return alert('Clique em Conectar ao Google'); const rows=getAllRows(); const values=[['Data','Hora','Paciente','Endereço','Telefone','Tipo','Destino','Prioridade','Atendente','Motorista','Observações']]; rows.forEach(r=>values.push([r.data||'',r.hora||'',r.paciente||'',r.endereco||'',r.telefone||'',r.tipo||'',r.destino||'',r.prioridade||'',r.atendente||'',r.motorista||'',r.observacoes||''])); return gapi.client.sheets.spreadsheets.values.update({ spreadsheetId, range:`${SHEET_NAME}!A1:K${values.length}`, valueInputOption:'RAW', resource:{values} }).then(()=>{ alert('Planilha atualizada.'); }).catch(e=>{ console.error(e); alert('Erro ao salvar — veja console.'); }); }
+
+/* Import JSON, local save/load */
+function pasteJsonPrompt(){ const text=prompt('Cole aqui o JSON (array) com os registros recuperados'); if(!text) return; try{ const arr=JSON.parse(text); if(!Array.isArray(arr)) throw new Error('JSON precisa ser array'); arr.forEach(o=>addRowFromData(o)); updateReport(); saveLocal(); alert('Registros colados.'); }catch(e){ alert('JSON inválido: '+e.message); } }
+
+function saveLocal(){ try{ const data=getAllRows(); localStorage.setItem('chamados_local',JSON.stringify(data)); }catch(e){} }
+function loadLocal(){ try{ const data=JSON.parse(localStorage.getItem('chamados_local')||'[]'); if(Array.isArray(data) && data.length) data.forEach(d=>addRowFromData(d)); }catch(e){} updateReport(); }
+
+function downloadHTML(){ const html=document.documentElement.outerHTML; const blob=new Blob([html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='index.html'; a.click(); }
+
+/* Init */
+window.addEventListener('load', ()=>{ loadLocal(); loadChatLocal(); updateReport(); document.getElementById('usernameDisplay').textContent = localStorage.getItem('chat_username') || ''; document.getElementById('chatInput') && document.getElementById('chatInput').addEventListener('keydown',(ev)=>{ if(ev.key==='Enter') sendChat(); }); });
+</script>
+</body>
+</html>
+ html>
+
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <title>Hello, World!</title>
+</head>
+<body>
+  <h1>
+    Hello, World!
+  </h1>
+</body>
+</html>
