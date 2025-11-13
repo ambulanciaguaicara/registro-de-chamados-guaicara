@@ -22,7 +22,8 @@ body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:0;background:
 .header-card{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);flex:1}
 .header-img{height:56px;width:56px;border-radius:8px;background:#fff;padding:6px;object-fit:contain;flex:0 0 56px}
 .header-title{margin:0;font-weight:700;font-size:18px}
-.toolbar{display:flex;gap:8px;align-items:center;margin:10px 18px;flex-wrap:wrap}
+.toolbar{display:flex;gap:8px;align-items:center;margin:10px 18px;flex-wrap:wrap;justify-content:space-between}
+.toolbar-left{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
 .btn.primary{background:var(--samu-red);color:#fff}
 .btn.blue{background:var(--blue);color:#fff}
@@ -52,6 +53,9 @@ tr:hover td{background:#fbfcfd}
 .chat-send{padding:8px 12px;border-radius:8px;border:0;background:var(--blue);color:#fff;cursor:pointer}
 .chat-list{max-height:160px;overflow:auto;padding:6px;border-radius:8px;border:1px solid #eee;background:#fafafa;margin-bottom:8px}
 .footer-small{font-size:12px;color:#777}
+.hidden { display: none !important; }
+.fade { transition: all 260ms ease; opacity: 1; }
+.fade.hidden { opacity: 0; height: 0; padding: 0; margin: 0; overflow: hidden; }
 @media (max-width:900px){.search-input{width:100%}}
 </style>
 </head>
@@ -63,25 +67,26 @@ tr:hover td{background:#fbfcfd}
     <img id="logoImg" class="header-img" src="https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB" alt="Ambulância 192">
     <div style="margin-left:12px">
       <h1 class="header-title">Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
-      <div class="small-muted">Tema SAMU — sincronização em tempo real (Firebase)</div>
+      <div class="small-muted" id="subtitle">tema samu — sincronização em tempo real (firebase)</div>
     </div>
   </div>
 
   <div style="display:flex;flex-direction:column;gap:8px;">
-    <button id="btnImportBase64" class="btn warn">📤 Importar imagem base64</button>
-    <button id="btnResetLogo" class="btn">🔁 Reset imagem</button>
+    <button id="btnImportBase64" class="btn warn">📤 importar imagem base64</button>
+    <button id="btnResetLogo" class="btn">🔁 reset imagem</button>
   </div>
 </div>
 
 <!-- CONTROLS -->
 <div class="toolbar container">
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button id="btnExcluir" class="btn primary">🗑️ Excluir Selecionados</button>
-    <button id="btnExportar" class="btn blue">📥 Exportar CSV</button>
-    <button id="btnRelatorio" class="btn green">📊 Relatório Mensal</button>
-    <button id="btnAtualizarEnd" class="btn warn">🔄 Atualizar Endereços</button>
-    <button id="btnAddEndereco" class="btn">➕ Acrescentar Endereço</button>
+  <div class="toolbar-left">
+    <button id="btnExcluir" class="btn primary">🗑️ excluir selecionados</button>
+    <button id="btnExportar" class="btn blue">📥 exportar csv</button>
+    <button id="btnRelatorio" class="btn green">📊 relatório mensal</button>
+    <button id="btnAtualizarEnd" class="btn warn">🔄 atualizar endereços</button>
+    <button id="btnAddEndereco" class="btn">➕ acrescentar endereços</button>
   </div>
+
   <input id="search" class="search-input" placeholder="Buscar paciente, motorista, destino ou observação..." />
 </div>
 
@@ -152,7 +157,7 @@ tr:hover td{background:#fbfcfd}
         </div>
 
         <div style="grid-column:1/-1;display:flex;justify-content:flex-end">
-          <button id="btnAdicionar" type="button" class="btn primary">➕ Adicionar Chamado</button>
+          <button id="btnAdicionar" type="button" class="btn primary">➕ adicionar chamado</button>
         </div>
       </div>
     </form>
@@ -172,7 +177,7 @@ tr:hover td{background:#fbfcfd}
     </table>
   </div>
 
-  <div class="panel">
+  <div class="panel fade hidden" id="graficoPanel">
     <h3 class="section-title">Gráfico Mensal de Chamados</h3>
     <canvas id="graficoMensal" height="120"></canvas>
   </div>
@@ -223,14 +228,19 @@ let chart = null;
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3_8QPyI7v109xYun_zxMKwqpoSmzPwbGaB4kvyHizG4IeJjR9ZGZHr1VF5WKsJWhcMFYnqeuosmrU/pub?gid=140252754&single=true&output=csv";
 
 /* inicial lists */
-let enderecoLista = ["Av Duque de Caxias","Av Nove de Julho","Rua Rui Barbosa","Rua Otávio Maitan","Avenida Brasil","Rua XV de Novembro","Alameda das Rosas","Praça Central"];
+let enderecoLista = [
+  "Av Duque de Caxias","Av Nove de Julho","Rua Rui Barbosa","Rua Otávio Maitan",
+  "Avenida Brasil","Rua XV de Novembro","Alameda das Rosas","Praça Central"
+];
 let prioridadeLista = ["Nenhuma","Curativo","Doenças crônicas ou complicações","Urgência","Emergência","Normal","Pós-consulta"];
-let destinoLista = ["Hospital Municipal","UPA","CSIII"];
+let destinoLista = [
+  "HGP","SANTA CASA LINS","CTA","CAPS","AME","TRANSFERÊNCIA",
+  "AGAR GRAVIDEZ DE RISCO","HAPVIDA","UNIMED","FISIOTERAPIA PARTICULAR","FISIOTERAPIA","+" 
+];
 
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
 function nowDateTime(){ const d=new Date(); return {date:`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`, time:`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}; }
-function saveLocalBackup(){ localStorage.setItem('chamados_backup', JSON.stringify(chamadosLocal)); }
 function parseCSV(text){
   const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim());
   if(!lines.length) return [];
@@ -249,8 +259,6 @@ function parseCSV(text){
     return obj;
   });
 }
-
-/* ---------- populate selects ---------- */
 function populateSelects(){
   const end = $('endereco'); end.innerHTML = '<option value="">Selecione...</option>';
   enderecoLista.forEach(e=> end.add(new Option(e,e)));
@@ -268,32 +276,34 @@ auth.signInAnonymously().catch(()=>{}).then(()=> {
   }
 });
 
-/* ---------- Firebase listeners (real-time) ---------- */
+/* ---------- Firebase refs and listeners ---------- */
 const chamadosRef = db.ref('chamados');
 const chatRef = db.ref('chat');
 
+// Listen full snapshot changes once (value) to update table only when DB changes -> reduces flicker
 chamadosRef.on('value', snap => {
   chamadosLocal = snap.val() || {};
   renderTabelaFromFirebase();
   atualizarGrafico();
 });
 
-chatRef.limitToLast(200).on('child_added', snap => {
-  const m = snap.val();
-  appendChatMessage(m);
-});
+// chat: handle add/change/remove to update messages live and show edit/delete for owner
+chatRef.limitToLast(500).on('child_added', snap => { appendChatMessageObj(snap.key, snap.val()); });
+chatRef.limitToLast(500).on('child_changed', snap => { updateChatMessageObj(snap.key, snap.val()); });
+chatRef.limitToLast(500).on('child_removed', snap => { removeChatMessageObj(snap.key); });
 
 /* ---------- render tabela (from Firebase) ---------- */
 function renderTabelaFromFirebase(filter=''){
   const tbody = $('tabelaChamados').querySelector('tbody');
-  tbody.innerHTML = '';
+  // build rows using DocumentFragment for smoother rendering
+  const frag = document.createDocumentFragment();
   const keys = Object.keys(chamadosLocal || {});
-  keys.forEach((k, idx)=>{
+  keys.forEach((k)=>{
     const c = chamadosLocal[k];
     if(!c) return;
     const text = ((c.Paciente||'') + (c.Telefone||'') + (c.Endereco||'') + (c.Atendente||'') + (c.Destino||'') + (c.Observacoes||'')).toLowerCase();
     if(filter && !text.includes(filter.toLowerCase())) return;
-    // duplication logic (same patient same date)
+    // duplication logic
     const duplicadosHoje = keys.filter(kk => {
       const x = chamadosLocal[kk];
       return x && x.Paciente === c.Paciente && x.Data === c.Data;
@@ -315,7 +325,7 @@ function renderTabelaFromFirebase(filter=''){
       <td>${c.Endereco||''}</td>
       <td>${c.Numero||''}</td>
       <td>${c.Telefone||''}</td>
-      <td><span class="status ${chamadoClass}">${(c.Chamado||'NORMAL').toUpperCase()}</span></td>
+      <td><span class="status ${chamadoClass}">${(c.Chamado||'normal').toLowerCase()}</span></td>
       <td>${c.Destino||''}</td>
       <td>${c.Prioridade||''}</td>
       <td>${c.Atendente||''}</td>
@@ -327,8 +337,11 @@ function renderTabelaFromFirebase(filter=''){
         <button class="btn" data-action="del" data-key="${k}">🗑️</button>
       </td>
     `;
-    tbody.appendChild(tr);
+    frag.appendChild(tr);
   });
+  // replace tbody content
+  tbody.innerHTML = '';
+  tbody.appendChild(frag);
   attachTableHandlers();
 }
 
@@ -339,9 +352,9 @@ function attachTableHandlers(){
       const action = e.currentTarget.dataset.action;
       const key = e.currentTarget.dataset.key;
       const record = chamadosLocal[key];
+      if(!record) return alert('Registro não encontrado (já removido).');
       const currentAtendenteName = $('atendente').value.trim();
       const ownerUID = record.createdBy || null;
-      // permission check: if auth present, require ownerUID === currentUID
       const canAct = (currentUID && ownerUID && currentUID === ownerUID) || (!currentUID && record.Atendente && record.Atendente === currentAtendenteName);
       if(!canAct){ alert('Somente o atendente/usuário que criou pode realizar esta ação.'); return; }
       if(action === 'dup'){
@@ -353,7 +366,6 @@ function attachTableHandlers(){
         return;
       }
       if(action === 'edit'){
-        // quick edit via prompts
         const novoPaciente = prompt('Editar nome:', record.Paciente || '');
         if(novoPaciente === null) return;
         const novoTelefone = prompt('Telefone:', record.Telefone || '') || record.Telefone;
@@ -434,31 +446,17 @@ $('btnExportar').onclick = ()=>{
   a.download = `chamados_guai_${new Date().toISOString().slice(0,10)}.csv`; a.click();
 };
 
-/* ---------- relatorio mensal ---------- */
+/* ---------- relatorio mensal (toggle grafico) ---------- */
 $('btnRelatorio').onclick = ()=>{
-  const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
-  const keys = Object.keys(chamadosLocal || {});
-  const chamadosMes = keys.map(k=>chamadosLocal[k]).filter(c=> {
-    if(!c || !c.Data) return false;
-    const parts = c.Data.split('/'); if(parts.length<3) return false;
-    const d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-    return d.getMonth()===mes && d.getFullYear()===ano;
-  });
-  const tipos = {Normal:0, Urgência:0, Emergência:0};
-  const prioridades = {}; const destinos = {};
-  chamadosMes.forEach(c=>{
-    const t = (c.Chamado||'').toLowerCase();
-    if(t.includes('urg')) tipos['Urgência']++;
-    else if(t.includes('emerg')) tipos['Emergência']++;
-    else tipos['Normal']++;
-    prioridades[c.Prioridade||'Não definida'] = (prioridades[c.Prioridade]||0)+1;
-    destinos[c.Destino||'Não definido'] = (destinos[c.Destino]||0)+1;
-  });
-  let csv = `Relatório mensal - ${hoje.toLocaleDateString('pt-BR')}\n\nTipo,Quantidade\n`;
-  Object.keys(tipos).forEach(k=> csv += `${k},${tipos[k]}\n`);
-  csv += '\nPrioridade,Quantidade\n'; Object.keys(prioridades).forEach(k=> csv += `${k},${prioridades[k]}\n`);
-  csv += '\nDestino,Quantidade\n'; Object.keys(destinos).forEach(k=> csv += `${k},${destinos[k]}\n`);
-  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download=`relatorio_mensal_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  const panel = $('graficoPanel');
+  const shown = !panel.classList.contains('hidden');
+  if(shown){
+    panel.classList.add('hidden');
+  } else {
+    panel.classList.remove('hidden');
+    // update chart when shown
+    atualizarGrafico();
+  }
 };
 
 /* ---------- grafico ---------- */
@@ -480,17 +478,49 @@ function atualizarGrafico(){
 $('search').addEventListener('input', (e)=> renderTabelaFromFirebase(e.target.value));
 
 /* ---------- chat (real-time) ---------- */
-function appendChatMessage(m){
+function appendChatMessageObj(key, m){
   const list = $('chatList');
   const row = document.createElement('div');
+  row.id = 'chat_' + key;
   const time = new Date(m.time || Date.now()).toLocaleTimeString();
-  row.innerHTML = `<div style="font-size:13px"><strong>${m.userName||'Usuário'}</strong> <span style="color:#777;font-size:12px">(${time})</span></div><div style="font-size:14px">${m.text}</div><hr style="margin:6px 0">`;
+  const mine = (m.uid && currentUID && m.uid === currentUID);
+  row.innerHTML = `<div style="font-size:13px;display:flex;justify-content:space-between"><strong>${m.userName||'Usuário'}</strong> <span style="color:#777;font-size:12px">(${time})</span></div><div style="font-size:14px;margin-top:4px">${m.text}</div>`;
+  if(mine){
+    const actions = document.createElement('div'); actions.style.marginTop='6px';
+    const edt = document.createElement('button'); edt.className='btn'; edt.textContent='✏️'; edt.onclick = ()=> editChatMessage(key, m);
+    const del = document.createElement('button'); del.className='btn'; del.textContent='🗑️'; del.onclick = ()=> deleteChatMessage(key);
+    actions.appendChild(edt); actions.appendChild(del);
+    row.appendChild(actions);
+  }
   list.appendChild(row); list.scrollTop = list.scrollHeight;
+}
+function updateChatMessageObj(key, m){
+  const node = $('chat_' + key);
+  if(!node) return appendChatMessageObj(key, m);
+  node.querySelector('div:nth-child(2)').innerHTML = m.text || '';
+}
+function removeChatMessageObj(key){
+  const node = $('chat_' + key);
+  if(node) node.remove();
+}
+function appendChatMessage(m){
+  // not used directly; left for compatibility
+  chatRef.push(m);
+}
+function editChatMessage(key, m){
+  const novo = prompt('Editar mensagem:', m.text);
+  if(novo === null) return;
+  chatRef.child(key).update({ text: novo });
+}
+function deleteChatMessage(key){
+  if(!confirm('Excluir sua mensagem?')) return;
+  chatRef.child(key).remove();
 }
 $('chatSend').onclick = ()=> {
   const text = $('chatInput').value.trim(); if(!text) return;
   const userName = $('atendente').value.trim() || 'Usuário';
-  chatRef.push({ text, userName, uid: currentUID, time: Date.now() });
+  const payload = { text, userName, uid: currentUID, time: Date.now() };
+  chatRef.push(payload);
   $('chatInput').value = '';
 };
 $('chatInput').addEventListener('keypress', (e)=> { if(e.key==='Enter'){ e.preventDefault(); $('chatSend').click(); } });
@@ -498,8 +528,8 @@ $('chatInput').addEventListener('keypress', (e)=> { if(e.key==='Enter'){ e.preve
 /* ---------- import CSV once into Firebase (only-if not imported before) ---------- */
 async function importCSVOnceToFirebase(){
   try{
-    if(localStorage.getItem('csv_imported')) return; // already imported
-    // fetch CSV using allorigins to avoid CORS
+    if(localStorage.getItem('csv_imported')) return;
+    // use allorigins to avoid CORS
     const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(CSV_URL));
     if(!res.ok) throw new Error('status '+res.status);
     const j = await res.json();
@@ -544,7 +574,6 @@ $('btnImportBase64').onclick = async ()=> {
   const paste = prompt('Cole data:image/... base64 (ou URL pública). Se colar URL e der CORS, converta para base64 e cole.');
   if(!paste) return;
   if(paste.startsWith('data:')){ localStorage.setItem('logo_base64', paste); $('logoImg').src = paste; alert('Imagem salva em base64.'); return; }
-  // try convert
   try{
     const res = await fetch(paste);
     const blob = await res.blob();
@@ -570,11 +599,9 @@ async function init(){
   populateSelects();
   // try import csv once (if not imported)
   await importCSVOnceToFirebase();
-  // initial render (data will come in from firebase listener)
   // restore atendente name if saved
   const savedAt = localStorage.getItem('atendente_name');
   if(savedAt) $('atendente').value = savedAt;
-  // listen atendente change to save locally
   $('atendente').addEventListener('change', ()=> localStorage.setItem('atendente_name', $('atendente').value.trim()));
 }
 init();
