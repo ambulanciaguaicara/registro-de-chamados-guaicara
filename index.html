@@ -15,30 +15,29 @@
   --card:#fff;
   --bg:#f5f6f8;
   --muted:#6b7280;
-  --glass: rgba(255,255,255,0.85);
 }
 *{box-sizing:border-box}
-body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:18px;background:linear-gradient(180deg,#f7f9fb, #eef2f6);color:#111}
-.header-wrap{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:0;background:linear-gradient(180deg,#f7f9fb,#eef2f6);color:#111}
+.header-wrap{display:flex;align-items:center;gap:14px;padding:18px}
 .header-card{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);flex:1}
 .header-img{height:56px;width:56px;border-radius:8px;background:#fff;padding:6px;object-fit:contain;flex:0 0 56px}
 .header-title{margin:0;font-weight:700;font-size:18px}
-.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.toolbar{display:flex;gap:8px;align-items:center;margin:10px 18px;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
 .btn.primary{background:var(--samu-red);color:#fff}
 .btn.blue{background:var(--blue);color:#fff}
 .btn.green{background:var(--samu-green);color:#fff}
 .btn.warn{background:#f39c12;color:#fff}
-.btn.purple{background:#8e44ad;color:#fff}
 .search-input{padding:8px 12px;border-radius:10px;border:1px solid #e5e7eb;width:320px}
+.container{padding:0 18px 120px 18px}
 .panel{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px}
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-.input, select, button[type="button"]{padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:transparent;font-size:14px}
+.input, select{padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:transparent;font-size:14px}
 .add-small{padding:8px 10px;border-radius:8px;border:0;background:var(--blue);color:#fff;cursor:pointer}
 .table-card{overflow:auto;border-radius:12px}
 table{width:100%;border-collapse:collapse;min-width:980px}
 th,td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left;font-size:13px}
-th{background:var(--samu-dark);color:#fff;position:sticky;top:0}
+th{background:var(--samu-dark);color:#fff;position:sticky;top:0;z-index:2}
 tr:hover td{background:#fbfcfd}
 .status{display:inline-block;padding:6px 8px;border-radius:8px;font-weight:700;font-size:12px}
 .status.normal{background:var(--samu-green);color:#fff}
@@ -48,32 +47,34 @@ tr:hover td{background:#fbfcfd}
 .alerta td{animation:pulse 1.2s infinite;border:2px solid orange}
 @keyframes pulse{0%{background:#fff4db}50%{background:#fff0c2}100%{background:#fff4db}}
 .small-muted{font-size:13px;color:var(--muted)}
-.chat-input{width:100%;padding:10px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;color:#111}
-.footer-note{font-size:13px;color:var(--muted);margin-top:8px}
-.icon{font-size:14px}
-@media (max-width:900px){.search-input{width:100%}header h1{font-size:16px}}
+.chat-footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e6e6e6;padding:8px 12px;display:flex;gap:8px;align-items:center;z-index:6}
+.chat-input{flex:1;padding:8px;border-radius:8px;border:1px solid #e5e7eb}
+.chat-send{padding:8px 12px;border-radius:8px;border:0;background:var(--blue);color:#fff;cursor:pointer}
+.chat-list{max-height:160px;overflow:auto;padding:6px;border-radius:8px;border:1px solid #eee;background:#fafafa;margin-bottom:8px}
+.footer-small{font-size:12px;color:#777}
+@media (max-width:900px){.search-input{width:100%}}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header-wrap">
-  <div class="header-card">
-    <img id="logo" class="header-img" src="https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB" alt="Ambulância 192">
-    <div>
+  <div class="header-card" style="flex:1">
+    <img id="logoImg" class="header-img" src="https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB" alt="Ambulância 192">
+    <div style="margin-left:12px">
       <h1 class="header-title">Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
-      <div class="small-muted">Tema SAMU • moderno • multi-usuário (simples)</div>
+      <div class="small-muted">Tema SAMU — sincronização em tempo real (Firebase)</div>
     </div>
   </div>
 
   <div style="display:flex;flex-direction:column;gap:8px;">
-    <button id="btnImportBase64" class="btn purple" title="Colar imagem em base64 (fixa)">📤 Importar imagem (base64)</button>
-    <button id="btnClearImage" class="btn" style="background:#fff;border:1px solid #eee">🧹 Reset Imagem</button>
+    <button id="btnImportBase64" class="btn warn">📤 Importar imagem base64</button>
+    <button id="btnResetLogo" class="btn">🔁 Reset imagem</button>
   </div>
 </div>
 
 <!-- CONTROLS -->
-<div class="toolbar">
+<div class="toolbar container">
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button id="btnExcluir" class="btn primary">🗑️ Excluir Selecionados</button>
     <button id="btnExportar" class="btn blue">📥 Exportar CSV</button>
@@ -84,312 +85,346 @@ tr:hover td{background:#fbfcfd}
   <input id="search" class="search-input" placeholder="Buscar paciente, motorista, destino ou observação..." />
 </div>
 
-<!-- FORM -->
-<div class="panel">
-  <form id="formChamado" onsubmit="return false;">
-    <div class="form-grid">
-      <input id="nome" class="input" placeholder="Nome do paciente" required>
-      <input id="telefone" class="input" placeholder="Telefone">
-      <div style="display:flex;gap:8px">
-        <select id="endereco" aria-label="Endereço" style="flex:1"></select>
-        <button id="btnAddEnderecoManual" type="button" class="add-small">➕</button>
+<!-- MAIN -->
+<div class="container">
+  <div class="panel">
+    <form id="formChamado" onsubmit="return false;">
+      <div class="form-grid">
+        <div>
+          <label for="nome">Nome do paciente</label><br>
+          <input id="nome" class="input" placeholder="Nome do paciente" required>
+        </div>
+        <div>
+          <label for="telefone">Telefone</label><br>
+          <input id="telefone" class="input" placeholder="Telefone">
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="flex:1">
+            <label for="endereco">📍 Endereço</label><br>
+            <select id="endereco" class="input" aria-label="Endereço"></select>
+          </div>
+          <button id="btnAddEnderecoManual" type="button" class="add-small">➕</button>
+        </div>
+
+        <div>
+          <label for="numero">Número</label><br>
+          <input id="numero" class="input" placeholder="Número">
+        </div>
+
+        <div>
+          <label for="chamado">Chamado</label><br>
+          <select id="chamado" class="input">
+            <option value="normal">Normal</option>
+            <option value="urgencia">Urgência</option>
+            <option value="emergencia">Emergência</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="flex:1">
+            <label for="destino">Destino</label><br>
+            <select id="destino" class="input"></select>
+          </div>
+          <button id="btnAddDestino" type="button" class="add-small">➕</button>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="flex:1">
+            <label for="prioridade">Prioridade</label><br>
+            <select id="prioridade" class="input"></select>
+          </div>
+          <button id="btnAddPrioridade" type="button" class="add-small">➕</button>
+        </div>
+
+        <div>
+          <label for="atendente">Atendente (seu nome)</label><br>
+          <input id="atendente" class="input" placeholder="Atendente" required>
+        </div>
+
+        <div>
+          <label for="motorista">Motorista</label><br>
+          <input id="motorista" class="input" placeholder="Motorista">
+        </div>
+
+        <div style="grid-column:1/-1">
+          <label for="observacoes">Observações</label><br>
+          <input id="observacoes" class="input" placeholder="Observações">
+        </div>
+
+        <div style="grid-column:1/-1;display:flex;justify-content:flex-end">
+          <button id="btnAdicionar" type="button" class="btn primary">➕ Adicionar Chamado</button>
+        </div>
       </div>
+    </form>
+    <div class="small-muted">Atenção: somente o atendente/usuário que criou o chamado poderá editá-lo/duplicá-lo/excluí-lo.</div>
+  </div>
 
-      <input id="numero" class="input" placeholder="Número">
-      <select id="chamado" class="input">
-        <option value="normal">Normal</option>
-        <option value="urgencia">Urgência</option>
-        <option value="emergencia">Emergência</option>
-      </select>
+  <div class="panel table-card">
+    <table id="tabelaChamados" aria-label="Tabela de chamados">
+      <thead>
+        <tr>
+          <th><input id="selAll" type="checkbox"></th>
+          <th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Número</th><th>Telefone</th>
+          <th>Chamado</th><th>Destino</th><th>Prioridade</th><th>Atendente</th><th>Motorista</th><th>Observações</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-      <div style="display:flex;gap:8px">
-        <select id="destino" class="input" style="flex:1"></select>
-        <button id="btnAddDestino" type="button" class="add-small">➕</button>
-      </div>
+  <div class="panel">
+    <h3 class="section-title">Gráfico Mensal de Chamados</h3>
+    <canvas id="graficoMensal" height="120"></canvas>
+  </div>
+</div>
 
-      <div style="display:flex;gap:8px">
-        <select id="prioridade" class="input" style="flex:1"></select>
-        <button id="btnAddPrioridade" type="button" class="add-small">➕</button>
-      </div>
-
-      <input id="atendente" class="input" placeholder="Atendente (seu nome)" required>
-      <input id="motorista" class="input" placeholder="Motorista">
-      <input id="observacoes" class="input" placeholder="Observações">
-
-      <div style="grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end">
-        <button id="btnAdicionar" type="button" class="btn primary">➕ Adicionar Chamado</button>
-      </div>
+<!-- CHAT FIXED FOOTER -->
+<div class="chat-footer">
+  <div style="width:360px;max-width:40%;">
+    <div class="chat-list" id="chatList"></div>
+    <div style="display:flex;gap:8px;">
+      <input id="chatInput" class="chat-input" placeholder="Mensagem rápida (enter para enviar)">
+      <button id="chatSend" class="chat-send">Enviar</button>
     </div>
-  </form>
-  <div class="footer-note">Atenção: apenas o atendente que criou um chamado poderá editá-lo/duplicá-lo/excluí-lo.</div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;">
+    <div class="footer-small">Conectado ao Firebase • Sincronização em tempo real</div>
+  </div>
 </div>
 
-<!-- TABELA -->
-<div class="panel table-card" aria-live="polite">
-  <table id="tabelaChamados" aria-label="Tabela de chamados">
-    <thead>
-      <tr>
-        <th><input id="selAll" type="checkbox"></th>
-        <th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Número</th><th>Telefone</th>
-        <th>Chamado</th><th>Destino</th><th>Prioridade</th><th>Atendente</th><th>Motorista</th><th>Observações</th><th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<!-- CHAT (local, non-persistent) -->
-<div class="panel">
-  <input id="chat" class="chat-input" placeholder="Chat interno (mensagens temporárias — apenas para leitura local)" />
-</div>
-
-<!-- GRÁFICO -->
-<div class="panel">
-  <h3 class="section-title">Gráfico Mensal de Chamados</h3>
-  <canvas id="graficoMensal" height="120"></canvas>
-</div>
+<!-- FIREBASE SCRIPTS (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
 <script>
-/* ---------------- CONFIG ---------------- */
-// CSV público (usei o link que você enviou, com gid e output=csv)
+/* ================== CONFIG (sua config enviada) ================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
+  authDomain: "registro-ambulancia192.firebaseapp.com",
+  databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com",
+  projectId: "registro-ambulancia192",
+  storageBucket: "registro-ambulancia192.firebasestorage.app",
+  messagingSenderId: "549498386461",
+  appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
+  measurementId: "G-NM7EQL6E83"
+};
+/* ================================================================= */
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const auth = firebase.auth();
+
+let currentUID = null;
+let chamadosLocal = {}; // mirror of DB
+let chart = null;
+
+/* CSV URL (sua planilha publicada) */
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3_8QPyI7v109xYun_zxMKwqpoSmzPwbGaB4kvyHizG4IeJjR9ZGZHr1VF5WKsJWhcMFYnqeuosmrU/pub?gid=140252754&single=true&output=csv";
 
-/* Built-in list of endereços (aumentamos com os que você pediu) */
-let enderecoLista = [
-  "Av Duque de Caxias","Av Nove de Julho","Rua Rui Barbosa","Rua Otávio Maitan",
-  "Avenida Brasil","Rua XV de Novembro","Alameda das Rosas","Praça Central"
-];
-/* Prioridades e destinos iniciais */
+/* inicial lists */
+let enderecoLista = ["Av Duque de Caxias","Av Nove de Julho","Rua Rui Barbosa","Rua Otávio Maitan","Avenida Brasil","Rua XV de Novembro","Alameda das Rosas","Praça Central"];
 let prioridadeLista = ["Nenhuma","Curativo","Doenças crônicas ou complicações","Urgência","Emergência","Normal","Pós-consulta"];
 let destinoLista = ["Hospital Municipal","UPA","CSIII"];
 
-/* App state */
-let chamados = []; // array of objects
-let chart = null;
-
-/* ---------------- HELPERS ---------------- */
+/* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
-function nowDateTime(){
-  const d=new Date();
-  const dd = String(d.getDate()).padStart(2,'0');
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const yyyy = d.getFullYear();
-  const hh = String(d.getHours()).padStart(2,'0');
-  const min = String(d.getMinutes()).padStart(2,'0');
-  return {date:`${dd}/${mm}/${yyyy}`, time:`${hh}:${min}`};
-}
-function saveLocal(){
-  localStorage.setItem('chamados_guai', JSON.stringify(chamados));
-}
-function loadLocal(){
-  const s = localStorage.getItem('chamados_guai');
-  if(s) chamados = JSON.parse(s);
-}
-
-/* ---------------- POPULATE SELECTS ---------------- */
-function populateSelects(){
-  const end = $('endereco'); end.innerHTML = '<option value="">Selecione...</option>';
-  enderecoLista.forEach(e => { const o = new Option(e, e); end.add(o); });
-  const pri = $('prioridade'); pri.innerHTML = '<option value="">Selecione...</option>';
-  prioridadeLista.forEach(p => { pri.add(new Option(p,p)); });
-  const des = $('destino'); des.innerHTML = '<option value="">Selecione...</option>';
-  destinoLista.forEach(d => { des.add(new Option(d,d)); });
-}
-
-/* ---------------- PARSE CSV (robusto para aspas) ---------------- */
+function nowDateTime(){ const d=new Date(); return {date:`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`, time:`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}; }
+function saveLocalBackup(){ localStorage.setItem('chamados_backup', JSON.stringify(chamadosLocal)); }
 function parseCSV(text){
-  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim()!=='');
+  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim());
   if(!lines.length) return [];
-  const headers = lines[0].split(',').map(h=>h.replace(/^"|"$/g,'').trim());
-  const rows = lines.slice(1);
-  const out = rows.map(r=>{
+  const headers = lines.shift().split(',').map(h=>h.replace(/(^"|"$)/g,'').trim());
+  return lines.map(line=>{
     const cols=[]; let cur='', inQ=false;
-    for(let i=0;i<r.length;i++){
-      const ch=r[i];
-      if(ch === '"'){ if(inQ && r[i+1]==='"'){ cur+='"'; i++; } else inQ = !inQ; continue; }
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch === '"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else inQ=!inQ; continue; }
       if(ch === ',' && !inQ){ cols.push(cur); cur=''; continue; }
       cur += ch;
     }
     cols.push(cur);
-    const obj={};
-    for(let i=0;i<headers.length;i++) obj[headers[i]] = (cols[i]||'').replace(/^"|"$/g,'').trim();
+    const obj = {};
+    headers.forEach((h,idx)=> obj[h] = (cols[idx]||'').replace(/(^"|"$)/g,'').trim());
     return obj;
   });
-  return out;
 }
 
-/* ---------------- LOAD CSV (once) ---------------- */
-async function carregarCSV(){
-  try{
-    const res = await fetch(CSV_URL);
-    if(!res.ok) throw new Error('status '+res.status);
-    const txt = await res.text();
-    const parsed = parseCSV(txt);
-    if(parsed.length){
-      // Map to our internal format (best-effort header names)
-      parsed.forEach(row => {
-        const item = {
-          Data: row['Data'] || row['data'] || row['Date'] || '',
-          Hora: row['Hora'] || row['hora'] || row['Time'] || '',
-          Paciente: row['Paciente'] || row['Nome'] || row['nome'] || '',
-          Endereco: row['Endereço'] || row['Endereco'] || row['logradouro'] || '',
-          Numero: row['Número'] || row['Numero'] || '',
-          Telefone: row['Telefone'] || row['telefone'] || '',
-          Chamado: (row['Chamado'] || row['Tipo'] || row['tipo'] || 'normal').toLowerCase(),
-          Destino: row['Destino'] || row['destino'] || '',
-          Prioridade: row['Prioridade'] || row['prioridade'] || '',
-          Atendente: row['Atendente'] || row['atendente'] || '',
-          Motorista: row['Motorista'] || row['motorista'] || '',
-          Observacoes: row['Observações'] || row['Observacoes'] || row['Obs'] || ''
-        };
-        chamados.push(item);
-      });
-      saveLocal();
-      renderTabela();
-    }
-  }catch(err){
-    console.warn('Falha ao carregar CSV (CORS ou outro):', err);
-    // fallback: if localStorage has backup, load it (already done), otherwise nothing
-    renderTabela();
+/* ---------- populate selects ---------- */
+function populateSelects(){
+  const end = $('endereco'); end.innerHTML = '<option value="">Selecione...</option>';
+  enderecoLista.forEach(e=> end.add(new Option(e,e)));
+  const pri = $('prioridade'); pri.innerHTML = '<option value="">Selecione...</option>';
+  prioridadeLista.forEach(p=> pri.add(new Option(p,p)));
+  const des = $('destino'); des.innerHTML = '<option value="">Selecione...</option>';
+  destinoLista.forEach(d=> des.add(new Option(d,d)));
+}
+
+/* ---------- AUTH (anonymous) ---------- */
+auth.signInAnonymously().catch(()=>{}).then(()=> {
+  if(auth.currentUser) {
+    currentUID = auth.currentUser.uid;
+    console.log('Auth anon OK, uid=', currentUID);
   }
-}
+});
 
-/* ---------------- RENDER TABLE ---------------- */
-function renderTabela(filter=''){
-  const tbody = document.querySelector('#tabelaChamados tbody');
+/* ---------- Firebase listeners (real-time) ---------- */
+const chamadosRef = db.ref('chamados');
+const chatRef = db.ref('chat');
+
+chamadosRef.on('value', snap => {
+  chamadosLocal = snap.val() || {};
+  renderTabelaFromFirebase();
+  atualizarGrafico();
+});
+
+chatRef.limitToLast(200).on('child_added', snap => {
+  const m = snap.val();
+  appendChatMessage(m);
+});
+
+/* ---------- render tabela (from Firebase) ---------- */
+function renderTabelaFromFirebase(filter=''){
+  const tbody = $('tabelaChamados').querySelector('tbody');
   tbody.innerHTML = '';
-  chamados.forEach((c, i) => {
-    const text = (c.Paciente + c.Telefone + c.Endereco + c.Atendente + c.Destino + c.Observacoes).toLowerCase();
+  const keys = Object.keys(chamadosLocal || {});
+  keys.forEach((k, idx)=>{
+    const c = chamadosLocal[k];
+    if(!c) return;
+    const text = ((c.Paciente||'') + (c.Telefone||'') + (c.Endereco||'') + (c.Atendente||'') + (c.Destino||'') + (c.Observacoes||'')).toLowerCase();
     if(filter && !text.includes(filter.toLowerCase())) return;
-    // duplicated same patient same date => blue row for duplicates
-    const duplicadosHoje = chamados.filter(x => x.Paciente === c.Paciente && x.Data === c.Data).length > 1;
-    const totalMesmo = chamados.filter(x => x.Data === c.Data).length;
+    // duplication logic (same patient same date)
+    const duplicadosHoje = keys.filter(kk => {
+      const x = chamadosLocal[kk];
+      return x && x.Paciente === c.Paciente && x.Data === c.Data;
+    }).length > 1;
+    const totalMesmo = keys.filter(kk => {
+      const x = chamadosLocal[kk];
+      return x && x.Data === c.Data;
+    }).length;
     const tr = document.createElement('tr');
     if(duplicadosHoje) tr.classList.add('duplicado');
     if(totalMesmo > 3) tr.classList.add('alerta');
-    const chamadoClass = c.Chamado === 'urgencia' ? 'urgencia' : (c.Chamado === 'emergencia' ? 'emergencia' : 'normal');
+    const chamadoClass = (c.Chamado||'').toLowerCase().includes('urg') ? 'urgencia' : ((c.Chamado||'').toLowerCase().includes('emerg') ? 'emergencia' : 'normal');
+    tr.dataset.key = k;
     tr.innerHTML = `
-      <td><input class="sel-item" type="checkbox" data-i="${i}"></td>
+      <td><input class="sel-item" type="checkbox" data-key="${k}"></td>
       <td>${c.Data||''}</td>
       <td>${c.Hora||''}</td>
       <td>${c.Paciente||''}</td>
       <td>${c.Endereco||''}</td>
       <td>${c.Numero||''}</td>
       <td>${c.Telefone||''}</td>
-      <td><span class="status ${chamadoClass}">${(c.Chamado||'').toUpperCase()}</span></td>
+      <td><span class="status ${chamadoClass}">${(c.Chamado||'NORMAL').toUpperCase()}</span></td>
       <td>${c.Destino||''}</td>
       <td>${c.Prioridade||''}</td>
       <td>${c.Atendente||''}</td>
       <td>${c.Motorista||''}</td>
       <td>${c.Observacoes||''}</td>
       <td>
-        <button class="btn" data-action="dup" data-i="${i}">➕</button>
-        <button class="btn" data-action="edit" data-i="${i}">✏️</button>
-        <button class="btn" data-action="del" data-i="${i}">🗑️</button>
+        <button class="btn" data-action="dup" data-key="${k}">➕</button>
+        <button class="btn" data-action="edit" data-key="${k}">✏️</button>
+        <button class="btn" data-action="del" data-key="${k}">🗑️</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
-  attachTableEvents();
-  atualizarGrafico();
+  attachTableHandlers();
 }
 
-/* ---------------- ATTACH EVENTS ---------------- */
-function attachTableEvents(){
+/* ---------- attach table handlers ---------- */
+function attachTableHandlers(){
   document.querySelectorAll('[data-action]').forEach(btn=>{
-    btn.onclick = (e)=>{
+    btn.onclick = async (e)=>{
       const action = e.currentTarget.dataset.action;
-      const i = Number(e.currentTarget.dataset.i);
-      const currentAtendente = $('atendente').value.trim();
-      const rowAtendente = chamados[i].Atendente || '';
+      const key = e.currentTarget.dataset.key;
+      const record = chamadosLocal[key];
+      const currentAtendenteName = $('atendente').value.trim();
+      const ownerUID = record.createdBy || null;
+      // permission check: if auth present, require ownerUID === currentUID
+      const canAct = (currentUID && ownerUID && currentUID === ownerUID) || (!currentUID && record.Atendente && record.Atendente === currentAtendenteName);
+      if(!canAct){ alert('Somente o atendente/usuário que criou pode realizar esta ação.'); return; }
       if(action === 'dup'){
-        // only creator can duplicate
-        if(rowAtendente && currentAtendente !== rowAtendente){ alert('Somente o atendente que criou pode duplicar.'); return; }
         const dt = nowDateTime();
-        const dup = {...chamados[i], Data: dt.date, Hora: dt.time};
-        chamados.push(dup); saveLocal(); renderTabela($('search').value);
+        const newKey = chamadosRef.push().key;
+        const copy = {...record, Data: dt.date, Hora: dt.time, createdBy: currentUID || record.createdBy, createdAt: Date.now()};
+        const u = {}; u[newKey] = copy;
+        await chamadosRef.update(u);
         return;
       }
       if(action === 'edit'){
-        if(rowAtendente && currentAtendente !== rowAtendente){ alert('Somente o atendente que criou pode editar.'); return; }
-        // inline edit via prompt (fast for tablet). Could be replaced by modal.
-        const novo = prompt('Editar nome do paciente:', chamados[i].Paciente);
-        if(novo === null) return;
-        chamados[i].Paciente = novo;
-        chamados[i].Telefone = prompt('Telefone:', chamados[i].Telefone) || chamados[i].Telefone;
-        chamados[i].Endereco = prompt('Endereço:', chamados[i].Endereco) || chamados[i].Endereco;
-        chamados[i].Numero = prompt('Número:', chamados[i].Numero) || chamados[i].Numero;
-        chamados[i].Destino = prompt('Destino:', chamados[i].Destino) || chamados[i].Destino;
-        chamados[i].Prioridade = prompt('Prioridade:', chamados[i].Prioridade) || chamados[i].Prioridade;
-        chamados[i].Observacoes = prompt('Observações:', chamados[i].Observacoes) || chamados[i].Observacoes;
-        saveLocal(); renderTabela($('search').value);
+        // quick edit via prompts
+        const novoPaciente = prompt('Editar nome:', record.Paciente || '');
+        if(novoPaciente === null) return;
+        const novoTelefone = prompt('Telefone:', record.Telefone || '') || record.Telefone;
+        const novoEndereco = prompt('Endereço:', record.Endereco || '') || record.Endereco;
+        const novoNumero = prompt('Número:', record.Numero || '') || record.Numero;
+        const novoDestino = prompt('Destino:', record.Destino || '') || record.Destino;
+        const novaPrior = prompt('Prioridade:', record.Prioridade || '') || record.Prioridade;
+        const novasObs = prompt('Observações:', record.Observacoes || '') || record.Observacoes;
+        await chamadosRef.child(key).update({
+          Paciente: novoPaciente, Telefone: novoTelefone, Endereco: novoEndereco, Numero: novoNumero,
+          Destino: novoDestino, Prioridade: novaPrior, Observacoes: novasObs
+        });
         return;
       }
       if(action === 'del'){
-        if(rowAtendente && currentAtendente !== rowAtendente){ alert('Somente o atendente que criou pode excluir.'); return; }
         if(!confirm('Confirmar exclusão deste chamado?')) return;
-        chamados.splice(i,1); saveLocal(); renderTabela($('search').value);
+        await chamadosRef.child(key).remove();
         return;
       }
     };
   });
-  // selAll behavior
-  $('selAll').onchange = function(){ document.querySelectorAll('.sel-item').forEach(c=>c.checked = this.checked); };
+  $('selAll').onchange = function(){ document.querySelectorAll('.sel-item').forEach(cb=>cb.checked = this.checked); };
 }
 
-/* ---------------- ADD / DELETE / EXPORT ---------------- */
-$('btnAdicionar').onclick = ()=>{
+/* ---------- adicionar chamado (salva no Firebase) ---------- */
+$('btnAdicionar').onclick = async ()=>{
   const nome = $('nome').value.trim(); const atendente = $('atendente').value.trim();
-  if(!nome || !atendente) { alert('Preencha nome do paciente e atendente.'); return; }
+  if(!nome || !atendente){ alert('Preencha nome do paciente e atendente'); return; }
   const dt = nowDateTime();
   const obj = {
-    Data: dt.date,
-    Hora: dt.time,
-    Paciente: nome,
-    Endereco: $('endereco').value || '',
-    Numero: $('numero').value || '',
-    Telefone: $('telefone').value || '',
-    Chamado: $('chamado').value || 'normal',
-    Destino: $('destino').value || '',
-    Prioridade: $('prioridade').value || '',
-    Atendente: atendente,
-    Motorista: $('motorista').value || '',
-    Observacoes: $('observacoes').value || ''
+    Data: dt.date, Hora: dt.time, Paciente: nome,
+    Endereco: $('endereco').value || '', Numero: $('numero').value || '',
+    Telefone: $('telefone').value || '', Chamado: $('chamado').value || 'normal',
+    Destino: $('destino').value || '', Prioridade: $('prioridade').value || '',
+    Atendente: atendente, Motorista: $('motorista').value || '', Observacoes: $('observacoes').value || '',
+    createdBy: currentUID || atendente, createdAt: Date.now()
   };
-  chamados.push(obj);
-  saveLocal();
-  renderTabela($('search').value);
-  // clear fields
+  const key = chamadosRef.push().key;
+  const u = {}; u[key] = obj;
+  await chamadosRef.update(u);
+  // clear form
   $('nome').value=''; $('telefone').value=''; $('numero').value=''; $('observacoes').value='';
 };
 
-/* excluir selecionados (respeita atendente) */
-$('btnExcluir').onclick = ()=>{
+/* ---------- excluir selecionados (respeita autor) ---------- */
+$('btnExcluir').onclick = async ()=>{
   const checked = Array.from(document.querySelectorAll('.sel-item:checked'));
   if(!checked.length){ alert('Nenhum chamado selecionado'); return; }
   if(!confirm(`Excluir ${checked.length} chamados selecionados?`)) return;
-  const currentAtendente = $('atendente').value.trim();
-  // compute indices to remove
-  const indices = checked.map(cb => Array.from(cb.closest('tr').parentNode.children).indexOf(cb.closest('tr')));
-  // filter keeping those not selected OR those selected but created by other atendente (can't delete)
-  let cantBlocked = 0;
-  chamados = chamados.filter((c, idx) => {
-    if(indices.includes(idx)){
-      if(c.Atendente && currentAtendente !== c.Atendente){ cantBlocked++; return true; }
-      return false; // remove
-    }
-    return true;
-  });
-  saveLocal(); renderTabela($('search').value);
-  if(cantBlocked) alert(`${cantBlocked} chamado(s) não foram excluídos porque pertencem a outro atendente.`);
+  const currentAtendenteName = $('atendente').value.trim();
+  let blocked = 0;
+  for(const cb of checked){
+    const key = cb.dataset.key;
+    const rec = chamadosLocal[key];
+    if(!rec) continue;
+    const ownerUID = rec.createdBy || null;
+    const canAct = (currentUID && ownerUID && currentUID === ownerUID) || (!currentUID && rec.Atendente && rec.Atendente === currentAtendenteName);
+    if(!canAct){ blocked++; continue; }
+    await chamadosRef.child(key).remove();
+  }
+  if(blocked) alert(`${blocked} chamado(s) não puderam ser excluídos — pertencem a outro atendente/usuário.`);
 };
 
-/* export CSV */
+/* ---------- export CSV (from Firebase snapshot) ---------- */
 $('btnExportar').onclick = ()=>{
-  if(!chamados.length){ alert('Sem dados para exportar'); return; }
+  const keys = Object.keys(chamadosLocal || {});
+  if(!keys.length){ alert('Sem dados para exportar'); return; }
   const header = ['Data','Hora','Paciente','Endereco','Numero','Telefone','Chamado','Destino','Prioridade','Atendente','Motorista','Observacoes'];
   const rows = [header.join(',')];
-  chamados.forEach(r=>{
+  keys.forEach(k=>{
+    const r = chamadosLocal[k];
     const line = [r.Data,r.Hora,r.Paciente,r.Endereco,r.Numero,r.Telefone,r.Chamado,r.Destino,r.Prioridade,r.Atendente,r.Motorista,r.Observacoes]
       .map(cell => `"${(cell||'').toString().replace(/"/g,'""')}"`).join(',');
     rows.push(line);
@@ -399,16 +434,17 @@ $('btnExportar').onclick = ()=>{
   a.download = `chamados_guai_${new Date().toISOString().slice(0,10)}.csv`; a.click();
 };
 
-/* relatorio (gera CSV com totais) */
+/* ---------- relatorio mensal ---------- */
 $('btnRelatorio').onclick = ()=>{
   const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
-  const chamadosMes = chamados.filter(c => {
-    if(!c.Data) return false;
+  const keys = Object.keys(chamadosLocal || {});
+  const chamadosMes = keys.map(k=>chamadosLocal[k]).filter(c=> {
+    if(!c || !c.Data) return false;
     const parts = c.Data.split('/'); if(parts.length<3) return false;
     const d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
     return d.getMonth()===mes && d.getFullYear()===ano;
   });
-  const tipos = {Normal:0,Urgência:0, Emergência:0};
+  const tipos = {Normal:0, Urgência:0, Emergência:0};
   const prioridades = {}; const destinos = {};
   chamadosMes.forEach(c=>{
     const t = (c.Chamado||'').toLowerCase();
@@ -419,56 +455,17 @@ $('btnRelatorio').onclick = ()=>{
     destinos[c.Destino||'Não definido'] = (destinos[c.Destino]||0)+1;
   });
   let csv = `Relatório mensal - ${hoje.toLocaleDateString('pt-BR')}\n\nTipo,Quantidade\n`;
-  Object.keys(tipos).forEach(k => csv += `${k},${tipos[k]}\n`);
-  csv += '\nPrioridade,Quantidade\n'; Object.keys(prioridades).forEach(k=> csv+= `${k},${prioridades[k]}\n`);
-  csv += '\nDestino,Quantidade\n'; Object.keys(destinos).forEach(k=> csv+= `${k},${destinos[k]}\n`);
-  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = `relatorio_mensal_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  Object.keys(tipos).forEach(k=> csv += `${k},${tipos[k]}\n`);
+  csv += '\nPrioridade,Quantidade\n'; Object.keys(prioridades).forEach(k=> csv += `${k},${prioridades[k]}\n`);
+  csv += '\nDestino,Quantidade\n'; Object.keys(destinos).forEach(k=> csv += `${k},${destinos[k]}\n`);
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download=`relatorio_mensal_${new Date().toISOString().slice(0,10)}.csv`; a.click();
 };
 
-/* ---------------- ADD OPTIONS ---------------- */
-$('btnAddEndereco').onclick = ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco');
-$('btnAddEndereco').addEventListener('click', ()=> {}); // noop for clarity
-$('btnAddPrioridade').onclick = ()=> promptAddOption('Digite nova prioridade:', prioridadeLista, 'prioridade');
-$('btnAddDestino').onclick = ()=> promptAddOption('Digite novo destino:', destinoLista, 'destino');
-$('btnAddEnderecoManual').onclick = ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco');
-function promptAddOption(msg, list, selId){
-  const v = prompt(msg);
-  if(!v) return;
-  if(list && !list.includes(v)) list.push(v);
-  const sel = $(selId);
-  const o = new Option(v,v); sel.add(o); sel.value = v;
-  // save options
-  localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista}));
-}
-
-/* ---------------- UPDATE ENDEREÇOS (try fetch, else user adds manually) ---------------- */
-$('btnAtualizarEnd').onclick = async ()=>{
-  const source = prompt('Cole a URL da fonte de endereços (ex: https://cep.guiamais.com.br/sp/guaicara/logradouros):');
-  if(!source) return;
-  try{
-    const res = await fetch(source);
-    if(!res.ok) throw new Error('status '+res.status);
-    const text = await res.text();
-    // try to extract probable logradouro names (heuristic)
-    const matches = Array.from(text.matchAll(/>([^<]*?(?:Rua|R |Avenida|Av |Alameda|Praça|Tv |Travessa|Via de Acesso)[^<]*)</gi)).map(m=>m[1].trim());
-    if(matches.length){
-      matches.forEach(m => { if(!enderecoLista.includes(m)) enderecoLista.push(m); });
-      populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista}));
-      alert('Endereços atualizados ('+matches.length+'). Revise a lista.');
-    } else {
-      alert('Não foi possível detectar endereços automaticamente. Use o botão ➕ para acrescentar manualmente.');
-    }
-  }catch(err){
-    console.warn(err); alert('Falha ao buscar (provável bloqueio CORS). Use o botão ➕ ou crie um Apps Script para fornecer um CSV/JSON sem CORS.');
-  }
-};
-
-/* ---------------- CHART ---------------- */
+/* ---------- grafico ---------- */
 function atualizarGrafico(){
   const ctx = document.getElementById('graficoMensal').getContext('2d');
-  const counts = {Normal:0,Urgência:0, Emergência:0};
-  chamados.forEach(c=>{
+  const counts = {Normal:0, Urgência:0, Emergência:0};
+  Object.values(chamadosLocal || {}).forEach(c=>{
     const k = (c.Chamado||'').toLowerCase();
     if(k.includes('urg')) counts['Urgência']++;
     else if(k.includes('emerg')) counts['Emergência']++;
@@ -476,65 +473,109 @@ function atualizarGrafico(){
   });
   const labels = Object.keys(counts), data = Object.values(counts);
   if(chart) chart.destroy();
-  chart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Chamados', data, backgroundColor:['#2ecc71','#f1c40f','#c92b2b'] }] }, options:{responsive:true,plugins:{legend:{display:false}} }});
+  chart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Chamados (mês)', data, backgroundColor:['#2ecc71','#f1c40f','#c92b2b'] }] }, options:{responsive:true,plugins:{legend:{display:false}} }});
 }
 
-/* ---------------- IMAGE IMPORT (base64 or try-drive) ---------------- */
-$('btnImportBase64').onclick = async ()=>{
-  const paste = prompt('Cole aqui a imagem em Base64 (data:image/…). Se você não souber, cole a URL pública da imagem (Drive).');
-  if(!paste) return;
-  // if paste starts with data:, set and persist
-  if(paste.startsWith('data:')){
-    localStorage.setItem('logo_base64', paste);
-    $('logo').src = paste;
-    alert('Imagem salva e fixa (base64).');
-    return;
+/* ---------- search ---------- */
+$('search').addEventListener('input', (e)=> renderTabelaFromFirebase(e.target.value));
+
+/* ---------- chat (real-time) ---------- */
+function appendChatMessage(m){
+  const list = $('chatList');
+  const row = document.createElement('div');
+  const time = new Date(m.time || Date.now()).toLocaleTimeString();
+  row.innerHTML = `<div style="font-size:13px"><strong>${m.userName||'Usuário'}</strong> <span style="color:#777;font-size:12px">(${time})</span></div><div style="font-size:14px">${m.text}</div><hr style="margin:6px 0">`;
+  list.appendChild(row); list.scrollTop = list.scrollHeight;
+}
+$('chatSend').onclick = ()=> {
+  const text = $('chatInput').value.trim(); if(!text) return;
+  const userName = $('atendente').value.trim() || 'Usuário';
+  chatRef.push({ text, userName, uid: currentUID, time: Date.now() });
+  $('chatInput').value = '';
+};
+$('chatInput').addEventListener('keypress', (e)=> { if(e.key==='Enter'){ e.preventDefault(); $('chatSend').click(); } });
+
+/* ---------- import CSV once into Firebase (only-if not imported before) ---------- */
+async function importCSVOnceToFirebase(){
+  try{
+    if(localStorage.getItem('csv_imported')) return; // already imported
+    // fetch CSV using allorigins to avoid CORS
+    const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(CSV_URL));
+    if(!res.ok) throw new Error('status '+res.status);
+    const j = await res.json();
+    const parsed = parseCSV(j.contents || '');
+    if(!parsed.length) { localStorage.setItem('csv_imported','1'); return; }
+    const updates = {};
+    parsed.forEach(row=>{
+      const key = chamadosRef.push().key;
+      updates[key] = {
+        Data: row['Data']||row['data']||'',
+        Hora: row['Hora']||row['hora']||'',
+        Paciente: row['Paciente']||row['Nome']||'',
+        Endereco: row['Endereço']||row['Endereco']||row['logradouro']||'',
+        Numero: row['Número']||row['Numero']||'',
+        Telefone: row['Telefone']||'',
+        Chamado: (row['Chamado']||row['Tipo']||'normal').toLowerCase(),
+        Destino: row['Destino']||'',
+        Prioridade: row['Prioridade']||'',
+        Atendente: row['Atendente']||'',
+        Motorista: row['Motorista']||'',
+        Observacoes: row['Observações']||row['Obs']||'',
+        createdBy: currentUID || (row['Atendente']||''),
+        createdAt: Date.now()
+      };
+    });
+    await chamadosRef.update(updates);
+    localStorage.setItem('csv_imported','1');
+    console.log('CSV importado para Firebase (uma vez).');
+  }catch(err){
+    console.warn('Import CSV falhou:', err);
   }
-  // else try to fetch the URL and convert to base64 in-browser (may fail due to CORS)
+}
+
+/* ---------- add-option buttons ---------- */
+$('btnAddEndereco').onclick = ()=> { const v = prompt('Digite novo endereço:'); if(!v) return; enderecoLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
+$('btnAddEnderecoManual').onclick = ()=> { const v = prompt('Digite novo endereço:'); if(!v) return; enderecoLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
+$('btnAddPrioridade').onclick = ()=> { const v = prompt('Digite nova prioridade:'); if(!v) return; prioridadeLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
+$('btnAddDestino').onclick = ()=> { const v = prompt('Digite novo destino:'); if(!v) return; destinoLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
+
+/* ---------- logo base64 import/reset ---------- */
+$('btnImportBase64').onclick = async ()=> {
+  const paste = prompt('Cole data:image/... base64 (ou URL pública). Se colar URL e der CORS, converta para base64 e cole.');
+  if(!paste) return;
+  if(paste.startsWith('data:')){ localStorage.setItem('logo_base64', paste); $('logoImg').src = paste; alert('Imagem salva em base64.'); return; }
+  // try convert
   try{
     const res = await fetch(paste);
-    if(!res.ok) throw new Error('status '+res.status);
     const blob = await res.blob();
     const reader = new FileReader();
-    reader.onloadend = ()=>{ localStorage.setItem('logo_base64', reader.result); $('logo').src = reader.result; alert('Imagem carregada e salva (base64).'); };
+    reader.onloadend = ()=>{ localStorage.setItem('logo_base64', reader.result); $('logoImg').src = reader.result; alert('Imagem convertida e salva.'); };
     reader.readAsDataURL(blob);
-  }catch(err){
-    console.warn(err);
-    alert('Falha ao buscar/convertir automaticamente (provável CORS). Você pode abrir a imagem localmente, convertê-la para base64 (há sites/tools) e colar o resultado aqui.');
-  }
+  }catch(e){ alert('Falha ao buscar/convertir imagem (provável CORS). Cole base64 direto.'); }
 };
-$('btnClearImage').onclick = ()=>{
-  localStorage.removeItem('logo_base64');
-  $('logo').src = 'https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB';
-  alert('Imagem resetada (tente novamente a importação se quiser fixar em base64).');
-};
+$('btnResetLogo').onclick = ()=> { localStorage.removeItem('logo_base64'); $('logoImg').src = 'https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB'; alert('Imagem resetada.'); };
 
-/* ---------------- SEARCH ---------------- */
-$('search').addEventListener('input', (e)=> renderTabela(e.target.value));
-
-/* ---------------- SAVE OPTIONS RESTORE ---------------- */
+/* ---------- load saved app options ---------- */
 function loadAppOptions(){
   try{
-    const s = localStorage.getItem('app_options');
-    if(!s) return;
-    const o = JSON.parse(s);
-    if(o.enderecoLista) enderecoLista = Array.from(new Set([...enderecoLista, ...o.enderecoLista]));
-    if(o.prioridadeLista) prioridadeLista = Array.from(new Set([...prioridadeLista, ...o.prioridadeLista]));
-    if(o.destinoLista) destinoLista = Array.from(new Set([...destinoLista, ...o.destinoLista]));
+    const s = localStorage.getItem('app_options'); if(!s) return;
+    const o = JSON.parse(s); if(o.enderecoLista) enderecoLista = Array.from(new Set([...enderecoLista, ...o.enderecoLista])); if(o.prioridadeLista) prioridadeLista = Array.from(new Set([...prioridadeLista, ...o.prioridadeLista])); if(o.destinoLista) destinoLista = Array.from(new Set([...destinoLista, ...o.destinoLista])); 
   }catch(e){ console.warn(e); }
 }
 
-/* ---------------- INIT ---------------- */
+/* ---------- init ---------- */
 async function init(){
-  // restore logo if base64 saved
-  const base = localStorage.getItem('logo_base64'); if(base) $('logo').src = base;
   loadAppOptions();
+  const base = localStorage.getItem('logo_base64'); if(base) $('logoImg').src = base;
   populateSelects();
-  loadLocal();
-  await carregarCSV(); // tries CSV (falls back to local)
-  renderTabela();
-  // save beforeunload
-  window.addEventListener('beforeunload', ()=> saveLocal());
+  // try import csv once (if not imported)
+  await importCSVOnceToFirebase();
+  // initial render (data will come in from firebase listener)
+  // restore atendente name if saved
+  const savedAt = localStorage.getItem('atendente_name');
+  if(savedAt) $('atendente').value = savedAt;
+  // listen atendente change to save locally
+  $('atendente').addEventListener('change', ()=> localStorage.setItem('atendente_name', $('atendente').value.trim()));
 }
 init();
 </script>
