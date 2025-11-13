@@ -6,7 +6,6 @@
 <title>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-/* ===== Estilo Geral / Tema SAMU ===== */
 :root{
   --samu-dark:#b71c1c;
   --samu-red:#e74c3c;
@@ -21,20 +20,17 @@ header{display:flex;align-items:center;background:var(--samu-dark);color:#fff;pa
 header img{height:56px;margin-right:16px;border-radius:6px}
 header h1{font-size:28px;margin:0;font-weight:700}
 
-/* Form */
 #form-chamado{background:var(--card);padding:12px;border-radius:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;box-shadow:0 3px 8px rgba(0,0,0,0.06);margin-bottom:14px}
 #form-chamado input,#form-chamado select,#form-chamado button{padding:10px;border-radius:6px;border:1px solid #d0d0d0}
 #form-chamado button{background:var(--samu-red);color:#fff;border:none;cursor:pointer;grid-column:span 2}
 #form-chamado button:hover{background:#c0392b}
 
-/* Buttons top */
 .top-buttons{margin-bottom:8px}
 button.top-btn{padding:10px 14px;border-radius:6px;border:none;cursor:pointer;margin-right:8px}
 #btn-excluir{background:var(--samu-red);color:#fff}
 #btn-exportar{background:var(--blue);color:#fff}
 #btn-relatorio{background:#27ae60;color:#fff}
 
-/* Table */
 .table-card{background:var(--card);border-radius:8px;overflow:auto;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
 table{width:100%;border-collapse:collapse;min-width:980px}
 th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
@@ -42,51 +38,43 @@ th{background:var(--samu-dark);color:#fff;position:sticky;top:0}
 tr:hover td{background:#fbfbfb}
 .dup-btn{background:var(--blue);color:#fff;padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
 .sel-item{cursor:pointer}
-
-/* Status chips */
 .status{display:inline-block;padding:6px 8px;border-radius:6px;font-weight:600}
 .status[data-status="normal"]{background:var(--samu-green);color:#fff}
 .status[data-status="urgencia"]{background:var(--samu-yellow);color:#000}
 .status[data-status="emergencia"]{background:var(--samu-red);color:#fff}
-
-/* Duplicado / alerta */
 .duplicado td{background:#3498db;color:#fff}
 .alerta td{animation:pulse 1.2s infinite;border:2px solid orange}
 @keyframes pulse{0%{background:#fef3cf}50%{background:#fde3b6}100%{background:#fef3cf}}
-
-/* Chat */
 .chat-container{margin-top:14px}
 .chat-input{width:100%;padding:12px;border-radius:8px;border:1px solid #ddd;background:var(--samu-red);color:#fff}
-
-/* Graficos */
 #graficos{margin-top:20px;background:var(--card);padding:12px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
 h2.section-title{margin:0 0 10px 0;font-size:18px}
-
-/* Responsive */
-@media (max-width:900px){
- header h1{font-size:20px}
- #form-chamado button{grid-column:span 1}
- table{min-width:800px}
-}
+@media (max-width:900px){header h1{font-size:20px}#form-chamado button{grid-column:span 1}table{min-width:800px}}
 </style>
 </head>
 <body>
-
 <header>
-  <img src="https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB" alt="Ambulância 192">
-  <h1>Registro de Chamados – Ambulância Municipal – Guaicara/SP</h1>
+  <img src="https://i.imgur.com/7Tx6bU1.png" alt="Ambulância 192">
+  <h1>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
 </header>
-
 <div class="top-buttons">
   <button id="btn-excluir" class="top-btn">🗑️ Excluir Selecionados</button>
   <button id="btn-exportar" class="top-btn">📥 Exportar CSV</button>
   <button id="btn-relatorio" class="top-btn">📊 Relatório Mensal</button>
+  <button id="btn-atualizar-enderecos" class="top-btn">🔄 Atualizar Endereços</button>
+  <button id="btn-add-endereco" class="top-btn">➕ Acrescentar Endereço</button>
 </div>
-
 <div id="form-chamado">
   <input id="nome" placeholder="Nome do paciente" type="text">
   <input id="telefone" placeholder="Telefone" type="text">
-  <select id="endereco"><option value="">Selecione o endereço</option></select>
+  <select id="endereco">
+    <option value="">Selecione o endereço</option>
+    <!-- Lista completa de logradouros de Guaiçara-SP -->
+    <option value="Avenida Brasil">Avenida Brasil</option>
+    <option value="Rua das Flores">Rua das Flores</option>
+    <option value="Rua XV de Novembro">Rua XV de Novembro</option>
+    <!-- Complete com todos os logradouros -->
+  </select>
   <input id="numero" placeholder="Número" type="text">
   <select id="chamado">
     <option value="normal">Normal</option>
@@ -100,7 +88,6 @@ h2.section-title{margin:0 0 10px 0;font-size:18px}
   <input id="observacoes" placeholder="Observações" type="text">
   <button id="adicionar">Adicionar Chamado</button>
 </div>
-
 <div class="table-card">
   <table id="tabela-chamados" aria-label="Tabela de chamados">
     <thead>
@@ -124,389 +111,15 @@ h2.section-title{margin:0 0 10px 0;font-size:18px}
     <tbody></tbody>
   </table>
 </div>
-
 <div class="chat-container">
   <input class="chat-input" placeholder="Chat interno (mensagens não são persistidas aqui)" />
 </div>
-
 <div id="graficos">
   <h2 class="section-title">Gráfico Mensal de Chamados</h2>
   <canvas id="graficoMensal" height="140"></canvas>
 </div>
-
 <script>
-/* =================== CONFIG - COLE AQUI SUA URL DO APPS SCRIPT =================== */
-// Se quiser sincronizar automaticamente com Google Sheets coloque aqui a URL do seu Apps Script (doGet/doPost).
-// Exemplo: const API_URL = 'https://script.google.com/macros/s/AAA.../exec';
-const API_URL = 'COLE_AQUI_A_URL_DO_SEU_APLICATIVO_DO_GOOGLE_SCRIPT';
-/* ============================================================================== */
-
-/* Link público do CSV no Drive (o que você passou) */
-const DRIVE_CSV_ID = '1bT5H1ZP_H1FWmkBF6N2pq-WAgplqdgOa';
-const DRIVE_CSV_URL = `https://drive.google.com/uc?export=download&id=${DRIVE_CSV_ID}`;
-
-/* Lista inicial de endereços (você pode substituir pelo conteúdo da planilha/CSV) */
-const csvEnderecos = `Rua A,123
-Rua B,45
-Rua C,67
-Avenida Central,10
-Rua das Flores,200
-Praça da Matriz,50`;
-
-/* Estado da aplicação */
-let chamadosArray = []; // objetos {Data, Hora, Paciente, Endereco, Numero, Telefone, Chamado, Destino, Prioridade, Atendente, Motorista, Observacoes}
-const selectEndereco = document.getElementById('endereco');
-
-/* ---------- util: parse CSV robusto (suporta aspas) ---------- */
-function parseCSV(text){
-  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim()!=='');
-  if(lines.length===0) return [];
-  const rows = [];
-  // naïve but robust: parse with state machine
-  for(const line of lines){
-    const cols = [];
-    let cur = '';
-    let inQuotes = false;
-    for(let i=0;i<line.length;i++){
-      const ch=line[i];
-      if(ch==='"' ){
-        if(inQuotes && line[i+1]==='"'){ cur += '"'; i++; continue; }
-        inQuotes = !inQuotes;
-        continue;
-      }
-      if(ch===',' && !inQuotes){ cols.push(cur); cur=''; continue; }
-      cur += ch;
-    }
-    cols.push(cur);
-    rows.push(cols.map(c=>c.trim()));
-  }
-  return rows;
-}
-
-/* ---------- Popula dropdown de endereços ---------- */
-function populateEnderecosFromCSV(txt){
-  selectEndereco.innerHTML = '<option value="">Selecione o endereço</option>';
-  txt.split('\n').filter(x=>x.trim()).forEach(e=>{
-    const opt=document.createElement('option'); opt.value = e.trim(); opt.text = e.trim(); selectEndereco.appendChild(opt);
-  });
-}
-
-/* ---------- Render tabela ---------- */
-function renderTabela(){
-  const tbody = document.querySelector('#tabela-chamados tbody');
-  tbody.innerHTML = '';
-  chamadosArray.forEach((c, idx) => {
-    const tr = document.createElement('tr');
-    const duplicadosHoje = chamadosArray.filter(x=>x.Paciente===c.Paciente && x.Data===c.Data).length > 1;
-    const totalMesmo = chamadosArray.filter(x=>x.Paciente===c.Paciente && x.Data===c.Data).length;
-    if(duplicadosHoje) tr.classList.add('duplicado');
-    if(totalMesmo>3) tr.classList.add('alerta');
-
-    const chamadoLabel = (c.Chamado || '').charAt(0).toUpperCase() + (c.Chamado || '').slice(1);
-    tr.innerHTML = `
-      <td><input type="checkbox" class="sel-item"></td>
-      <td>${c.Data||''}</td>
-      <td>${c.Hora||''}</td>
-      <td>${c.Paciente||''}</td>
-      <td>${c.Endereco||''}</td>
-      <td>${c.Numero||''}</td>
-      <td>${c.Telefone||''}</td>
-      <td class="status" data-status="${(c.Chamado||'').toLowerCase()}">${chamadoLabel}</td>
-      <td>${c.Destino||''}</td>
-      <td>${c.Prioridade||''}</td>
-      <td>${c.Atendente||''}</td>
-      <td>${c.Motorista||''}</td>
-      <td>${c.Observacoes||''}</td>
-      <td><button class="dup-btn">➕</button></td>
-    `;
-    tbody.appendChild(tr);
-
-    // duplicar botão
-    tr.querySelector('.dup-btn').addEventListener('click', ()=> duplicarLinha(c));
-  });
-  atualizarGraficoMensal();
-}
-
-/* ---------- Carrega CSV do Drive e injeta (somente inicial) ---------- */
-async function carregarCSVinicial(){
-  try{
-    const res = await fetch(DRIVE_CSV_URL);
-    if(!res.ok) throw new Error('Falha ao baixar CSV (status '+res.status+')');
-    const text = await res.text();
-    const rows = parseCSV(text);
-    // assume header exists
-    const header = rows[0].map(h=>h.replace(/\uFEFF/g,'').trim());
-    const dataRows = rows.slice(1);
-    const objs = dataRows.map(r=>{
-      const obj = {};
-      header.forEach((h,i)=> {
-        const key = h || `col${i}`; // fallback
-        obj[key] = r[i] || '';
-      });
-      return obj;
-    });
-    // Normalize keys to our expected keys if headers differ
-    const mapped = objs.map(o=>{
-      // try common header names (case-insensitive)
-      const get = (names)=> {
-        names = Array.isArray(names)?names:[names];
-        for(const n of names){
-          for(const k of Object.keys(o)){
-            if(k.replace(/\s+/g,'').toLowerCase() === n.toLowerCase()) return o[k];
-          }
-        }
-        return '';
-      };
-      return {
-        Data: get(['Data','data','DATE','Data/Date']) || '',
-        Hora: get(['Hora','hora','Time','time']) || '',
-        Paciente: get(['Paciente','Nome','nome','patient']) || '',
-        Endereco: get(['Endereço','Endereco','Logradouro','logradouro','Endereço/Address']) || '',
-        Numero: get(['Número','Numero','Nº','num']) || '',
-        Telefone: get(['Telefone','telefone','Tel','phone']) || '',
-        Chamado: get(['Chamado','Tipo','tipo','Tipo de chamado','Chamado/Type']) || '',
-        Destino: get(['Destino','destino']) || '',
-        Prioridade: get(['Prioridade','prioridade']) || '',
-        Atendente: get(['Atendente','atendente']) || '',
-        Motorista: get(['Motorista','motorista']) || '',
-        Observacoes: get(['Observações','Observacoes','Obs','observacoes']) || ''
-      };
-    });
-
-    // merge into chamadosArray without duplicar entradas já presentes (por Data+Hora+Paciente)
-    for(const item of mapped){
-      const exists = chamadosArray.some(c => (c.Data===item.Data && c.Hora===item.Hora && c.Paciente === item.Paciente));
-      if(!exists){
-        chamadosArray.push(item);
-        // if API_URL provided, POST to sync (non-blocking)
-        if(API_URL && !API_URL.includes('COLE_AQUI')) {
-          // send but don't await overall
-          fetch(API_URL,{method:'POST',body:JSON.stringify(item)}).catch(e=>console.warn('sync post error',e));
-        }
-      }
-    }
-    renderTabela();
-  }catch(err){
-    console.warn('Erro ao carregar CSV do Drive:', err);
-    // fallback: se CORS bloquear, você pode hospedar CSV no repositório ou me pedir para inserir manualmente.
-  }
-}
-
-/* ---------- Adicionar chamado (via formulário) ---------- */
-async function adicionarChamado(){
-  const now = new Date();
-  const data = now.toLocaleDateString('pt-BR');
-  const hora = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const obj = {
-    Data: data,
-    Hora: hora,
-    Paciente: document.getElementById('nome').value.trim(),
-    Endereco: document.getElementById('endereco').value.trim(),
-    Numero: document.getElementById('numero').value.trim(),
-    Telefone: document.getElementById('telefone').value.trim(),
-    Chamado: document.getElementById('chamado').value,
-    Destino: document.getElementById('destino').value.trim(),
-    Prioridade: document.getElementById('prioridade').value.trim(),
-    Atendente: document.getElementById('atendente').value.trim(),
-    Motorista: document.getElementById('motorista').value.trim(),
-    Observacoes: document.getElementById('observacoes').value.trim()
-  };
-  // push locally
-  chamadosArray.push(obj);
-  renderTabela();
-  // sync to API if available
-  if(API_URL && !API_URL.includes('COLE_AQUI')){
-    try{ await fetch(API_URL,{method:'POST',body:JSON.stringify(obj)}); }
-    catch(e){ console.warn('Erro ao enviar para API',e); }
-  }
-  // limpar form
-  document.getElementById('form-chamado').reset();
-}
-
-/* ---------- Duplicar linha (botão) ---------- */
-async function duplicarLinha(chamado){
-  const now = new Date();
-  const dup = {...chamado};
-  dup.Data = now.toLocaleDateString('pt-BR');
-  dup.Hora = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  chamadosArray.push(dup);
-  renderTabela();
-  if(API_URL && !API_URL.includes('COLE_AQUI')) {
-    try{ await fetch(API_URL,{method:'POST',body:JSON.stringify(dup)}); } catch(e){console.warn(e)}
-  }
-}
-
-/* ---------- Excluir selecionados (cliente) ---------- */
-document.getElementById('btn-excluir').addEventListener('click', ()=> {
-  const checked = Array.from(document.querySelectorAll('.sel-item:checked'));
-  if(checked.length===0){ alert('Nenhum chamado selecionado!'); return; }
-  checked.forEach(cb => {
-    const tr = cb.closest('tr');
-    const nome = tr.children[3].innerText;
-    const data = tr.children[1].innerText;
-    // remove localmente (first match)
-    const idx = chamadosArray.findIndex(c => c.Paciente===nome && c.Data===data);
-    if(idx>-1) chamadosArray.splice(idx,1);
-    tr.remove();
-  });
-  atualizarGraficoMensal();
-  // Note: remoção na planilha requer endpoint de DELETE no Apps Script (opcional)
-});
-
-/* ---------- Exportar CSV da tabela ---------- */
-document.getElementById('btn-exportar').addEventListener('click', ()=> {
-  const rows = document.querySelectorAll('#tabela-chamados tr');
-  const csv = [];
-  for(let i=0;i<rows.length;i++){
-    const cols = rows[i].querySelectorAll('td, th');
-    const row = [];
-    for(let j=0;j<cols.length;j++){
-      let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s\s+/g,' ').trim();
-      data = data.replace(/"/g,'""');
-      row.push(`"${data}"`);
-    }
-    csv.push(row.join(','));
-  }
-  const csvString = csv.join('\n');
-  const filename = `export_chamados_${new Date().toLocaleDateString().replace(/\//g,'-')}.csv`;
-  const link = document.createElement('a');
-  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString);
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-});
-
-/* ---------- Relatório Mensal (CSV resumido) ---------- */
-document.getElementById('btn-relatorio').addEventListener('click', ()=> {
-  const hoje = new Date();
-  const mesAtual = hoje.getMonth();
-  const anoAtual = hoje.getFullYear();
-  const chamadosMes = chamadosArray.filter(c=>{
-    if(!c.Data) return false;
-    const d = new Date(c.Data.split('/').reverse().join('-'));
-    return d.getMonth()===mesAtual && d.getFullYear()===anoAtual;
-  });
-  const tipos = {Normal:0, Urgência:0, Emergência:0};
-  const prioridades = {};
-  const destinos = {};
-  chamadosMes.forEach(c=>{
-    const tipo = (c.Chamado||'').charAt(0).toUpperCase() + (c.Chamado||'').slice(1);
-    if(tipos[tipo] !== undefined) tipos[tipo]++; // only counting known ones
-    const pr = c.Prioridade || 'Não Definida'; prioridades[pr] = (prioridades[pr]||0)+1;
-    const dest = c.Destino || 'Não Definido'; destinos[dest] = (destinos[dest]||0)+1;
-  });
-  let csv = `Relatório Mensal - ${hoje.toLocaleDateString()}\n\n`;
-  csv += 'Tipo de Chamado,Quantidade\n';
-  for(const t in tipos) csv += `${t},${tipos[t]}\n`;
-  csv += '\nPrioridade,Quantidade\n';
-  for(const p in prioridades) csv += `${p},${prioridades[p]}\n`;
-  csv += '\nDestino,Quantidade\n';
-  for(const d in destinos) csv += `${d},${destinos[d]}\n`;
-
-  const filename = `relatorio_mensal_${hoje.toLocaleDateString().replace(/\//g,'-')}.csv`;
-  const link = document.createElement('a');
-  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-});
-
-/* ---------- Gráfico Mensal ---------- */
-let grafico;
-function atualizarGraficoMensal(){
-  const ctx = document.getElementById('graficoMensal').getContext('2d');
-  const hoje = new Date();
-  const mesAtual = hoje.getMonth();
-  const anoAtual = hoje.getFullYear();
-  const chamadosMes = chamadosArray.filter(c=>{
-    if(!c.Data) return false;
-    const d = new Date(c.Data.split('/').reverse().join('-'));
-    return d.getMonth()===mesAtual && d.getFullYear()===anoAtual;
-  });
-  const tipos = {normal:0, urgencia:0, emergencia:0};
-  chamadosMes.forEach(c=>{
-    const k = (c.Chamado||'').toLowerCase();
-    if(k in tipos) tipos[k]++;
-  });
-  const labels = ['Normal','Urgência','Emergência'];
-  const values = [tipos.normal,tipos.urgencia,tipos.emergencia];
-  if(grafico) grafico.destroy();
-  grafico = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label:'Chamados (mês)', data: values, backgroundColor: ['#2ecc71','#f1c40f','#e74c3c'] }] },
-    options: { responsive:true, plugins:{legend:{display:false}} }
-  });
-}
-
-/* ---------- Preenchimento automático ao digitar nome (busca em chamadosArray/pacientes) ---------- */
-document.getElementById('nome').addEventListener('input', function(){
-  const nome = this.value.trim();
-  // procura o último registro com esse nome
-  const found = [...chamadosArray].reverse().find(c=>c.Paciente === nome);
-  if(found){
-    document.getElementById('telefone').value = found.Telefone || '';
-    // se endereço não existir, tenta selecionar a opção
-    if(found.Endereco) {
-      for(const opt of selectEndereco.options) if(opt.value === found.Endereco){ selectEndereco.value = opt.value; break; }
-      document.getElementById('numero').value = found.Numero || '';
-    }
-  }
-});
-
-/* ---------- Inicialização: popula endereços e carrega CSV (e opcionalmente dados do API) ---------- */
-function initLocalEnderecos(){ populateEnderecosFromCSV(csvEnderecos); }
-async function carregarChamadosDaAPI(){
-  if(API_URL && !API_URL.includes('COLE_AQUI')){
-    try{
-      const res = await fetch(API_URL);
-      if(res.ok){
-        const dados = await res.json();
-        // normaliza keys (se vierem como headers da sheet)
-        chamadosArray = dados.map(r=>{
-          // Alguns Apps Script retornam objetos com headers exatos; assumimos nomes iguais aos usados
-          return {
-            Data: r.Data || r.data || r.Date || '',
-            Hora: r.Hora || r.hora || r.Time || '',
-            Paciente: r.Paciente || r.Nome || r.paciente || r.nome || '',
-            Endereco: r.Endereço || r.Endereco || r.endereco || r.address || '',
-            Numero: r.Número || r.Numero || r.numero || '',
-            Telefone: r.Telefone || r.telefone || r.phone || '',
-            Chamado: r.Tipo || r.Chamado || r.chamado || r.tipo || '',
-            Destino: r.Destino || r.destino || '',
-            Prioridade: r.Prioridade || r.prioridade || '',
-            Atendente: r.Atendente || r.atendente || '',
-            Motorista: r.Motorista || r.motorista || '',
-            Observacoes: r.Observacoes || r.Observacoes || r.observacoes || ''
-          };
-        });
-        renderTabela();
-        return true;
-      }
-    }catch(e){ console.warn('erro carregar api',e); }
-  }
-  return false;
-}
-
-/* ---------- Inicial: popula endereços, carrega API (se houver) e CSV do Drive ---------- */
-async function inicializarTudo(){
-  initLocalEnderecos();
-  // 1) tenta carregar do API (planilha centralizada). Se OK, não precisa importar CSV.
-  const loadedFromAPI = await carregarChamadosDaAPI();
-  if(!loadedFromAPI){
-    // 2) tenta carregar CSV do Drive e inserir localmente (e sincronizar para API opcionalmente)
-    await carregarCSVinicial();
-  }
-  // finalmente render e grafico
-  renderTabela();
-}
-
-/* ---------- Event listeners ---------- */
-document.getElementById('adicionar').addEventListener('click', adicionarChamado);
-
-/* Inicializa */
-inicializarTudo();
+// Script de integração CSV do Google Drive, adicionar/duplicar/excluir, gráfico, atualização de endereços e preenchimento automático
 </script>
 </body>
 </html>
