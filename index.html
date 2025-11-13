@@ -14,27 +14,27 @@
   --blue:#2980b9;
   --card:#fff;
   --bg:#f4f4f4;
-  --muted:#888;
+  --muted:#777;
 }
 *{box-sizing:border-box}
 body{font-family:Arial,Helvetica,sans-serif;margin:18px;background:var(--bg);color:#222}
 header{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;box-shadow:0 4px 8px rgba(0,0,0,0.08)}
-header img{height:56px;margin-right:12px;border-radius:6px}
+.header-img{height:56px;margin-right:12px;border-radius:6px;flex:0 0 56px}
 header h1{font-size:20px;margin:0;font-weight:700}
-.controls-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.top-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.controls-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.top-buttons{display:flex;gap:8px;flex-wrap:wrap}
 button.top-btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
 #btn-excluir{background:var(--samu-red);color:#fff}
 #btn-exportar{background:var(--blue);color:#fff}
 #btn-relatorio{background:#27ae60;color:#fff}
 #btn-atualizar-enderecos{background:#f39c12;color:#fff}
 #btn-add-endereco{background:#8e44ad;color:#fff}
-.search-input{padding:8px;border-radius:6px;border:1px solid #ddd;width:260px}
+.search-input{padding:8px;border-radius:6px;border:1px solid #ddd;width:280px}
 #form-chamado{background:var(--card);padding:10px;border-radius:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06);margin-bottom:12px}
 #form-chamado input,#form-chamado select,#form-chamado button{padding:8px;border-radius:6px;border:1px solid #d0d0d0}
 #form-chamado button{background:var(--samu-red);color:#fff;border:none;cursor:pointer;grid-column:span 2}
-.small-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
-.add-opt-btn{background:#2d9cdb;color:#fff;margin-left:6px}
+.small-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer;margin-left:6px}
+.add-opt-btn{background:#2d9cdb;color:#fff}
 .table-card{background:var(--card);border-radius:8px;overflow:auto;box-shadow:0 3px 8px rgba(0,0,0,0.06);padding:0}
 table{width:100%;border-collapse:collapse;min-width:980px}
 th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
@@ -63,8 +63,8 @@ tr:hover td{background:#fbfbfb}
 </head>
 <body>
 <header>
-  <!-- imagem fixa; você já tem a imagem ok -->
-  <img src="https://i.imgur.com/7Tx6bU1.png" alt="Ambulância 192">
+  <!-- imagem principal (fallback SVG se o src falhar) -->
+  <img id="logoImg" class="header-img" src="https://i.imgur.com/7Tx6bU1.png" alt="Ambulância 192">
   <h1>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
 </header>
 
@@ -80,19 +80,13 @@ tr:hover td{background:#fbfbfb}
   <input id="search" class="search-input" placeholder="Buscar paciente, motorista, destino..." />
 </div>
 
-<div class="notice">Observação: alterações são gravadas localmente automaticamente. Para sincronizar com Google Sheets cole sua URL de Apps Script em <code>API_URL</code> no script.</div>
+<div class="notice">Observação: o sistema tenta carregar seu CSV publicado. Se o navegador bloquear (CORS), os dados serão carregados do backup local. Para sincronizar com Google Sheets sem CORS use um Apps Script Web App (vejo comentário no script).</div>
 
 <form id="form-chamado" onsubmit="return false;">
   <input id="nome" placeholder="Nome do paciente" type="text" required>
   <input id="telefone" placeholder="Telefone" type="text">
   <div style="display:flex;gap:6px;align-items:center">
-    <select id="endereco" aria-label="Endereço" style="flex:1">
-      <option value="">Selecione o endereço</option>
-      <!-- Exemplo — você pode popular com a lista completa -->
-      <option value="Avenida Brasil">Avenida Brasil</option>
-      <option value="Rua das Flores">Rua das Flores</option>
-      <option value="Rua XV de Novembro">Rua XV de Novembro</option>
-    </select>
+    <select id="endereco" aria-label="Endereço" style="flex:1"></select>
     <button id="btn-add-endereco-manual" type="button" class="small-btn add-opt-btn">➕</button>
   </div>
 
@@ -103,31 +97,15 @@ tr:hover td{background:#fbfbfb}
       <option value="urgencia">Urgência</option>
       <option value="emergencia">Emergência</option>
     </select>
-    <!-- empty placeholder to balance grid -->
   </div>
 
   <div style="display:flex;gap:6px;align-items:center">
-    <select id="destino" aria-label="Destino" style="flex:1">
-      <option value="">Selecione o destino</option>
-      <option value="Hospital Municipal">Hospital Municipal</option>
-      <option value="UPA">UPA</option>
-      <option value="CSIII">CSIII</option>
-      <!-- complete com demais destinos -->
-    </select>
+    <select id="destino" aria-label="Destino" style="flex:1"></select>
     <button id="add-destino" type="button" class="small-btn add-opt-btn">➕</button>
   </div>
 
   <div style="display:flex;gap:6px;align-items:center">
-    <select id="prioridade" aria-label="Prioridade" style="flex:1">
-      <option value="">Selecione a prioridade</option>
-      <option value="Nenhuma">Nenhuma</option>
-      <option value="Curativo">Curativo</option>
-      <option value="Doenças crônicas ou complicações">Doenças crônicas ou complicações</option>
-      <option value="Urgência">Urgência</option>
-      <option value="Emergência">Emergência</option>
-      <option value="Normal">Normal</option>
-      <option value="Pós-consulta">Pós-consulta</option>
-    </select>
+    <select id="prioridade" aria-label="Prioridade" style="flex:1"></select>
     <button id="add-prioridade" type="button" class="small-btn add-opt-btn">➕</button>
   </div>
 
@@ -171,48 +149,84 @@ tr:hover td{background:#fbfbfb}
 </div>
 
 <script>
-/* ----------------- CONFIG ----------------- */
-/* Coloque aqui a URL do Apps Script (opcional) para salvar no Google Sheets via POST */
-const API_URL = ''; // ex: 'https://script.google.com/macros/s/XXXXX/exec'
+/* --------------- CONFIG --------------- */
+/* (Opcional) cole aqui URL do Apps Script Web App para POST (cira um endpoint sem CORS).
+   Se você publicar um Apps Script que retorna CSV ou aceita POST, coloque a URL abaixo. */
+const API_URL = ''; // ex: 'https://script.google.com/macros/s/AKfyc.../exec'
 
-/* URL pública do CSV publicado (padrão usei a sua versão pub?output=csv) */
+/* CSV público (se disponível). Se fetch falhar por CORS, usamos backup localStorage. */
 const urlCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3_8QPyI7v109xYun_zxMKwqpoSmzPwbGaB4kvyHizG4IeJjR9ZGZHr1VF5WKsJWhcMFYnqeuosmrU/pub?output=csv";
 
-/* Lista de endereços local inicial (será substituível) */
-let enderecoLista = [
-  "Avenida Brasil",
-  "Rua das Flores",
-  "Rua XV de Novembro",
-  "Praça da Matriz"
+/* ---------- Lista de endereços (logradouros) de Guaiçara-SP (extraída do site indicado) ---------- */
+/* Esta lista foi obtida das páginas do site cep.guiamais.com.br/sp/guaicara/logradouros
+   (várias páginas paginadas) e deduplicada. Se quiser acrescentar mais, use o botão ➕. */
+const enderecoLista = [
+"Via de Acesso Hermínio Paizan","R Otávio Maitan - Tavico","R Coronel-Polícia Militar Eduardo Assumpção",
+"R José Gringo dos Santos","R Guerino Campaner","R José Ferreira Pessoa","R Joaquim Rodrigues",
+"R Martiniano Cruz","R Aristides Bento","R Jovino Faustino Rosa","R Hiroshi Suzuki",
+"R Noé Franco da Rocha","R Agenor Leme Franco","R Fausto Longo Baptista Pereira",
+"R Hilário Teixeira da Silva","R José de Souza","R Ana de Jesus Maia","R Angelin Garoze",
+"Tv Mariano Martinez","Av Duque de Caxias","Av Nove de Julho","Via de Acesso José Martinez Rodrigues",
+"R Adão Afonso Costa","R Yoshi Sato","R Sunao Katsuki","R Rio Branco","R Frei Henrique",
+"R José do Patrocínio","R Tiradentes","R da Amizade","R Osvaldo Cruz","R Rui Barbosa",
+"R Jose Bonifácio","R Marechal Deodoro","R Antonio Buzinaro","R Doutor Arnaldo de Andrade",
+"R Pedro Dutra Sobrinho","Tv Vereador Plácido Pereira de Magalhães","R Osvaldo Pereira",
+"R Ercilio Lima dos Santos","R Orlando Jorge","R Dirce Camargo Vaz","R João Pacífico da Silva",
+"R Airton Alves dos Santos","R José Francisco Moco","R Mario Pereira da Silva","R Antonio Monteiro Paschoal",
+"R Manoel dos Reis Soares","R Luiz Caetano","R Luiz Esperança","R Ana Carlotta Arruda Paula",
+"R Jayme Pereira de Oliveira","R Valdemir Bridi","R João Batista do Amaral Caldas",
+"R Félix Umbelino","R Dirceu Sanches","Av Henrique Bertin","R Sabino","R Sebastião de Souza",
+"Av Paulo Xavier Ribeiro","Tv Álvaro Bittencourt","R José Graciotin","R Ernesto Bianchini",
+"R Luiz Buzinaro","R Soldado-Polícia Militar Carlos Trombini","R Joana Biscaro Pereira",
+"R Bernardino Alves","R Antonio Cezário","R Eliseo Nunes","R Nelson Costa","R Maria Purcina Dias",
+"R Professora Adelaide Baptista Pereira Cruz","R Horácio Ramos Nogueira","R Urbano Pierre",
+"R Ofriner Paulo Palo","R Felicio Takase","R Helena Lucas Franco da Rocha",
+"R Elza Katsuki Ishizaka","R Cônego Lino Braz Branwart","R Luiz Vieira","R Francisco Ramos dos Santos",
+"R Mario Maitan","R Esmeraldo Cruz","R Joaquim Francisco de Paula","R Cabo-Polícia Militar Miguel Redondo",
+"R Luis de Almeida Rosa","R Roman Garcia Echeto","R Antonio Bráz Herrero","R Jonas Miranda",
+"Alameda dos Manacás","Alameda das Acácias","Alameda das Azaléias","Alameda dos Lírios",
+"Alameda das Rosas","Alameda das Orquídeas","Alameda das Hortências","Alameda das Violetas",
+"Alameda dos Jasmins","Alameda dos Girassóis","R Cateto","R Laércio Domingos","R Luiz Cruz",
+"R Domingos Antunes de Souza","R José Roberto Coutinho Junior","R Maestro João Pavezzi",
+"R Pedro Bertolino","R Vitor Maida","R Marcelo de Alencar Bento","R Job Dias de Oliveira",
+"R Manoel Joaquim Cordeiro","R Élcio Joaquim dos Santos","R Rogê Ferreira","R Maria Luiza Costa Raimundo",
+"R Celso de Souza","R Julio Santini","R João Gonçalves Rocha","R José Wilson Vicentino",
+"R Felix Cardoso Gomes","R Vereador Nelson Evaristo Teixeira","R Paulo César Pereira",
+"R Olivio Alves de Oliveira","R Soldado-Polícia Militar Gilberto Augustinho",
+"R Augusto Rodrigues Profeta","R Mario Cardoso","R Pedro Pavoni","R João Lopes",
+"R Vereador Muneo Nakano","R Deloy do Rosário de Jesus","R José Antonio de Souza",
+"R Otacilio Pereira dos Santos","R Maria de Lourdes Pinto Jorge","R Gino Kenji Ishizaka",
+"R Vice-Prefeito Paulo Katsuki","R Armando Gava","R Edson Vander Camacho","R Edwirges Gonçalves Thomas",
+"R José Francisco da Costa","R Antonio Carlos de Oliveira","R dos Trabalhadores","R do Concenso",
+"R dos Industriários","R Arlindo Pita","R Euclides Bridi","R José Pereira",
+"R Rosangela Aparecida dos Santos Oliveira","R Geraldo Tremeschin Silva","Av Antonio Rodolpho Cantoni",
+"R Antonio Luiz Ferreira","R Izabel Fresneda Carmona","R Vereadora Ana Maria Herrera Fresca",
+"R Milton Bittencourt","R José Pianta","R Afonso da Silva","R Amadeu Jorge",
+"R Joaquim Benedito da Silva","R Wuillian Kfouri","R Alcides Osvaldo Pavoni",
+"R Vereador João Souto Pereira","R Vereador Celso Lousada Bittencourt","Av André de Souza Lima",
+"R Aristides Cruz","R Luiz Teixeira Lima"
 ];
+/* --------------------------------------- */
 
-/* estado */
-let chamados = []; // array de objetos
+let chamados = []; // in-memory array of objects
 const tbody = document.querySelector('#tabela-chamados tbody');
 
-/* util: parse CSV robusto */
-function parseCSV(text){
-  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim()!=='');
-  if(lines.length===0) return [];
-  const headers = lines[0].split(',').map(h=>h.replace(/(^"|"$)/g,'').trim());
-  const rows = lines.slice(1);
-  return rows.map(r=>{
-    const cols = [];
-    let cur='', inQ=false;
-    for(let i=0;i<r.length;i++){
-      const ch = r[i];
-      if(ch === '"'){ if(inQ && r[i+1]==='"'){ cur+='"'; i++; } else { inQ = !inQ; } continue; }
-      if(ch === ',' && !inQ){ cols.push(cur); cur=''; continue; }
-      cur += ch;
-    }
-    cols.push(cur);
-    const obj = {};
-    for(let i=0;i<headers.length;i++) obj[headers[i]] = (cols[i]||'').replace(/(^"|"$)/g,'').trim();
-    return obj;
-  });
+/* ---------- helpers ---------- */
+function nowDateTime(){
+  const n = new Date();
+  const dd = String(n.getDate()).padStart(2,'0');
+  const mm = String(n.getMonth()+1).padStart(2,'0');
+  const yyyy = n.getFullYear();
+  const hh = String(n.getHours()).padStart(2,'0');
+  const min = String(n.getMinutes()).padStart(2,'0');
+  return {date:`${dd}/${mm}/${yyyy}`, time:`${hh}:${min}`};
 }
 
-/* ---------- UI helpers ---------- */
+function getSelectOptions(id){
+  return Array.from(document.getElementById(id).options).map(o=>o.value).filter(v=>v);
+}
+
+/* populate selects for endereco, prioridade, destino with saved options if any */
 function populateEnderecoOptions(){
   const sel = document.getElementById('endereco');
   sel.innerHTML = '<option value="">Selecione o endereço</option>';
@@ -220,11 +234,21 @@ function populateEnderecoOptions(){
     const opt = document.createElement('option'); opt.value = e; opt.text = e; sel.appendChild(opt);
   });
 }
+function populatePrioridadeDestinoDefaults(){
+  const prior = document.getElementById('prioridade');
+  prior.innerHTML = '<option value="">Selecione a prioridade</option>';
+  const priorDefault = ["Nenhuma","Curativo","Doenças crônicas ou complicações","Urgência","Emergência","Normal","Pós-consulta"];
+  priorDefault.forEach(p=> { const o=document.createElement('option'); o.value=p; o.text=p; prior.appendChild(o); });
 
-/* ---------- Render tabela ---------- */
+  const dest = document.getElementById('destino');
+  dest.innerHTML = '<option value="">Selecione o destino</option>';
+  const destDefault = ["Hospital Municipal","UPA","CSIII"];
+  destDefault.forEach(d=> { const o=document.createElement('option'); o.value=d; o.text=d; dest.appendChild(o); });
+}
+
+/* ---------- render tabela ---------- */
 function renderTabela(filter=''){
   tbody.innerHTML = '';
-  // sort by date+hora descending? keep insertion order
   chamados.forEach((c, idx) => {
     const textSearch = (c.Paciente + c.Telefone + c.Endereco + c.Atendente + c.Destino + c.Observacoes).toLowerCase();
     if(filter && !textSearch.includes(filter.toLowerCase())) return;
@@ -234,7 +258,6 @@ function renderTabela(filter=''){
     // detect duplicated same patient same date
     const duplicadosHoje = chamados.filter(x=>x.Paciente===c.Paciente && x.Data===c.Data).length > 1;
     if(duplicadosHoje) tr.classList.add('duplicado');
-    // alert visual if >3 chamados same day
     const totalMesmo = chamados.filter(x=>x.Data===c.Data).length;
     if(totalMesmo>3) tr.classList.add('alerta');
 
@@ -264,25 +287,43 @@ function renderTabela(filter=''){
   atualizarGraficoMensal();
 }
 
-/* ---------- carregar CSV inicial do Google Sheets (publicado) ---------- */
+/* ---------- carregar CSV inicial (tenta fetch; pode falhar por CORS) ---------- */
+function parseCSV(text){
+  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim()!=='');
+  if(lines.length===0) return [];
+  const headers = lines[0].split(',').map(h=>h.replace(/(^"|"$)/g,'').trim());
+  const rows = lines.slice(1);
+  return rows.map(r=>{
+    const cols = [];
+    let cur='', inQ=false;
+    for(let i=0;i<r.length;i++){
+      const ch = r[i];
+      if(ch === '"'){ if(inQ && r[i+1]==='"'){ cur+='"'; i++; } else { inQ = !inQ; } continue; }
+      if(ch === ',' && !inQ){ cols.push(cur); cur=''; continue; }
+      cur += ch;
+    }
+    cols.push(cur);
+    const obj = {};
+    for(let i=0;i<headers.length;i++) obj[headers[i]] = (cols[i]||'').replace(/(^"|"$)/g,'').trim();
+    return obj;
+  });
+}
+
 async function carregarCSVinicial(){
   try{
     const res = await fetch(urlCSV);
-    if(!res.ok) throw new Error('Falha ao baixar CSV (status '+res.status+')');
+    if(!res.ok) throw new Error('status '+res.status);
     const text = await res.text();
-    // try parse; if published sheet has HTML, user provided /pubhtml - we used ?output=csv
     const parsed = parseCSV(text);
     if(parsed.length>0){
-      // map fields - try to map standard headers if present
       parsed.forEach(row=>{
-        // map common header names to our schema
         const item = {
           Data: row['Data'] || row['data'] || row['Date'] || '',
           Hora: row['Hora'] || row['hora'] || row['Time'] || '',
           Paciente: row['Paciente'] || row['Nome'] || row['nome'] || '',
-          Endereco: row['Endereço'] || row['Endereco'] || row['Endereço '] || row['logradouro'] || '',
-          Numero: row['Número'] || row['Numero'] || row['Nº'] || '',
-          Telefone: row['Telefone'] || row['telefone'] || row['Tel'] || '',
+          Endereco: row['Endereço'] || row['Endereco'] || row['logradouro'] || '',
+          Numero: row['Número'] || row['Numero'] || '',
+          Telefone: row['Telefone'] || row['telefone'] || '',
           Chamado: row['Chamado'] || row['Tipo'] || row['tipo'] || '',
           Destino: row['Destino'] || row['destino'] || '',
           Prioridade: row['Prioridade'] || row['prioridade'] || '',
@@ -292,29 +333,20 @@ async function carregarCSVinicial(){
         };
         chamados.push(item);
       });
-      saveLocal(); // persist backup
+      saveLocal(); // backup
       renderTabela();
+      return;
     }
   }catch(err){
-    console.warn('Erro ao carregar CSV:', err);
-    // load from local storage if available
+    console.warn('Não foi possível carregar CSV público (CORS ou outro erro):', err);
+    // fallback para localStorage
     loadLocal();
     renderTabela();
   }
 }
 
 /* ---------- adicionar chamado ---------- */
-function nowDateTime(){
-  const n = new Date();
-  const dd = String(n.getDate()).padStart(2,'0');
-  const mm = String(n.getMonth()+1).padStart(2,'0');
-  const yyyy = n.getFullYear();
-  const hh = String(n.getHours()).padStart(2,'0');
-  const min = String(n.getMinutes()).padStart(2,'0');
-  return {date:`${dd}/${mm}/${yyyy}`, time:`${hh}:${min}`};
-}
-
-async function adicionarChamado(){
+function adicionarChamado(){
   const nome = document.getElementById('nome').value.trim();
   const atendente = document.getElementById('atendente').value.trim();
   if(!nome || !atendente){ alert('Preencha pelo menos Nome do paciente e Atendente'); return; }
@@ -334,20 +366,17 @@ async function adicionarChamado(){
     Observacoes: document.getElementById('observacoes').value.trim()
   };
   chamados.push(obj);
-  renderTabela();
+  renderTabela(document.getElementById('search').value);
   saveLocal();
-  // try to sync to API_URL
-  if(API_URL){
-    fetch(API_URL, {method:'POST', body: JSON.stringify(obj)}).catch(()=>{});
-  }
-  // clear some fields (keep atendente)
+  if(API_URL) fetch(API_URL, {method:'POST', body: JSON.stringify(obj)}).catch(()=>{});
+  // clear certain fields
   document.getElementById('nome').value='';
   document.getElementById('telefone').value='';
   document.getElementById('numero').value='';
   document.getElementById('observacoes').value='';
 }
 
-/* ---------- duplicar linha (só autor pode duplicar) ---------- */
+/* ---------- row events (dup/edit) ---------- */
 function attachRowEvents(){
   document.querySelectorAll('.dup-btn').forEach(btn=>{
     btn.removeEventListener('click', onDup);
@@ -357,13 +386,12 @@ function attachRowEvents(){
     b.removeEventListener('click', onEdit);
     b.addEventListener('click', onEdit);
   });
-  // select all checkbox
   document.getElementById('sel-all').onchange = function(){
     document.querySelectorAll('.sel-item').forEach(cb=>cb.checked = this.checked);
   };
 }
 
-async function onDup(e){
+function onDup(e){
   const idx = Number(e.currentTarget.dataset.idx);
   const row = chamados[idx];
   const currentAtendente = document.getElementById('atendente').value.trim();
@@ -379,7 +407,6 @@ async function onDup(e){
   if(API_URL) fetch(API_URL, {method:'POST', body: JSON.stringify(dup)}).catch(()=>{});
 }
 
-/* ---------- editar linha (inline modal simple) ---------- */
 function onEdit(e){
   const idx = Number(e.currentTarget.dataset.idx);
   const rowData = chamados[idx];
@@ -388,7 +415,7 @@ function onEdit(e){
     alert('Somente o atendente que criou este chamado pode editar.');
     return;
   }
-  // open prompt for key fields (simple approach)
+  // simple inline prompt editor (fast on tablet). If prefer modal we can upgrade.
   const novoPaciente = prompt('Editar Nome do paciente:', rowData.Paciente);
   if(novoPaciente === null) return;
   rowData.Paciente = novoPaciente;
@@ -398,7 +425,6 @@ function onEdit(e){
   rowData.Destino = prompt('Destino:', rowData.Destino) || rowData.Destino;
   rowData.Prioridade = prompt('Prioridade:', rowData.Prioridade) || rowData.Prioridade;
   rowData.Observacoes = prompt('Observações:', rowData.Observacoes) || rowData.Observacoes;
-  // update
   chamados[idx] = rowData;
   saveLocal();
   renderTabela(document.getElementById('search').value);
@@ -410,18 +436,19 @@ document.getElementById('btn-excluir').addEventListener('click', ()=>{
   const checked = Array.from(document.querySelectorAll('.sel-item:checked'));
   if(checked.length===0) { alert('Nenhum chamado selecionado'); return; }
   if(!confirm(`Excluir ${checked.length} chamados selecionados?`)) return;
+  const currentAtend = document.getElementById('atendente').value.trim();
+  let cant = 0;
   checked.forEach(cb=>{
     const tr = cb.closest('tr');
     const idx = Number(tr.dataset.index);
-    // only allow delete if current atendente is same OR blank
     const rowAtend = chamados[idx].Atendente || '';
-    const currentAtend = document.getElementById('atendente').value.trim();
-    if(rowAtend && rowAtend !== currentAtend){ alert('Você não pode excluir chamados de outro atendente: ' + rowAtend); return; }
-    chamados[idx] = null; // mark
+    if(rowAtend && rowAtend !== currentAtend){ cant++; return; }
+    chamados[idx] = null;
   });
   chamados = chamados.filter(x=>x);
   saveLocal();
   renderTabela(document.getElementById('search').value);
+  if(cant>0) alert(`${cant} chamado(s) não puderam ser excluídos porque pertencem a outro atendente.`);
 });
 
 /* ---------- export CSV ---------- */
@@ -442,7 +469,7 @@ document.getElementById('btn-exportar').addEventListener('click', ()=>{
   document.body.appendChild(a); a.click(); a.remove();
 });
 
-/* ---------- relatorio mensal (download CSV resumo) ---------- */
+/* ---------- relatorio mensal ---------- */
 document.getElementById('btn-relatorio').addEventListener('click', ()=>{
   const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
   const chamadosMes = chamados.filter(c=>{
@@ -456,8 +483,8 @@ document.getElementById('btn-relatorio').addEventListener('click', ()=>{
   const destinos = {};
   chamadosMes.forEach(c=>{
     const t = (c.Chamado||'').toLowerCase();
-    if(t.includes('urgencia')||t.includes('urgência')) tipos['Urgência']++;
-    else if(t.includes('emergencia')||t.includes('emergência')) tipos['Emergência']++;
+    if(t.includes('urg')) tipos['Urgência']++;
+    else if(t.includes('emerg')) tipos['Emergência']++;
     else tipos['Normal']++;
     prioridades[c.Prioridade || 'Não definida'] = (prioridades[c.Prioridade]||0)+1;
     destinos[c.Destino || 'Não definido'] = (destinos[c.Destino]||0)+1;
@@ -502,62 +529,52 @@ function atualizarGraficoMensal(){
   });
 }
 
-/* ---------- pesquisa em tempo real ---------- */
+/* ---------- busca em tempo real ---------- */
 document.getElementById('search').addEventListener('input', (e)=>{
   renderTabela(e.target.value);
 });
 
-/* ---------- adicionar novas opções (Prioridade/Destino/Endereço) ---------- */
+/* ---------- adicionar novas opções via prompt ---------- */
 function promptAddOption(message, list, selId){
   const v = prompt(message);
   if(!v) return;
-  if(!list.includes(v)){ list.push(v); }
-  populateEnderecoOptions(); // if address updated
+  // avoid duplicates
+  if(list && !list.includes(v)) list.push(v);
   const sel = document.getElementById(selId);
   const opt = document.createElement('option'); opt.value = v; opt.text = v; sel.appendChild(opt);
   sel.value = v;
-  // save to local so options persist
   localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridades: getSelectOptions('prioridade'), destinos: getSelectOptions('destino')}));
 }
 document.getElementById('btn-add-endereco-manual').addEventListener('click', ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco'));
 document.getElementById('btn-add-endereco').addEventListener('click', ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco'));
-document.getElementById('add-destino').addEventListener('click', ()=> {
-  const sel = document.getElementById('destino'); promptAddOption('Digite novo destino:', [], 'destino');
-});
-document.getElementById('add-prioridade').addEventListener('click', ()=> {
-  promptAddOption('Digite nova prioridade:', [], 'prioridade');
-});
+document.getElementById('add-destino').addEventListener('click', ()=> { promptAddOption('Digite novo destino:', [], 'destino'); });
+document.getElementById('add-prioridade').addEventListener('click', ()=> { promptAddOption('Digite nova prioridade:', [], 'prioridade'); });
 
-function getSelectOptions(id){
-  return Array.from(document.getElementById(id).options).map(o=>o.value).filter(v=>v);
-}
-
-/* ---------- Atualizar endereços (esboço de fetch paginado) ---------- */
+/* ---------- atualizar endereços (tenta buscar da fonte; se CORS bloquear, instruções) ---------- */
 document.getElementById('btn-atualizar-enderecos').addEventListener('click', async ()=>{
-  // Nota: muitos sites bloqueiam CORS. Se o servidor permitir, insira a URL completa de onde extrair os logradouros.
   const source = prompt('Cole a URL da fonte de endereços (ex: https://cep.guiamais.com.br/sp/guaicara/logradouros):');
   if(!source) return;
   try{
     const res = await fetch(source);
-    if(!res.ok) throw new Error('Erro ao buscar lista');
+    if(!res.ok) throw new Error('Erro ao buscar lista (status '+res.status+')');
     const text = await res.text();
-    // tentativa simples: extrair <a> que contenham logradouro (heurística)
-    const matches = Array.from(text.matchAll(/<a[^>]*>([^<]*Rua[^<]*|Avenida[^<]*|Praça[^<]*|Alameda[^<]*|Travessa[^<]*)<\/a>/gi)).map(m=>m[1].trim());
+    // tentativa heurística simples: extrair nomes de logradouro (palavras comuns)
+    const matches = Array.from(text.matchAll(/>([^<]*?(?:Rua|R |Avenida|Av |Alameda|Praça|Tv |Travessa|Via de Acesso)[^<]*)</gi)).map(m=>m[1].trim());
     if(matches.length>0){
-      enderecoLista = Array.from(new Set([...enderecoLista, ...matches]));
+      matches.forEach(m=>{ if(!enderecoLista.includes(m)) enderecoLista.push(m); });
       populateEnderecoOptions();
-      alert('Endereços atualizados ('+matches.length+') — verifique se todos foram importados.');
+      alert('Endereços atualizados ('+matches.length+') — verifique a lista.');
       localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridades: getSelectOptions('prioridade'), destinos: getSelectOptions('destino')}));
     } else {
-      alert('Não foi possível detectar endereços automaticamente (provável bloqueio CORS). Use "➕ Acrescentar Endereço" para adicionar manualmente.');
+      alert('Não foi possível detectar endereços automaticamente (provável bloqueio CORS). Use o botão ➕ para adicionar manualmente ou crie um Apps Script para fornecer um JSON/CSV sem CORS.');
     }
   }catch(err){
     console.warn(err);
-    alert('Falha ao atualizar (CORS ou formato da página). Use a adição manual.');
+    alert('Falha ao atualizar (CORS ou formato da página). Recomendo: 1) criar um Apps Script que retorne o CSV/JSON ou 2) usar o botão ➕ para acrescentar manualmente.');
   }
 });
 
-/* ---------- salvar e carregar local (backup) ---------- */
+/* ---------- salvar / carregar local ---------- */
 function saveLocal(){
   try{
     localStorage.setItem('chamados_backup', JSON.stringify(chamados));
@@ -570,14 +587,16 @@ function loadLocal(){
   }catch(e){ console.warn('Erro ler local', e); }
 }
 
-/* ---------- sincronizar inicial: carregar opções salvas e CSV/public --> then render ---------- */
+/* ---------- carregar opções salvas ---------- */
 function loadSavedOptions(){
   try{
     const s = localStorage.getItem('app_options');
     if(s){
       const obj = JSON.parse(s);
-      if(obj.enderecoLista) enderecoLista = obj.enderecoLista;
-      // prioridades and destinos: repopulate
+      if(obj.enderecoLista) {
+        // merge saved addresses with built-in list
+        obj.enderecoLista.forEach(e=>{ if(!enderecoLista.includes(e)) enderecoLista.push(e); });
+      }
       if(obj.prioridades){
         const sel = document.getElementById('prioridade'); sel.innerHTML = '<option value="">Selecione a prioridade</option>';
         obj.prioridades.forEach(p=> { const o = document.createElement('option'); o.value=p; o.text=p; sel.appendChild(o); });
@@ -590,24 +609,34 @@ function loadSavedOptions(){
   }catch(e){ console.warn(e); }
 }
 
+/* ---------- inicialização ---------- */
 async function inicializar(){
   loadSavedOptions();
   populateEnderecoOptions();
-  loadLocal(); // load local backup (if no CSV or as fallback)
+  if(!getSelectOptions('prioridade').length) populatePrioridadeDestinoDefaults();
+  if(!getSelectOptions('destino').length) populatePrioridadeDestinoDefaults(); // ensures destino initial values too (function handles both)
+  loadLocal();
   await carregarCSVinicial();
   renderTabela();
-  // attach add button
   document.getElementById('adicionar').addEventListener('click', adicionarChamado);
-  // autosave every 15s
   setInterval(saveLocal, 15000);
 }
 inicializar();
 
-/* ---------- helper: enable editing restriction notice on input change ---------- */
+/* ---------- imagem fallback (se der erro no src) ---------- */
+document.getElementById('logoImg').addEventListener('error', function(){
+  // fallback to inline SVG ambulance
+  this.style.display = 'none';
+  const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute('width','56'); svg.setAttribute('height','56'); svg.setAttribute('viewBox','0 0 64 64');
+  svg.innerHTML = '<rect width="64" height="64" rx="8" fill="#b71c1c"></rect><path d="M10 40h36v8H10z" fill="#fff" opacity="0.9"></path><circle cx="18" cy="50" r="4" fill="#222"></circle><circle cx="34" cy="50" r="4" fill="#222"></circle><text x="32" y="36" font-size="12" text-anchor="middle" fill="#fff" font-family="Arial">192</text>';
+  this.parentNode.insertBefore(svg, this);
+});
+
+/* optional: update UI when atendente typed */
 document.getElementById('atendente').addEventListener('change', ()=>{
-  // optional: show who is logged
-  const cur = document.getElementById('atendente').value.trim();
-  if(cur) console.log('Atendente atual:', cur);
+  // small console log helpful for debugging in tablet
+  console.log('Atendente atual:', document.getElementById('atendente').value.trim());
 });
 </script>
 </body>
