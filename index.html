@@ -14,81 +14,134 @@
   --blue:#2980b9;
   --card:#fff;
   --bg:#f4f4f4;
+  --muted:#888;
 }
-body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:var(--bg);color:#222}
-header{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:16px 20px;border-radius:8px;margin-bottom:18px;box-shadow:0 4px 8px rgba(0,0,0,0.08)}
-header img{height:56px;margin-right:16px;border-radius:6px}
-header h1{font-size:28px;margin:0;font-weight:700}
-#form-chamado{background:var(--card);padding:12px;border-radius:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;box-shadow:0 3px 8px rgba(0,0,0,0.06);margin-bottom:14px}
-#form-chamado input,#form-chamado select,#form-chamado button{padding:10px;border-radius:6px;border:1px solid #d0d0d0}
-#form-chamado button{background:var(--samu-red);color:#fff;border:none;cursor:pointer;grid-column:span 2}
-#form-chamado button:hover{background:#c0392b}
-.top-buttons{margin-bottom:8px}
-button.top-btn{padding:10px 14px;border-radius:6px;border:none;cursor:pointer;margin-right:8px}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;margin:18px;background:var(--bg);color:#222}
+header{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;box-shadow:0 4px 8px rgba(0,0,0,0.08)}
+header img{height:56px;margin-right:12px;border-radius:6px}
+header h1{font-size:20px;margin:0;font-weight:700}
+.controls-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.top-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+button.top-btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
 #btn-excluir{background:var(--samu-red);color:#fff}
 #btn-exportar{background:var(--blue);color:#fff}
 #btn-relatorio{background:#27ae60;color:#fff}
-.table-card{background:var(--card);border-radius:8px;overflow:auto;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
+#btn-atualizar-enderecos{background:#f39c12;color:#fff}
+#btn-add-endereco{background:#8e44ad;color:#fff}
+.search-input{padding:8px;border-radius:6px;border:1px solid #ddd;width:260px}
+#form-chamado{background:var(--card);padding:10px;border-radius:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06);margin-bottom:12px}
+#form-chamado input,#form-chamado select,#form-chamado button{padding:8px;border-radius:6px;border:1px solid #d0d0d0}
+#form-chamado button{background:var(--samu-red);color:#fff;border:none;cursor:pointer;grid-column:span 2}
+.small-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
+.add-opt-btn{background:#2d9cdb;color:#fff;margin-left:6px}
+.table-card{background:var(--card);border-radius:8px;overflow:auto;box-shadow:0 3px 8px rgba(0,0,0,0.06);padding:0}
 table{width:100%;border-collapse:collapse;min-width:980px}
-th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
 th{background:var(--samu-dark);color:#fff;position:sticky;top:0}
 tr:hover td{background:#fbfbfb}
 .dup-btn{background:var(--blue);color:#fff;padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
 .sel-item{cursor:pointer}
-.status{display:inline-block;padding:6px 8px;border-radius:6px;font-weight:600}
+.status{display:inline-block;padding:6px 8px;border-radius:6px;font-weight:600;font-size:12px}
 .status[data-status="normal"]{background:var(--samu-green);color:#fff}
 .status[data-status="urgencia"]{background:var(--samu-yellow);color:#000}
 .status[data-status="emergencia"]{background:var(--samu-red);color:#fff}
 .duplicado td{background:#3498db;color:#fff}
 .alerta td{animation:pulse 1.2s infinite;border:2px solid orange}
 @keyframes pulse{0%{background:#fef3cf}50%{background:#fde3b6}100%{background:#fef3cf}}
-.chat-container{margin-top:14px}
-.chat-input{width:100%;padding:12px;border-radius:8px;border:1px solid #ddd;background:var(--samu-red);color:#fff}
-#graficos{margin-top:20px;background:var(--card);padding:12px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
-h2.section-title{margin:0 0 10px 0;font-size:18px}
-@media (max-width:900px){header h1{font-size:20px}#form-chamado button{grid-column:span 1}table{min-width:800px}}
+.edit-btn, .save-btn, .cancel-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer;margin-left:6px}
+.edit-btn{background:#f39c12;color:#fff}
+.save-btn{background:#2ecc71;color:#fff}
+.cancel-btn{background:#95a5a6;color:#fff}
+.chat-container{margin-top:10px}
+.chat-input{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;background:var(--samu-red);color:#fff}
+#graficos{margin-top:12px;background:var(--card);padding:12px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
+.section-title{margin:0 0 8px 0;font-size:15px}
+.notice{font-size:13px;color:var(--muted);margin-bottom:10px}
+@media (max-width:900px){header h1{font-size:16px} .search-input{width:100%} table{min-width:800px}}
 </style>
 </head>
 <body>
 <header>
+  <!-- imagem fixa; você já tem a imagem ok -->
   <img src="https://i.imgur.com/7Tx6bU1.png" alt="Ambulância 192">
   <h1>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
 </header>
-<div class="top-buttons">
-  <button id="btn-excluir" class="top-btn">🗑️ Excluir Selecionados</button>
-  <button id="btn-exportar" class="top-btn">📥 Exportar CSV</button>
-  <button id="btn-relatorio" class="top-btn">📊 Relatório Mensal</button>
-  <button id="btn-atualizar-enderecos" class="top-btn">🔄 Atualizar Endereços</button>
-  <button id="btn-add-endereco" class="top-btn">➕ Acrescentar Endereço</button>
+
+<div class="controls-row">
+  <div class="top-buttons" role="toolbar" aria-label="Ações principais">
+    <button id="btn-excluir" class="top-btn">🗑️ Excluir Selecionados</button>
+    <button id="btn-exportar" class="top-btn">📥 Exportar CSV</button>
+    <button id="btn-relatorio" class="top-btn">📊 Relatório Mensal</button>
+    <button id="btn-atualizar-enderecos" class="top-btn">🔄 Atualizar Endereços</button>
+    <button id="btn-add-endereco" class="top-btn">➕ Acrescentar Endereço</button>
+  </div>
+
+  <input id="search" class="search-input" placeholder="Buscar paciente, motorista, destino..." />
 </div>
-<div id="form-chamado">
-  <input id="nome" placeholder="Nome do paciente" type="text">
+
+<div class="notice">Observação: alterações são gravadas localmente automaticamente. Para sincronizar com Google Sheets cole sua URL de Apps Script em <code>API_URL</code> no script.</div>
+
+<form id="form-chamado" onsubmit="return false;">
+  <input id="nome" placeholder="Nome do paciente" type="text" required>
   <input id="telefone" placeholder="Telefone" type="text">
-  <select id="endereco">
-    <option value="">Selecione o endereço</option>
-    <option value="Avenida Brasil">Avenida Brasil</option>
-    <option value="Rua das Flores">Rua das Flores</option>
-    <option value="Rua XV de Novembro">Rua XV de Novembro</option>
-    <!-- Complete com todos os logradouros -->
-  </select>
+  <div style="display:flex;gap:6px;align-items:center">
+    <select id="endereco" aria-label="Endereço" style="flex:1">
+      <option value="">Selecione o endereço</option>
+      <!-- Exemplo — você pode popular com a lista completa -->
+      <option value="Avenida Brasil">Avenida Brasil</option>
+      <option value="Rua das Flores">Rua das Flores</option>
+      <option value="Rua XV de Novembro">Rua XV de Novembro</option>
+    </select>
+    <button id="btn-add-endereco-manual" type="button" class="small-btn add-opt-btn">➕</button>
+  </div>
+
   <input id="numero" placeholder="Número" type="text">
-  <select id="chamado">
-    <option value="normal">Normal</option>
-    <option value="urgencia">Urgência</option>
-    <option value="emergencia">Emergência</option>
-  </select>
-  <input id="destino" placeholder="Destino" type="text">
-  <input id="prioridade" placeholder="Prioridade" type="text">
-  <input id="atendente" placeholder="Atendente" type="text">
+  <div style="display:flex;gap:6px;align-items:center">
+    <select id="chamado" aria-label="Tipo">
+      <option value="normal">Normal</option>
+      <option value="urgencia">Urgência</option>
+      <option value="emergencia">Emergência</option>
+    </select>
+    <!-- empty placeholder to balance grid -->
+  </div>
+
+  <div style="display:flex;gap:6px;align-items:center">
+    <select id="destino" aria-label="Destino" style="flex:1">
+      <option value="">Selecione o destino</option>
+      <option value="Hospital Municipal">Hospital Municipal</option>
+      <option value="UPA">UPA</option>
+      <option value="CSIII">CSIII</option>
+      <!-- complete com demais destinos -->
+    </select>
+    <button id="add-destino" type="button" class="small-btn add-opt-btn">➕</button>
+  </div>
+
+  <div style="display:flex;gap:6px;align-items:center">
+    <select id="prioridade" aria-label="Prioridade" style="flex:1">
+      <option value="">Selecione a prioridade</option>
+      <option value="Nenhuma">Nenhuma</option>
+      <option value="Curativo">Curativo</option>
+      <option value="Doenças crônicas ou complicações">Doenças crônicas ou complicações</option>
+      <option value="Urgência">Urgência</option>
+      <option value="Emergência">Emergência</option>
+      <option value="Normal">Normal</option>
+      <option value="Pós-consulta">Pós-consulta</option>
+    </select>
+    <button id="add-prioridade" type="button" class="small-btn add-opt-btn">➕</button>
+  </div>
+
+  <input id="atendente" placeholder="Atendente (seu nome)" type="text" required>
   <input id="motorista" placeholder="Motorista" type="text">
   <input id="observacoes" placeholder="Observações" type="text">
-  <button id="adicionar">Adicionar Chamado</button>
-</div>
-<div class="table-card">
+  <button id="adicionar" type="button">Adicionar Chamado</button>
+</form>
+
+<div class="table-card" aria-live="polite">
   <table id="tabela-chamados" aria-label="Tabela de chamados">
     <thead>
       <tr>
-        <th>Sel</th>
+        <th><input id="sel-all" type="checkbox" aria-label="Selecionar todos"></th>
         <th>Data</th>
         <th>Hora</th>
         <th>Paciente</th>
@@ -101,55 +154,461 @@ h2.section-title{margin:0 0 10px 0;font-size:18px}
         <th>Atendente</th>
         <th>Motorista</th>
         <th>Observações</th>
-        <th>Duplicar</th>
+        <th>⤴️</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 </div>
+
 <div class="chat-container">
   <input class="chat-input" placeholder="Chat interno (mensagens não são persistidas aqui)" />
 </div>
+
 <div id="graficos">
-  <h2 class="section-title">Gráfico Mensal de Chamados</h2>
+  <h3 class="section-title">Gráfico Mensal de Chamados</h3>
   <canvas id="graficoMensal" height="140"></canvas>
 </div>
+
 <script>
-// URL pública da planilha publicada em CSV
+/* ----------------- CONFIG ----------------- */
+/* Coloque aqui a URL do Apps Script (opcional) para salvar no Google Sheets via POST */
+const API_URL = ''; // ex: 'https://script.google.com/macros/s/XXXXX/exec'
+
+/* URL pública do CSV publicado (padrão usei a sua versão pub?output=csv) */
 const urlCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3_8QPyI7v109xYun_zxMKwqpoSmzPwbGaB4kvyHizG4IeJjR9ZGZHr1VF5WKsJWhcMFYnqeuosmrU/pub?output=csv";
 
-// Função para carregar dados do CSV e preencher a tabela
-async function carregarCSV() {
-  const res = await fetch(urlCSV);
-  const csvText = await res.text();
-  const linhas = csvText.split("\n").slice(1); // Ignora cabeçalho
-  const tbody = document.querySelector("#tabela-chamados tbody");
-  linhas.forEach(linha => {
-    if(!linha.trim()) return;
-    const cols = linha.split(",");
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><input type="checkbox" class="sel-item"></td>
-      <td>${cols[0] || ""}</td>
-      <td>${cols[1] || ""}</td>
-      <td>${cols[2] || ""}</td>
-      <td>${cols[3] || ""}</td>
-      <td>${cols[4] || ""}</td>
-      <td>${cols[5] || ""}</td>
-      <td>${cols[6] || ""}</td>
-      <td>${cols[7] || ""}</td>
-      <td>${cols[8] || ""}</td>
-      <td>${cols[9] || ""}</td>
-      <td>${cols[10] || ""}</td>
-      <td>${cols[11] || ""}</td>
-      <td><button class="dup-btn">Duplicar</button></td>
-    `;
-    tbody.appendChild(tr);
+/* Lista de endereços local inicial (será substituível) */
+let enderecoLista = [
+  "Avenida Brasil",
+  "Rua das Flores",
+  "Rua XV de Novembro",
+  "Praça da Matriz"
+];
+
+/* estado */
+let chamados = []; // array de objetos
+const tbody = document.querySelector('#tabela-chamados tbody');
+
+/* util: parse CSV robusto */
+function parseCSV(text){
+  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim()!=='');
+  if(lines.length===0) return [];
+  const headers = lines[0].split(',').map(h=>h.replace(/(^"|"$)/g,'').trim());
+  const rows = lines.slice(1);
+  return rows.map(r=>{
+    const cols = [];
+    let cur='', inQ=false;
+    for(let i=0;i<r.length;i++){
+      const ch = r[i];
+      if(ch === '"'){ if(inQ && r[i+1]==='"'){ cur+='"'; i++; } else { inQ = !inQ; } continue; }
+      if(ch === ',' && !inQ){ cols.push(cur); cur=''; continue; }
+      cur += ch;
+    }
+    cols.push(cur);
+    const obj = {};
+    for(let i=0;i<headers.length;i++) obj[headers[i]] = (cols[i]||'').replace(/(^"|"$)/g,'').trim();
+    return obj;
   });
 }
 
-// Chamar função ao carregar página
-carregarCSV();
+/* ---------- UI helpers ---------- */
+function populateEnderecoOptions(){
+  const sel = document.getElementById('endereco');
+  sel.innerHTML = '<option value="">Selecione o endereço</option>';
+  enderecoLista.forEach(e=>{
+    const opt = document.createElement('option'); opt.value = e; opt.text = e; sel.appendChild(opt);
+  });
+}
+
+/* ---------- Render tabela ---------- */
+function renderTabela(filter=''){
+  tbody.innerHTML = '';
+  // sort by date+hora descending? keep insertion order
+  chamados.forEach((c, idx) => {
+    const textSearch = (c.Paciente + c.Telefone + c.Endereco + c.Atendente + c.Destino + c.Observacoes).toLowerCase();
+    if(filter && !textSearch.includes(filter.toLowerCase())) return;
+    const tr = document.createElement('tr');
+    tr.dataset.atendente = c.Atendente || '';
+    tr.dataset.index = idx;
+    // detect duplicated same patient same date
+    const duplicadosHoje = chamados.filter(x=>x.Paciente===c.Paciente && x.Data===c.Data).length > 1;
+    if(duplicadosHoje) tr.classList.add('duplicado');
+    // alert visual if >3 chamados same day
+    const totalMesmo = chamados.filter(x=>x.Data===c.Data).length;
+    if(totalMesmo>3) tr.classList.add('alerta');
+
+    const chamadoLabel = (c.Chamado||'').charAt(0).toUpperCase() + (c.Chamado||'').slice(1);
+    tr.innerHTML = `
+      <td><input type="checkbox" class="sel-item"></td>
+      <td>${c.Data||''}</td>
+      <td>${c.Hora||''}</td>
+      <td>${c.Paciente||''}</td>
+      <td>${c.Endereco||''}</td>
+      <td>${c.Numero||''}</td>
+      <td>${c.Telefone||''}</td>
+      <td class="status" data-status="${(c.Chamado||'').toLowerCase()}">${chamadoLabel}</td>
+      <td>${c.Destino||''}</td>
+      <td>${c.Prioridade||''}</td>
+      <td>${c.Atendente||''}</td>
+      <td>${c.Motorista||''}</td>
+      <td>${c.Observacoes||''}</td>
+      <td>
+        <button class="dup-btn" data-idx="${idx}">➕</button>
+        <button class="edit-btn" data-idx="${idx}">Editar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  attachRowEvents();
+  atualizarGraficoMensal();
+}
+
+/* ---------- carregar CSV inicial do Google Sheets (publicado) ---------- */
+async function carregarCSVinicial(){
+  try{
+    const res = await fetch(urlCSV);
+    if(!res.ok) throw new Error('Falha ao baixar CSV (status '+res.status+')');
+    const text = await res.text();
+    // try parse; if published sheet has HTML, user provided /pubhtml - we used ?output=csv
+    const parsed = parseCSV(text);
+    if(parsed.length>0){
+      // map fields - try to map standard headers if present
+      parsed.forEach(row=>{
+        // map common header names to our schema
+        const item = {
+          Data: row['Data'] || row['data'] || row['Date'] || '',
+          Hora: row['Hora'] || row['hora'] || row['Time'] || '',
+          Paciente: row['Paciente'] || row['Nome'] || row['nome'] || '',
+          Endereco: row['Endereço'] || row['Endereco'] || row['Endereço '] || row['logradouro'] || '',
+          Numero: row['Número'] || row['Numero'] || row['Nº'] || '',
+          Telefone: row['Telefone'] || row['telefone'] || row['Tel'] || '',
+          Chamado: row['Chamado'] || row['Tipo'] || row['tipo'] || '',
+          Destino: row['Destino'] || row['destino'] || '',
+          Prioridade: row['Prioridade'] || row['prioridade'] || '',
+          Atendente: row['Atendente'] || row['atendente'] || '',
+          Motorista: row['Motorista'] || row['motorista'] || '',
+          Observacoes: row['Observações'] || row['Observacoes'] || row['Obs'] || ''
+        };
+        chamados.push(item);
+      });
+      saveLocal(); // persist backup
+      renderTabela();
+    }
+  }catch(err){
+    console.warn('Erro ao carregar CSV:', err);
+    // load from local storage if available
+    loadLocal();
+    renderTabela();
+  }
+}
+
+/* ---------- adicionar chamado ---------- */
+function nowDateTime(){
+  const n = new Date();
+  const dd = String(n.getDate()).padStart(2,'0');
+  const mm = String(n.getMonth()+1).padStart(2,'0');
+  const yyyy = n.getFullYear();
+  const hh = String(n.getHours()).padStart(2,'0');
+  const min = String(n.getMinutes()).padStart(2,'0');
+  return {date:`${dd}/${mm}/${yyyy}`, time:`${hh}:${min}`};
+}
+
+async function adicionarChamado(){
+  const nome = document.getElementById('nome').value.trim();
+  const atendente = document.getElementById('atendente').value.trim();
+  if(!nome || !atendente){ alert('Preencha pelo menos Nome do paciente e Atendente'); return; }
+  const dt = nowDateTime();
+  const obj = {
+    Data: dt.date,
+    Hora: dt.time,
+    Paciente: nome,
+    Endereco: document.getElementById('endereco').value.trim(),
+    Numero: document.getElementById('numero').value.trim(),
+    Telefone: document.getElementById('telefone').value.trim(),
+    Chamado: document.getElementById('chamado').value,
+    Destino: document.getElementById('destino').value.trim(),
+    Prioridade: document.getElementById('prioridade').value,
+    Atendente: atendente,
+    Motorista: document.getElementById('motorista').value.trim(),
+    Observacoes: document.getElementById('observacoes').value.trim()
+  };
+  chamados.push(obj);
+  renderTabela();
+  saveLocal();
+  // try to sync to API_URL
+  if(API_URL){
+    fetch(API_URL, {method:'POST', body: JSON.stringify(obj)}).catch(()=>{});
+  }
+  // clear some fields (keep atendente)
+  document.getElementById('nome').value='';
+  document.getElementById('telefone').value='';
+  document.getElementById('numero').value='';
+  document.getElementById('observacoes').value='';
+}
+
+/* ---------- duplicar linha (só autor pode duplicar) ---------- */
+function attachRowEvents(){
+  document.querySelectorAll('.dup-btn').forEach(btn=>{
+    btn.removeEventListener('click', onDup);
+    btn.addEventListener('click', onDup);
+  });
+  document.querySelectorAll('.edit-btn').forEach(b=>{
+    b.removeEventListener('click', onEdit);
+    b.addEventListener('click', onEdit);
+  });
+  // select all checkbox
+  document.getElementById('sel-all').onchange = function(){
+    document.querySelectorAll('.sel-item').forEach(cb=>cb.checked = this.checked);
+  };
+}
+
+async function onDup(e){
+  const idx = Number(e.currentTarget.dataset.idx);
+  const row = chamados[idx];
+  const currentAtendente = document.getElementById('atendente').value.trim();
+  if(row.Atendente && currentAtendente !== row.Atendente){
+    alert('Somente o atendente que criou este chamado pode duplicá-lo.');
+    return;
+  }
+  const dt = nowDateTime();
+  const dup = {...row, Data: dt.date, Hora: dt.time};
+  chamados.push(dup);
+  saveLocal();
+  renderTabela(document.getElementById('search').value);
+  if(API_URL) fetch(API_URL, {method:'POST', body: JSON.stringify(dup)}).catch(()=>{});
+}
+
+/* ---------- editar linha (inline modal simple) ---------- */
+function onEdit(e){
+  const idx = Number(e.currentTarget.dataset.idx);
+  const rowData = chamados[idx];
+  const currentAtendente = document.getElementById('atendente').value.trim();
+  if(rowData.Atendente && currentAtendente !== rowData.Atendente){
+    alert('Somente o atendente que criou este chamado pode editar.');
+    return;
+  }
+  // open prompt for key fields (simple approach)
+  const novoPaciente = prompt('Editar Nome do paciente:', rowData.Paciente);
+  if(novoPaciente === null) return;
+  rowData.Paciente = novoPaciente;
+  rowData.Telefone = prompt('Telefone:', rowData.Telefone) || rowData.Telefone;
+  rowData.Endereco = prompt('Endereço:', rowData.Endereco) || rowData.Endereco;
+  rowData.Numero = prompt('Número:', rowData.Numero) || rowData.Numero;
+  rowData.Destino = prompt('Destino:', rowData.Destino) || rowData.Destino;
+  rowData.Prioridade = prompt('Prioridade:', rowData.Prioridade) || rowData.Prioridade;
+  rowData.Observacoes = prompt('Observações:', rowData.Observacoes) || rowData.Observacoes;
+  // update
+  chamados[idx] = rowData;
+  saveLocal();
+  renderTabela(document.getElementById('search').value);
+  if(API_URL) fetch(API_URL, {method:'POST', body: JSON.stringify(rowData)}).catch(()=>{});
+}
+
+/* ---------- excluir selecionados ---------- */
+document.getElementById('btn-excluir').addEventListener('click', ()=>{
+  const checked = Array.from(document.querySelectorAll('.sel-item:checked'));
+  if(checked.length===0) { alert('Nenhum chamado selecionado'); return; }
+  if(!confirm(`Excluir ${checked.length} chamados selecionados?`)) return;
+  checked.forEach(cb=>{
+    const tr = cb.closest('tr');
+    const idx = Number(tr.dataset.index);
+    // only allow delete if current atendente is same OR blank
+    const rowAtend = chamados[idx].Atendente || '';
+    const currentAtend = document.getElementById('atendente').value.trim();
+    if(rowAtend && rowAtend !== currentAtend){ alert('Você não pode excluir chamados de outro atendente: ' + rowAtend); return; }
+    chamados[idx] = null; // mark
+  });
+  chamados = chamados.filter(x=>x);
+  saveLocal();
+  renderTabela(document.getElementById('search').value);
+});
+
+/* ---------- export CSV ---------- */
+document.getElementById('btn-exportar').addEventListener('click', ()=>{
+  if(chamados.length===0){ alert('Sem dados para exportar'); return; }
+  const header = ['Data','Hora','Paciente','Endereco','Numero','Telefone','Chamado','Destino','Prioridade','Atendente','Motorista','Observacoes'];
+  const rows = [header.join(',')];
+  chamados.forEach(r=>{
+    const line = [
+      r.Data, r.Hora, r.Paciente, r.Endereco, r.Numero, r.Telefone, r.Chamado, r.Destino, r.Prioridade, r.Atendente, r.Motorista, r.Observacoes
+    ].map(cell=>`"${(cell||'').toString().replace(/"/g,'""')}"`).join(',');
+    rows.push(line);
+  });
+  const csv = rows.join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `chamados_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+/* ---------- relatorio mensal (download CSV resumo) ---------- */
+document.getElementById('btn-relatorio').addEventListener('click', ()=>{
+  const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
+  const chamadosMes = chamados.filter(c=>{
+    if(!c.Data) return false;
+    const parts = c.Data.split('/'); if(parts.length<3) return false;
+    const d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+    return d.getMonth()===mes && d.getFullYear()===ano;
+  });
+  const tipos = {Normal:0,Urgência:0, Emergência:0};
+  const prioridades = {};
+  const destinos = {};
+  chamadosMes.forEach(c=>{
+    const t = (c.Chamado||'').toLowerCase();
+    if(t.includes('urgencia')||t.includes('urgência')) tipos['Urgência']++;
+    else if(t.includes('emergencia')||t.includes('emergência')) tipos['Emergência']++;
+    else tipos['Normal']++;
+    prioridades[c.Prioridade || 'Não definida'] = (prioridades[c.Prioridade]||0)+1;
+    destinos[c.Destino || 'Não definido'] = (destinos[c.Destino]||0)+1;
+  });
+  let csv = `Relatório mensal - ${hoje.toLocaleDateString()}\n\nTipo,Quantidade\n`;
+  for(const k in tipos) csv += `${k},${tipos[k]}\n`;
+  csv += `\nPrioridade,Quantidade\n`;
+  for(const p in prioridades) csv += `${p},${prioridades[p]}\n`;
+  csv += `\nDestino,Quantidade\n`;
+  for(const d in destinos) csv += `${d},${destinos[d]}\n`;
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `relatorio_mensal_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+/* ---------- grafico mensal ---------- */
+let chart;
+function atualizarGraficoMensal(){
+  const ctx = document.getElementById('graficoMensal').getContext('2d');
+  const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
+  const chamadosMes = chamados.filter(c=>{
+    if(!c.Data) return false;
+    const parts = c.Data.split('/'); if(parts.length<3) return false;
+    const d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+    return d.getMonth()===mes && d.getFullYear()===ano;
+  });
+  const counts = {normal:0, urgencia:0, emergencia:0};
+  chamadosMes.forEach(c=>{
+    const k = (c.Chamado||'').toLowerCase();
+    if(k.includes('urg')) counts.urgencia++;
+    else if(k.includes('emerg')) counts.emergencia++;
+    else counts.normal++;
+  });
+  const labels = ['Normal','Urgência','Emergência'];
+  const data = [counts.normal, counts.urgencia, counts.emergencia];
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets:[{ label:'Chamados (mês)', data, backgroundColor:['#2ecc71','#f1c40f','#e74c3c'] }]},
+    options: { responsive:true, plugins:{ legend:{display:false} } }
+  });
+}
+
+/* ---------- pesquisa em tempo real ---------- */
+document.getElementById('search').addEventListener('input', (e)=>{
+  renderTabela(e.target.value);
+});
+
+/* ---------- adicionar novas opções (Prioridade/Destino/Endereço) ---------- */
+function promptAddOption(message, list, selId){
+  const v = prompt(message);
+  if(!v) return;
+  if(!list.includes(v)){ list.push(v); }
+  populateEnderecoOptions(); // if address updated
+  const sel = document.getElementById(selId);
+  const opt = document.createElement('option'); opt.value = v; opt.text = v; sel.appendChild(opt);
+  sel.value = v;
+  // save to local so options persist
+  localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridades: getSelectOptions('prioridade'), destinos: getSelectOptions('destino')}));
+}
+document.getElementById('btn-add-endereco-manual').addEventListener('click', ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco'));
+document.getElementById('btn-add-endereco').addEventListener('click', ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco'));
+document.getElementById('add-destino').addEventListener('click', ()=> {
+  const sel = document.getElementById('destino'); promptAddOption('Digite novo destino:', [], 'destino');
+});
+document.getElementById('add-prioridade').addEventListener('click', ()=> {
+  promptAddOption('Digite nova prioridade:', [], 'prioridade');
+});
+
+function getSelectOptions(id){
+  return Array.from(document.getElementById(id).options).map(o=>o.value).filter(v=>v);
+}
+
+/* ---------- Atualizar endereços (esboço de fetch paginado) ---------- */
+document.getElementById('btn-atualizar-enderecos').addEventListener('click', async ()=>{
+  // Nota: muitos sites bloqueiam CORS. Se o servidor permitir, insira a URL completa de onde extrair os logradouros.
+  const source = prompt('Cole a URL da fonte de endereços (ex: https://cep.guiamais.com.br/sp/guaicara/logradouros):');
+  if(!source) return;
+  try{
+    const res = await fetch(source);
+    if(!res.ok) throw new Error('Erro ao buscar lista');
+    const text = await res.text();
+    // tentativa simples: extrair <a> que contenham logradouro (heurística)
+    const matches = Array.from(text.matchAll(/<a[^>]*>([^<]*Rua[^<]*|Avenida[^<]*|Praça[^<]*|Alameda[^<]*|Travessa[^<]*)<\/a>/gi)).map(m=>m[1].trim());
+    if(matches.length>0){
+      enderecoLista = Array.from(new Set([...enderecoLista, ...matches]));
+      populateEnderecoOptions();
+      alert('Endereços atualizados ('+matches.length+') — verifique se todos foram importados.');
+      localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridades: getSelectOptions('prioridade'), destinos: getSelectOptions('destino')}));
+    } else {
+      alert('Não foi possível detectar endereços automaticamente (provável bloqueio CORS). Use "➕ Acrescentar Endereço" para adicionar manualmente.');
+    }
+  }catch(err){
+    console.warn(err);
+    alert('Falha ao atualizar (CORS ou formato da página). Use a adição manual.');
+  }
+});
+
+/* ---------- salvar e carregar local (backup) ---------- */
+function saveLocal(){
+  try{
+    localStorage.setItem('chamados_backup', JSON.stringify(chamados));
+  }catch(e){ console.warn('Erro salvar local', e); }
+}
+function loadLocal(){
+  try{
+    const s = localStorage.getItem('chamados_backup');
+    if(s) chamados = JSON.parse(s);
+  }catch(e){ console.warn('Erro ler local', e); }
+}
+
+/* ---------- sincronizar inicial: carregar opções salvas e CSV/public --> then render ---------- */
+function loadSavedOptions(){
+  try{
+    const s = localStorage.getItem('app_options');
+    if(s){
+      const obj = JSON.parse(s);
+      if(obj.enderecoLista) enderecoLista = obj.enderecoLista;
+      // prioridades and destinos: repopulate
+      if(obj.prioridades){
+        const sel = document.getElementById('prioridade'); sel.innerHTML = '<option value="">Selecione a prioridade</option>';
+        obj.prioridades.forEach(p=> { const o = document.createElement('option'); o.value=p; o.text=p; sel.appendChild(o); });
+      }
+      if(obj.destinos){
+        const sel = document.getElementById('destino'); sel.innerHTML = '<option value="">Selecione o destino</option>';
+        obj.destinos.forEach(p=> { const o = document.createElement('option'); o.value=p; o.text=p; sel.appendChild(o); });
+      }
+    }
+  }catch(e){ console.warn(e); }
+}
+
+async function inicializar(){
+  loadSavedOptions();
+  populateEnderecoOptions();
+  loadLocal(); // load local backup (if no CSV or as fallback)
+  await carregarCSVinicial();
+  renderTabela();
+  // attach add button
+  document.getElementById('adicionar').addEventListener('click', adicionarChamado);
+  // autosave every 15s
+  setInterval(saveLocal, 15000);
+}
+inicializar();
+
+/* ---------- helper: enable editing restriction notice on input change ---------- */
+document.getElementById('atendente').addEventListener('change', ()=>{
+  // optional: show who is logged
+  const cur = document.getElementById('atendente').value.trim();
+  if(cur) console.log('Atendente atual:', cur);
+});
 </script>
 </body>
 </html>
