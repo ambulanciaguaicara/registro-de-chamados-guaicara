@@ -7,316 +7,227 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
-  --samu-dark:#b71c1c;
-  --samu-red:#e74c3c;
+  --samu-dark:#7a1212;
+  --samu-red:#c92b2b;
   --samu-yellow:#f1c40f;
   --samu-green:#2ecc71;
-  --blue:#2980b9;
+  --blue:#2b7bd3;
   --card:#fff;
-  --bg:#f4f4f4;
-  --muted:#777;
+  --bg:#f5f6f8;
+  --muted:#6b7280;
+  --glass: rgba(255,255,255,0.85);
 }
 *{box-sizing:border-box}
-body{font-family:Arial,Helvetica,sans-serif;margin:18px;background:var(--bg);color:#222}
-header{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;box-shadow:0 4px 8px rgba(0,0,0,0.08)}
-.header-img{height:56px;margin-right:12px;border-radius:6px;flex:0 0 56px}
-header h1{font-size:20px;margin:0;font-weight:700}
-.controls-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
-.top-buttons{display:flex;gap:8px;flex-wrap:wrap}
-button.top-btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
-#btn-excluir{background:var(--samu-red);color:#fff}
-#btn-exportar{background:var(--blue);color:#fff}
-#btn-relatorio{background:#27ae60;color:#fff}
-#btn-atualizar-enderecos{background:#f39c12;color:#fff}
-#btn-add-endereco{background:#8e44ad;color:#fff}
-.search-input{padding:8px;border-radius:6px;border:1px solid #ddd;width:280px}
-#form-chamado{background:var(--card);padding:10px;border-radius:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06);margin-bottom:12px}
-#form-chamado input,#form-chamado select,#form-chamado button{padding:8px;border-radius:6px;border:1px solid #d0d0d0}
-#form-chamado button{background:var(--samu-red);color:#fff;border:none;cursor:pointer;grid-column:span 2}
-.small-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer;margin-left:6px}
-.add-opt-btn{background:#2d9cdb;color:#fff}
-.table-card{background:var(--card);border-radius:8px;overflow:auto;box-shadow:0 3px 8px rgba(0,0,0,0.06);padding:0}
+body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:18px;background:linear-gradient(180deg,#f7f9fb, #eef2f6);color:#111}
+.header-wrap{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.header-card{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);flex:1}
+.header-img{height:56px;width:56px;border-radius:8px;background:#fff;padding:6px;object-fit:contain;flex:0 0 56px}
+.header-title{margin:0;font-weight:700;font-size:18px}
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--samu-red);color:#fff}
+.btn.blue{background:var(--blue);color:#fff}
+.btn.green{background:var(--samu-green);color:#fff}
+.btn.warn{background:#f39c12;color:#fff}
+.btn.purple{background:#8e44ad;color:#fff}
+.search-input{padding:8px 12px;border-radius:10px;border:1px solid #e5e7eb;width:320px}
+.panel{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.input, select, button[type="button"]{padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:transparent;font-size:14px}
+.add-small{padding:8px 10px;border-radius:8px;border:0;background:var(--blue);color:#fff;cursor:pointer}
+.table-card{overflow:auto;border-radius:12px}
 table{width:100%;border-collapse:collapse;min-width:980px}
-th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
+th,td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left;font-size:13px}
 th{background:var(--samu-dark);color:#fff;position:sticky;top:0}
-tr:hover td{background:#fbfbfb}
-.dup-btn{background:var(--blue);color:#fff;padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
-.sel-item{cursor:pointer}
-.status{display:inline-block;padding:6px 8px;border-radius:6px;font-weight:600;font-size:12px}
-.status[data-status="normal"]{background:var(--samu-green);color:#fff}
-.status[data-status="urgencia"]{background:var(--samu-yellow);color:#000}
-.status[data-status="emergencia"]{background:var(--samu-red);color:#fff}
-.duplicado td{background:#3498db;color:#fff}
+tr:hover td{background:#fbfcfd}
+.status{display:inline-block;padding:6px 8px;border-radius:8px;font-weight:700;font-size:12px}
+.status.normal{background:var(--samu-green);color:#fff}
+.status.urgencia{background:var(--samu-yellow);color:#111}
+.status.emergencia{background:var(--samu-red);color:#fff}
+.duplicado td{background:#2b7bd3;color:#fff}
 .alerta td{animation:pulse 1.2s infinite;border:2px solid orange}
-@keyframes pulse{0%{background:#fef3cf}50%{background:#fde3b6}100%{background:#fef3cf}}
-.edit-btn, .save-btn, .cancel-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer;margin-left:6px}
-.edit-btn{background:#f39c12;color:#fff}
-.save-btn{background:#2ecc71;color:#fff}
-.cancel-btn{background:#95a5a6;color:#fff}
-.chat-container{margin-top:10px}
-.chat-input{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;background:var(--samu-red);color:#fff}
-#graficos{margin-top:12px;background:var(--card);padding:12px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
-.section-title{margin:0 0 8px 0;font-size:15px}
-.notice{font-size:13px;color:var(--muted);margin-bottom:10px}
-@media (max-width:900px){header h1{font-size:16px} .search-input{width:100%} table{min-width:800px}}
+@keyframes pulse{0%{background:#fff4db}50%{background:#fff0c2}100%{background:#fff4db}}
+.small-muted{font-size:13px;color:var(--muted)}
+.chat-input{width:100%;padding:10px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;color:#111}
+.footer-note{font-size:13px;color:var(--muted);margin-top:8px}
+.icon{font-size:14px}
+@media (max-width:900px){.search-input{width:100%}header h1{font-size:16px}}
 </style>
 </head>
 <body>
-<header>
-  <!-- imagem principal (fallback SVG se o src falhar) -->
-  <img id="logoImg" class="header-img" src="https://i.imgur.com/7Tx6bU1.png" alt="Ambulância 192">
-  <h1>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
-</header>
 
-<div class="controls-row">
-  <div class="top-buttons" role="toolbar" aria-label="Ações principais">
-    <button id="btn-excluir" class="top-btn">🗑️ Excluir Selecionados</button>
-    <button id="btn-exportar" class="top-btn">📥 Exportar CSV</button>
-    <button id="btn-relatorio" class="top-btn">📊 Relatório Mensal</button>
-    <button id="btn-atualizar-enderecos" class="top-btn">🔄 Atualizar Endereços</button>
-    <button id="btn-add-endereco" class="top-btn">➕ Acrescentar Endereço</button>
+<!-- HEADER -->
+<div class="header-wrap">
+  <div class="header-card">
+    <img id="logo" class="header-img" src="https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB" alt="Ambulância 192">
+    <div>
+      <h1 class="header-title">Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
+      <div class="small-muted">Tema SAMU • moderno • multi-usuário (simples)</div>
+    </div>
   </div>
 
-  <input id="search" class="search-input" placeholder="Buscar paciente, motorista, destino..." />
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <button id="btnImportBase64" class="btn purple" title="Colar imagem em base64 (fixa)">📤 Importar imagem (base64)</button>
+    <button id="btnClearImage" class="btn" style="background:#fff;border:1px solid #eee">🧹 Reset Imagem</button>
+  </div>
 </div>
 
-<div class="notice">Observação: o sistema tenta carregar seu CSV publicado. Se o navegador bloquear (CORS), os dados serão carregados do backup local. Para sincronizar com Google Sheets sem CORS use um Apps Script Web App (vejo comentário no script).</div>
-
-<form id="form-chamado" onsubmit="return false;">
-  <input id="nome" placeholder="Nome do paciente" type="text" required>
-  <input id="telefone" placeholder="Telefone" type="text">
-  <div style="display:flex;gap:6px;align-items:center">
-    <select id="endereco" aria-label="Endereço" style="flex:1"></select>
-    <button id="btn-add-endereco-manual" type="button" class="small-btn add-opt-btn">➕</button>
+<!-- CONTROLS -->
+<div class="toolbar">
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button id="btnExcluir" class="btn primary">🗑️ Excluir Selecionados</button>
+    <button id="btnExportar" class="btn blue">📥 Exportar CSV</button>
+    <button id="btnRelatorio" class="btn green">📊 Relatório Mensal</button>
+    <button id="btnAtualizarEnd" class="btn warn">🔄 Atualizar Endereços</button>
+    <button id="btnAddEndereco" class="btn">➕ Acrescentar Endereço</button>
   </div>
+  <input id="search" class="search-input" placeholder="Buscar paciente, motorista, destino ou observação..." />
+</div>
 
-  <input id="numero" placeholder="Número" type="text">
-  <div style="display:flex;gap:6px;align-items:center">
-    <select id="chamado" aria-label="Tipo">
-      <option value="normal">Normal</option>
-      <option value="urgencia">Urgência</option>
-      <option value="emergencia">Emergência</option>
-    </select>
-  </div>
+<!-- FORM -->
+<div class="panel">
+  <form id="formChamado" onsubmit="return false;">
+    <div class="form-grid">
+      <input id="nome" class="input" placeholder="Nome do paciente" required>
+      <input id="telefone" class="input" placeholder="Telefone">
+      <div style="display:flex;gap:8px">
+        <select id="endereco" aria-label="Endereço" style="flex:1"></select>
+        <button id="btnAddEnderecoManual" type="button" class="add-small">➕</button>
+      </div>
 
-  <div style="display:flex;gap:6px;align-items:center">
-    <select id="destino" aria-label="Destino" style="flex:1"></select>
-    <button id="add-destino" type="button" class="small-btn add-opt-btn">➕</button>
-  </div>
+      <input id="numero" class="input" placeholder="Número">
+      <select id="chamado" class="input">
+        <option value="normal">Normal</option>
+        <option value="urgencia">Urgência</option>
+        <option value="emergencia">Emergência</option>
+      </select>
 
-  <div style="display:flex;gap:6px;align-items:center">
-    <select id="prioridade" aria-label="Prioridade" style="flex:1"></select>
-    <button id="add-prioridade" type="button" class="small-btn add-opt-btn">➕</button>
-  </div>
+      <div style="display:flex;gap:8px">
+        <select id="destino" class="input" style="flex:1"></select>
+        <button id="btnAddDestino" type="button" class="add-small">➕</button>
+      </div>
 
-  <input id="atendente" placeholder="Atendente (seu nome)" type="text" required>
-  <input id="motorista" placeholder="Motorista" type="text">
-  <input id="observacoes" placeholder="Observações" type="text">
-  <button id="adicionar" type="button">Adicionar Chamado</button>
-</form>
+      <div style="display:flex;gap:8px">
+        <select id="prioridade" class="input" style="flex:1"></select>
+        <button id="btnAddPrioridade" type="button" class="add-small">➕</button>
+      </div>
 
-<div class="table-card" aria-live="polite">
-  <table id="tabela-chamados" aria-label="Tabela de chamados">
+      <input id="atendente" class="input" placeholder="Atendente (seu nome)" required>
+      <input id="motorista" class="input" placeholder="Motorista">
+      <input id="observacoes" class="input" placeholder="Observações">
+
+      <div style="grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end">
+        <button id="btnAdicionar" type="button" class="btn primary">➕ Adicionar Chamado</button>
+      </div>
+    </div>
+  </form>
+  <div class="footer-note">Atenção: apenas o atendente que criou um chamado poderá editá-lo/duplicá-lo/excluí-lo.</div>
+</div>
+
+<!-- TABELA -->
+<div class="panel table-card" aria-live="polite">
+  <table id="tabelaChamados" aria-label="Tabela de chamados">
     <thead>
       <tr>
-        <th><input id="sel-all" type="checkbox" aria-label="Selecionar todos"></th>
-        <th>Data</th>
-        <th>Hora</th>
-        <th>Paciente</th>
-        <th>Endereço</th>
-        <th>Número</th>
-        <th>Telefone</th>
-        <th>Chamado</th>
-        <th>Destino</th>
-        <th>Prioridade</th>
-        <th>Atendente</th>
-        <th>Motorista</th>
-        <th>Observações</th>
-        <th>⤴️</th>
+        <th><input id="selAll" type="checkbox"></th>
+        <th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Número</th><th>Telefone</th>
+        <th>Chamado</th><th>Destino</th><th>Prioridade</th><th>Atendente</th><th>Motorista</th><th>Observações</th><th>Actions</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 </div>
 
-<div class="chat-container">
-  <input class="chat-input" placeholder="Chat interno (mensagens não são persistidas aqui)" />
+<!-- CHAT (local, non-persistent) -->
+<div class="panel">
+  <input id="chat" class="chat-input" placeholder="Chat interno (mensagens temporárias — apenas para leitura local)" />
 </div>
 
-<div id="graficos">
+<!-- GRÁFICO -->
+<div class="panel">
   <h3 class="section-title">Gráfico Mensal de Chamados</h3>
-  <canvas id="graficoMensal" height="140"></canvas>
+  <canvas id="graficoMensal" height="120"></canvas>
 </div>
 
 <script>
-/* --------------- CONFIG --------------- */
-/* (Opcional) cole aqui URL do Apps Script Web App para POST (cira um endpoint sem CORS).
-   Se você publicar um Apps Script que retorna CSV ou aceita POST, coloque a URL abaixo. */
-const API_URL = ''; // ex: 'https://script.google.com/macros/s/AKfyc.../exec'
+/* ---------------- CONFIG ---------------- */
+// CSV público (usei o link que você enviou, com gid e output=csv)
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3_8QPyI7v109xYun_zxMKwqpoSmzPwbGaB4kvyHizG4IeJjR9ZGZHr1VF5WKsJWhcMFYnqeuosmrU/pub?gid=140252754&single=true&output=csv";
 
-/* CSV público (se disponível). Se fetch falhar por CORS, usamos backup localStorage. */
-const urlCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3_8QPyI7v109xYun_zxMKwqpoSmzPwbGaB4kvyHizG4IeJjR9ZGZHr1VF5WKsJWhcMFYnqeuosmrU/pub?output=csv";
-
-/* ---------- Lista de endereços (logradouros) de Guaiçara-SP (extraída do site indicado) ---------- */
-/* Esta lista foi obtida das páginas do site cep.guiamais.com.br/sp/guaicara/logradouros
-   (várias páginas paginadas) e deduplicada. Se quiser acrescentar mais, use o botão ➕. */
-const enderecoLista = [
-"Via de Acesso Hermínio Paizan","R Otávio Maitan - Tavico","R Coronel-Polícia Militar Eduardo Assumpção",
-"R José Gringo dos Santos","R Guerino Campaner","R José Ferreira Pessoa","R Joaquim Rodrigues",
-"R Martiniano Cruz","R Aristides Bento","R Jovino Faustino Rosa","R Hiroshi Suzuki",
-"R Noé Franco da Rocha","R Agenor Leme Franco","R Fausto Longo Baptista Pereira",
-"R Hilário Teixeira da Silva","R José de Souza","R Ana de Jesus Maia","R Angelin Garoze",
-"Tv Mariano Martinez","Av Duque de Caxias","Av Nove de Julho","Via de Acesso José Martinez Rodrigues",
-"R Adão Afonso Costa","R Yoshi Sato","R Sunao Katsuki","R Rio Branco","R Frei Henrique",
-"R José do Patrocínio","R Tiradentes","R da Amizade","R Osvaldo Cruz","R Rui Barbosa",
-"R Jose Bonifácio","R Marechal Deodoro","R Antonio Buzinaro","R Doutor Arnaldo de Andrade",
-"R Pedro Dutra Sobrinho","Tv Vereador Plácido Pereira de Magalhães","R Osvaldo Pereira",
-"R Ercilio Lima dos Santos","R Orlando Jorge","R Dirce Camargo Vaz","R João Pacífico da Silva",
-"R Airton Alves dos Santos","R José Francisco Moco","R Mario Pereira da Silva","R Antonio Monteiro Paschoal",
-"R Manoel dos Reis Soares","R Luiz Caetano","R Luiz Esperança","R Ana Carlotta Arruda Paula",
-"R Jayme Pereira de Oliveira","R Valdemir Bridi","R João Batista do Amaral Caldas",
-"R Félix Umbelino","R Dirceu Sanches","Av Henrique Bertin","R Sabino","R Sebastião de Souza",
-"Av Paulo Xavier Ribeiro","Tv Álvaro Bittencourt","R José Graciotin","R Ernesto Bianchini",
-"R Luiz Buzinaro","R Soldado-Polícia Militar Carlos Trombini","R Joana Biscaro Pereira",
-"R Bernardino Alves","R Antonio Cezário","R Eliseo Nunes","R Nelson Costa","R Maria Purcina Dias",
-"R Professora Adelaide Baptista Pereira Cruz","R Horácio Ramos Nogueira","R Urbano Pierre",
-"R Ofriner Paulo Palo","R Felicio Takase","R Helena Lucas Franco da Rocha",
-"R Elza Katsuki Ishizaka","R Cônego Lino Braz Branwart","R Luiz Vieira","R Francisco Ramos dos Santos",
-"R Mario Maitan","R Esmeraldo Cruz","R Joaquim Francisco de Paula","R Cabo-Polícia Militar Miguel Redondo",
-"R Luis de Almeida Rosa","R Roman Garcia Echeto","R Antonio Bráz Herrero","R Jonas Miranda",
-"Alameda dos Manacás","Alameda das Acácias","Alameda das Azaléias","Alameda dos Lírios",
-"Alameda das Rosas","Alameda das Orquídeas","Alameda das Hortências","Alameda das Violetas",
-"Alameda dos Jasmins","Alameda dos Girassóis","R Cateto","R Laércio Domingos","R Luiz Cruz",
-"R Domingos Antunes de Souza","R José Roberto Coutinho Junior","R Maestro João Pavezzi",
-"R Pedro Bertolino","R Vitor Maida","R Marcelo de Alencar Bento","R Job Dias de Oliveira",
-"R Manoel Joaquim Cordeiro","R Élcio Joaquim dos Santos","R Rogê Ferreira","R Maria Luiza Costa Raimundo",
-"R Celso de Souza","R Julio Santini","R João Gonçalves Rocha","R José Wilson Vicentino",
-"R Felix Cardoso Gomes","R Vereador Nelson Evaristo Teixeira","R Paulo César Pereira",
-"R Olivio Alves de Oliveira","R Soldado-Polícia Militar Gilberto Augustinho",
-"R Augusto Rodrigues Profeta","R Mario Cardoso","R Pedro Pavoni","R João Lopes",
-"R Vereador Muneo Nakano","R Deloy do Rosário de Jesus","R José Antonio de Souza",
-"R Otacilio Pereira dos Santos","R Maria de Lourdes Pinto Jorge","R Gino Kenji Ishizaka",
-"R Vice-Prefeito Paulo Katsuki","R Armando Gava","R Edson Vander Camacho","R Edwirges Gonçalves Thomas",
-"R José Francisco da Costa","R Antonio Carlos de Oliveira","R dos Trabalhadores","R do Concenso",
-"R dos Industriários","R Arlindo Pita","R Euclides Bridi","R José Pereira",
-"R Rosangela Aparecida dos Santos Oliveira","R Geraldo Tremeschin Silva","Av Antonio Rodolpho Cantoni",
-"R Antonio Luiz Ferreira","R Izabel Fresneda Carmona","R Vereadora Ana Maria Herrera Fresca",
-"R Milton Bittencourt","R José Pianta","R Afonso da Silva","R Amadeu Jorge",
-"R Joaquim Benedito da Silva","R Wuillian Kfouri","R Alcides Osvaldo Pavoni",
-"R Vereador João Souto Pereira","R Vereador Celso Lousada Bittencourt","Av André de Souza Lima",
-"R Aristides Cruz","R Luiz Teixeira Lima"
+/* Built-in list of endereços (aumentamos com os que você pediu) */
+let enderecoLista = [
+  "Av Duque de Caxias","Av Nove de Julho","Rua Rui Barbosa","Rua Otávio Maitan",
+  "Avenida Brasil","Rua XV de Novembro","Alameda das Rosas","Praça Central"
 ];
-/* --------------------------------------- */
+/* Prioridades e destinos iniciais */
+let prioridadeLista = ["Nenhuma","Curativo","Doenças crônicas ou complicações","Urgência","Emergência","Normal","Pós-consulta"];
+let destinoLista = ["Hospital Municipal","UPA","CSIII"];
 
-let chamados = []; // in-memory array of objects
-const tbody = document.querySelector('#tabela-chamados tbody');
+/* App state */
+let chamados = []; // array of objects
+let chart = null;
 
-/* ---------- helpers ---------- */
+/* ---------------- HELPERS ---------------- */
+const $ = id => document.getElementById(id);
 function nowDateTime(){
-  const n = new Date();
-  const dd = String(n.getDate()).padStart(2,'0');
-  const mm = String(n.getMonth()+1).padStart(2,'0');
-  const yyyy = n.getFullYear();
-  const hh = String(n.getHours()).padStart(2,'0');
-  const min = String(n.getMinutes()).padStart(2,'0');
+  const d=new Date();
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const min = String(d.getMinutes()).padStart(2,'0');
   return {date:`${dd}/${mm}/${yyyy}`, time:`${hh}:${min}`};
 }
-
-function getSelectOptions(id){
-  return Array.from(document.getElementById(id).options).map(o=>o.value).filter(v=>v);
+function saveLocal(){
+  localStorage.setItem('chamados_guai', JSON.stringify(chamados));
+}
+function loadLocal(){
+  const s = localStorage.getItem('chamados_guai');
+  if(s) chamados = JSON.parse(s);
 }
 
-/* populate selects for endereco, prioridade, destino with saved options if any */
-function populateEnderecoOptions(){
-  const sel = document.getElementById('endereco');
-  sel.innerHTML = '<option value="">Selecione o endereço</option>';
-  enderecoLista.forEach(e=>{
-    const opt = document.createElement('option'); opt.value = e; opt.text = e; sel.appendChild(opt);
-  });
-}
-function populatePrioridadeDestinoDefaults(){
-  const prior = document.getElementById('prioridade');
-  prior.innerHTML = '<option value="">Selecione a prioridade</option>';
-  const priorDefault = ["Nenhuma","Curativo","Doenças crônicas ou complicações","Urgência","Emergência","Normal","Pós-consulta"];
-  priorDefault.forEach(p=> { const o=document.createElement('option'); o.value=p; o.text=p; prior.appendChild(o); });
-
-  const dest = document.getElementById('destino');
-  dest.innerHTML = '<option value="">Selecione o destino</option>';
-  const destDefault = ["Hospital Municipal","UPA","CSIII"];
-  destDefault.forEach(d=> { const o=document.createElement('option'); o.value=d; o.text=d; dest.appendChild(o); });
+/* ---------------- POPULATE SELECTS ---------------- */
+function populateSelects(){
+  const end = $('endereco'); end.innerHTML = '<option value="">Selecione...</option>';
+  enderecoLista.forEach(e => { const o = new Option(e, e); end.add(o); });
+  const pri = $('prioridade'); pri.innerHTML = '<option value="">Selecione...</option>';
+  prioridadeLista.forEach(p => { pri.add(new Option(p,p)); });
+  const des = $('destino'); des.innerHTML = '<option value="">Selecione...</option>';
+  destinoLista.forEach(d => { des.add(new Option(d,d)); });
 }
 
-/* ---------- render tabela ---------- */
-function renderTabela(filter=''){
-  tbody.innerHTML = '';
-  chamados.forEach((c, idx) => {
-    const textSearch = (c.Paciente + c.Telefone + c.Endereco + c.Atendente + c.Destino + c.Observacoes).toLowerCase();
-    if(filter && !textSearch.includes(filter.toLowerCase())) return;
-    const tr = document.createElement('tr');
-    tr.dataset.atendente = c.Atendente || '';
-    tr.dataset.index = idx;
-    // detect duplicated same patient same date
-    const duplicadosHoje = chamados.filter(x=>x.Paciente===c.Paciente && x.Data===c.Data).length > 1;
-    if(duplicadosHoje) tr.classList.add('duplicado');
-    const totalMesmo = chamados.filter(x=>x.Data===c.Data).length;
-    if(totalMesmo>3) tr.classList.add('alerta');
-
-    const chamadoLabel = (c.Chamado||'').charAt(0).toUpperCase() + (c.Chamado||'').slice(1);
-    tr.innerHTML = `
-      <td><input type="checkbox" class="sel-item"></td>
-      <td>${c.Data||''}</td>
-      <td>${c.Hora||''}</td>
-      <td>${c.Paciente||''}</td>
-      <td>${c.Endereco||''}</td>
-      <td>${c.Numero||''}</td>
-      <td>${c.Telefone||''}</td>
-      <td class="status" data-status="${(c.Chamado||'').toLowerCase()}">${chamadoLabel}</td>
-      <td>${c.Destino||''}</td>
-      <td>${c.Prioridade||''}</td>
-      <td>${c.Atendente||''}</td>
-      <td>${c.Motorista||''}</td>
-      <td>${c.Observacoes||''}</td>
-      <td>
-        <button class="dup-btn" data-idx="${idx}">➕</button>
-        <button class="edit-btn" data-idx="${idx}">Editar</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-  attachRowEvents();
-  atualizarGraficoMensal();
-}
-
-/* ---------- carregar CSV inicial (tenta fetch; pode falhar por CORS) ---------- */
+/* ---------------- PARSE CSV (robusto para aspas) ---------------- */
 function parseCSV(text){
   const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim()!=='');
-  if(lines.length===0) return [];
-  const headers = lines[0].split(',').map(h=>h.replace(/(^"|"$)/g,'').trim());
+  if(!lines.length) return [];
+  const headers = lines[0].split(',').map(h=>h.replace(/^"|"$/g,'').trim());
   const rows = lines.slice(1);
-  return rows.map(r=>{
-    const cols = [];
-    let cur='', inQ=false;
+  const out = rows.map(r=>{
+    const cols=[]; let cur='', inQ=false;
     for(let i=0;i<r.length;i++){
-      const ch = r[i];
-      if(ch === '"'){ if(inQ && r[i+1]==='"'){ cur+='"'; i++; } else { inQ = !inQ; } continue; }
+      const ch=r[i];
+      if(ch === '"'){ if(inQ && r[i+1]==='"'){ cur+='"'; i++; } else inQ = !inQ; continue; }
       if(ch === ',' && !inQ){ cols.push(cur); cur=''; continue; }
       cur += ch;
     }
     cols.push(cur);
-    const obj = {};
-    for(let i=0;i<headers.length;i++) obj[headers[i]] = (cols[i]||'').replace(/(^"|"$)/g,'').trim();
+    const obj={};
+    for(let i=0;i<headers.length;i++) obj[headers[i]] = (cols[i]||'').replace(/^"|"$/g,'').trim();
     return obj;
   });
+  return out;
 }
 
-async function carregarCSVinicial(){
+/* ---------------- LOAD CSV (once) ---------------- */
+async function carregarCSV(){
   try{
-    const res = await fetch(urlCSV);
+    const res = await fetch(CSV_URL);
     if(!res.ok) throw new Error('status '+res.status);
-    const text = await res.text();
-    const parsed = parseCSV(text);
-    if(parsed.length>0){
-      parsed.forEach(row=>{
+    const txt = await res.text();
+    const parsed = parseCSV(txt);
+    if(parsed.length){
+      // Map to our internal format (best-effort header names)
+      parsed.forEach(row => {
         const item = {
           Data: row['Data'] || row['data'] || row['Date'] || '',
           Hora: row['Hora'] || row['hora'] || row['Time'] || '',
@@ -324,7 +235,7 @@ async function carregarCSVinicial(){
           Endereco: row['Endereço'] || row['Endereco'] || row['logradouro'] || '',
           Numero: row['Número'] || row['Numero'] || '',
           Telefone: row['Telefone'] || row['telefone'] || '',
-          Chamado: row['Chamado'] || row['Tipo'] || row['tipo'] || '',
+          Chamado: (row['Chamado'] || row['Tipo'] || row['tipo'] || 'normal').toLowerCase(),
           Destino: row['Destino'] || row['destino'] || '',
           Prioridade: row['Prioridade'] || row['prioridade'] || '',
           Atendente: row['Atendente'] || row['atendente'] || '',
@@ -333,311 +244,299 @@ async function carregarCSVinicial(){
         };
         chamados.push(item);
       });
-      saveLocal(); // backup
+      saveLocal();
       renderTabela();
-      return;
     }
   }catch(err){
-    console.warn('Não foi possível carregar CSV público (CORS ou outro erro):', err);
-    // fallback para localStorage
-    loadLocal();
+    console.warn('Falha ao carregar CSV (CORS ou outro):', err);
+    // fallback: if localStorage has backup, load it (already done), otherwise nothing
     renderTabela();
   }
 }
 
-/* ---------- adicionar chamado ---------- */
-function adicionarChamado(){
-  const nome = document.getElementById('nome').value.trim();
-  const atendente = document.getElementById('atendente').value.trim();
-  if(!nome || !atendente){ alert('Preencha pelo menos Nome do paciente e Atendente'); return; }
+/* ---------------- RENDER TABLE ---------------- */
+function renderTabela(filter=''){
+  const tbody = document.querySelector('#tabelaChamados tbody');
+  tbody.innerHTML = '';
+  chamados.forEach((c, i) => {
+    const text = (c.Paciente + c.Telefone + c.Endereco + c.Atendente + c.Destino + c.Observacoes).toLowerCase();
+    if(filter && !text.includes(filter.toLowerCase())) return;
+    // duplicated same patient same date => blue row for duplicates
+    const duplicadosHoje = chamados.filter(x => x.Paciente === c.Paciente && x.Data === c.Data).length > 1;
+    const totalMesmo = chamados.filter(x => x.Data === c.Data).length;
+    const tr = document.createElement('tr');
+    if(duplicadosHoje) tr.classList.add('duplicado');
+    if(totalMesmo > 3) tr.classList.add('alerta');
+    const chamadoClass = c.Chamado === 'urgencia' ? 'urgencia' : (c.Chamado === 'emergencia' ? 'emergencia' : 'normal');
+    tr.innerHTML = `
+      <td><input class="sel-item" type="checkbox" data-i="${i}"></td>
+      <td>${c.Data||''}</td>
+      <td>${c.Hora||''}</td>
+      <td>${c.Paciente||''}</td>
+      <td>${c.Endereco||''}</td>
+      <td>${c.Numero||''}</td>
+      <td>${c.Telefone||''}</td>
+      <td><span class="status ${chamadoClass}">${(c.Chamado||'').toUpperCase()}</span></td>
+      <td>${c.Destino||''}</td>
+      <td>${c.Prioridade||''}</td>
+      <td>${c.Atendente||''}</td>
+      <td>${c.Motorista||''}</td>
+      <td>${c.Observacoes||''}</td>
+      <td>
+        <button class="btn" data-action="dup" data-i="${i}">➕</button>
+        <button class="btn" data-action="edit" data-i="${i}">✏️</button>
+        <button class="btn" data-action="del" data-i="${i}">🗑️</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  attachTableEvents();
+  atualizarGrafico();
+}
+
+/* ---------------- ATTACH EVENTS ---------------- */
+function attachTableEvents(){
+  document.querySelectorAll('[data-action]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const action = e.currentTarget.dataset.action;
+      const i = Number(e.currentTarget.dataset.i);
+      const currentAtendente = $('atendente').value.trim();
+      const rowAtendente = chamados[i].Atendente || '';
+      if(action === 'dup'){
+        // only creator can duplicate
+        if(rowAtendente && currentAtendente !== rowAtendente){ alert('Somente o atendente que criou pode duplicar.'); return; }
+        const dt = nowDateTime();
+        const dup = {...chamados[i], Data: dt.date, Hora: dt.time};
+        chamados.push(dup); saveLocal(); renderTabela($('search').value);
+        return;
+      }
+      if(action === 'edit'){
+        if(rowAtendente && currentAtendente !== rowAtendente){ alert('Somente o atendente que criou pode editar.'); return; }
+        // inline edit via prompt (fast for tablet). Could be replaced by modal.
+        const novo = prompt('Editar nome do paciente:', chamados[i].Paciente);
+        if(novo === null) return;
+        chamados[i].Paciente = novo;
+        chamados[i].Telefone = prompt('Telefone:', chamados[i].Telefone) || chamados[i].Telefone;
+        chamados[i].Endereco = prompt('Endereço:', chamados[i].Endereco) || chamados[i].Endereco;
+        chamados[i].Numero = prompt('Número:', chamados[i].Numero) || chamados[i].Numero;
+        chamados[i].Destino = prompt('Destino:', chamados[i].Destino) || chamados[i].Destino;
+        chamados[i].Prioridade = prompt('Prioridade:', chamados[i].Prioridade) || chamados[i].Prioridade;
+        chamados[i].Observacoes = prompt('Observações:', chamados[i].Observacoes) || chamados[i].Observacoes;
+        saveLocal(); renderTabela($('search').value);
+        return;
+      }
+      if(action === 'del'){
+        if(rowAtendente && currentAtendente !== rowAtendente){ alert('Somente o atendente que criou pode excluir.'); return; }
+        if(!confirm('Confirmar exclusão deste chamado?')) return;
+        chamados.splice(i,1); saveLocal(); renderTabela($('search').value);
+        return;
+      }
+    };
+  });
+  // selAll behavior
+  $('selAll').onchange = function(){ document.querySelectorAll('.sel-item').forEach(c=>c.checked = this.checked); };
+}
+
+/* ---------------- ADD / DELETE / EXPORT ---------------- */
+$('btnAdicionar').onclick = ()=>{
+  const nome = $('nome').value.trim(); const atendente = $('atendente').value.trim();
+  if(!nome || !atendente) { alert('Preencha nome do paciente e atendente.'); return; }
   const dt = nowDateTime();
   const obj = {
     Data: dt.date,
     Hora: dt.time,
     Paciente: nome,
-    Endereco: document.getElementById('endereco').value.trim(),
-    Numero: document.getElementById('numero').value.trim(),
-    Telefone: document.getElementById('telefone').value.trim(),
-    Chamado: document.getElementById('chamado').value,
-    Destino: document.getElementById('destino').value.trim(),
-    Prioridade: document.getElementById('prioridade').value,
+    Endereco: $('endereco').value || '',
+    Numero: $('numero').value || '',
+    Telefone: $('telefone').value || '',
+    Chamado: $('chamado').value || 'normal',
+    Destino: $('destino').value || '',
+    Prioridade: $('prioridade').value || '',
     Atendente: atendente,
-    Motorista: document.getElementById('motorista').value.trim(),
-    Observacoes: document.getElementById('observacoes').value.trim()
+    Motorista: $('motorista').value || '',
+    Observacoes: $('observacoes').value || ''
   };
   chamados.push(obj);
-  renderTabela(document.getElementById('search').value);
   saveLocal();
-  if(API_URL) fetch(API_URL, {method:'POST', body: JSON.stringify(obj)}).catch(()=>{});
-  // clear certain fields
-  document.getElementById('nome').value='';
-  document.getElementById('telefone').value='';
-  document.getElementById('numero').value='';
-  document.getElementById('observacoes').value='';
-}
+  renderTabela($('search').value);
+  // clear fields
+  $('nome').value=''; $('telefone').value=''; $('numero').value=''; $('observacoes').value='';
+};
 
-/* ---------- row events (dup/edit) ---------- */
-function attachRowEvents(){
-  document.querySelectorAll('.dup-btn').forEach(btn=>{
-    btn.removeEventListener('click', onDup);
-    btn.addEventListener('click', onDup);
-  });
-  document.querySelectorAll('.edit-btn').forEach(b=>{
-    b.removeEventListener('click', onEdit);
-    b.addEventListener('click', onEdit);
-  });
-  document.getElementById('sel-all').onchange = function(){
-    document.querySelectorAll('.sel-item').forEach(cb=>cb.checked = this.checked);
-  };
-}
-
-function onDup(e){
-  const idx = Number(e.currentTarget.dataset.idx);
-  const row = chamados[idx];
-  const currentAtendente = document.getElementById('atendente').value.trim();
-  if(row.Atendente && currentAtendente !== row.Atendente){
-    alert('Somente o atendente que criou este chamado pode duplicá-lo.');
-    return;
-  }
-  const dt = nowDateTime();
-  const dup = {...row, Data: dt.date, Hora: dt.time};
-  chamados.push(dup);
-  saveLocal();
-  renderTabela(document.getElementById('search').value);
-  if(API_URL) fetch(API_URL, {method:'POST', body: JSON.stringify(dup)}).catch(()=>{});
-}
-
-function onEdit(e){
-  const idx = Number(e.currentTarget.dataset.idx);
-  const rowData = chamados[idx];
-  const currentAtendente = document.getElementById('atendente').value.trim();
-  if(rowData.Atendente && currentAtendente !== rowData.Atendente){
-    alert('Somente o atendente que criou este chamado pode editar.');
-    return;
-  }
-  // simple inline prompt editor (fast on tablet). If prefer modal we can upgrade.
-  const novoPaciente = prompt('Editar Nome do paciente:', rowData.Paciente);
-  if(novoPaciente === null) return;
-  rowData.Paciente = novoPaciente;
-  rowData.Telefone = prompt('Telefone:', rowData.Telefone) || rowData.Telefone;
-  rowData.Endereco = prompt('Endereço:', rowData.Endereco) || rowData.Endereco;
-  rowData.Numero = prompt('Número:', rowData.Numero) || rowData.Numero;
-  rowData.Destino = prompt('Destino:', rowData.Destino) || rowData.Destino;
-  rowData.Prioridade = prompt('Prioridade:', rowData.Prioridade) || rowData.Prioridade;
-  rowData.Observacoes = prompt('Observações:', rowData.Observacoes) || rowData.Observacoes;
-  chamados[idx] = rowData;
-  saveLocal();
-  renderTabela(document.getElementById('search').value);
-  if(API_URL) fetch(API_URL, {method:'POST', body: JSON.stringify(rowData)}).catch(()=>{});
-}
-
-/* ---------- excluir selecionados ---------- */
-document.getElementById('btn-excluir').addEventListener('click', ()=>{
+/* excluir selecionados (respeita atendente) */
+$('btnExcluir').onclick = ()=>{
   const checked = Array.from(document.querySelectorAll('.sel-item:checked'));
-  if(checked.length===0) { alert('Nenhum chamado selecionado'); return; }
+  if(!checked.length){ alert('Nenhum chamado selecionado'); return; }
   if(!confirm(`Excluir ${checked.length} chamados selecionados?`)) return;
-  const currentAtend = document.getElementById('atendente').value.trim();
-  let cant = 0;
-  checked.forEach(cb=>{
-    const tr = cb.closest('tr');
-    const idx = Number(tr.dataset.index);
-    const rowAtend = chamados[idx].Atendente || '';
-    if(rowAtend && rowAtend !== currentAtend){ cant++; return; }
-    chamados[idx] = null;
+  const currentAtendente = $('atendente').value.trim();
+  // compute indices to remove
+  const indices = checked.map(cb => Array.from(cb.closest('tr').parentNode.children).indexOf(cb.closest('tr')));
+  // filter keeping those not selected OR those selected but created by other atendente (can't delete)
+  let cantBlocked = 0;
+  chamados = chamados.filter((c, idx) => {
+    if(indices.includes(idx)){
+      if(c.Atendente && currentAtendente !== c.Atendente){ cantBlocked++; return true; }
+      return false; // remove
+    }
+    return true;
   });
-  chamados = chamados.filter(x=>x);
-  saveLocal();
-  renderTabela(document.getElementById('search').value);
-  if(cant>0) alert(`${cant} chamado(s) não puderam ser excluídos porque pertencem a outro atendente.`);
-});
+  saveLocal(); renderTabela($('search').value);
+  if(cantBlocked) alert(`${cantBlocked} chamado(s) não foram excluídos porque pertencem a outro atendente.`);
+};
 
-/* ---------- export CSV ---------- */
-document.getElementById('btn-exportar').addEventListener('click', ()=>{
-  if(chamados.length===0){ alert('Sem dados para exportar'); return; }
+/* export CSV */
+$('btnExportar').onclick = ()=>{
+  if(!chamados.length){ alert('Sem dados para exportar'); return; }
   const header = ['Data','Hora','Paciente','Endereco','Numero','Telefone','Chamado','Destino','Prioridade','Atendente','Motorista','Observacoes'];
   const rows = [header.join(',')];
   chamados.forEach(r=>{
-    const line = [
-      r.Data, r.Hora, r.Paciente, r.Endereco, r.Numero, r.Telefone, r.Chamado, r.Destino, r.Prioridade, r.Atendente, r.Motorista, r.Observacoes
-    ].map(cell=>`"${(cell||'').toString().replace(/"/g,'""')}"`).join(',');
+    const line = [r.Data,r.Hora,r.Paciente,r.Endereco,r.Numero,r.Telefone,r.Chamado,r.Destino,r.Prioridade,r.Atendente,r.Motorista,r.Observacoes]
+      .map(cell => `"${(cell||'').toString().replace(/"/g,'""')}"`).join(',');
     rows.push(line);
   });
   const csv = rows.join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = `chamados_${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a); a.click(); a.remove();
-});
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `chamados_guai_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+};
 
-/* ---------- relatorio mensal ---------- */
-document.getElementById('btn-relatorio').addEventListener('click', ()=>{
+/* relatorio (gera CSV com totais) */
+$('btnRelatorio').onclick = ()=>{
   const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
-  const chamadosMes = chamados.filter(c=>{
+  const chamadosMes = chamados.filter(c => {
     if(!c.Data) return false;
     const parts = c.Data.split('/'); if(parts.length<3) return false;
     const d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
     return d.getMonth()===mes && d.getFullYear()===ano;
   });
   const tipos = {Normal:0,Urgência:0, Emergência:0};
-  const prioridades = {};
-  const destinos = {};
+  const prioridades = {}; const destinos = {};
   chamadosMes.forEach(c=>{
     const t = (c.Chamado||'').toLowerCase();
     if(t.includes('urg')) tipos['Urgência']++;
     else if(t.includes('emerg')) tipos['Emergência']++;
     else tipos['Normal']++;
-    prioridades[c.Prioridade || 'Não definida'] = (prioridades[c.Prioridade]||0)+1;
-    destinos[c.Destino || 'Não definido'] = (destinos[c.Destino]||0)+1;
+    prioridades[c.Prioridade||'Não definida'] = (prioridades[c.Prioridade]||0)+1;
+    destinos[c.Destino||'Não definido'] = (destinos[c.Destino]||0)+1;
   });
-  let csv = `Relatório mensal - ${hoje.toLocaleDateString()}\n\nTipo,Quantidade\n`;
-  for(const k in tipos) csv += `${k},${tipos[k]}\n`;
-  csv += `\nPrioridade,Quantidade\n`;
-  for(const p in prioridades) csv += `${p},${prioridades[p]}\n`;
-  csv += `\nDestino,Quantidade\n`;
-  for(const d in destinos) csv += `${d},${destinos[d]}\n`;
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = `relatorio_mensal_${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a); a.click(); a.remove();
-});
+  let csv = `Relatório mensal - ${hoje.toLocaleDateString('pt-BR')}\n\nTipo,Quantidade\n`;
+  Object.keys(tipos).forEach(k => csv += `${k},${tipos[k]}\n`);
+  csv += '\nPrioridade,Quantidade\n'; Object.keys(prioridades).forEach(k=> csv+= `${k},${prioridades[k]}\n`);
+  csv += '\nDestino,Quantidade\n'; Object.keys(destinos).forEach(k=> csv+= `${k},${destinos[k]}\n`);
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `relatorio_mensal_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+};
 
-/* ---------- grafico mensal ---------- */
-let chart;
-function atualizarGraficoMensal(){
-  const ctx = document.getElementById('graficoMensal').getContext('2d');
-  const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
-  const chamadosMes = chamados.filter(c=>{
-    if(!c.Data) return false;
-    const parts = c.Data.split('/'); if(parts.length<3) return false;
-    const d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-    return d.getMonth()===mes && d.getFullYear()===ano;
-  });
-  const counts = {normal:0, urgencia:0, emergencia:0};
-  chamadosMes.forEach(c=>{
-    const k = (c.Chamado||'').toLowerCase();
-    if(k.includes('urg')) counts.urgencia++;
-    else if(k.includes('emerg')) counts.emergencia++;
-    else counts.normal++;
-  });
-  const labels = ['Normal','Urgência','Emergência'];
-  const data = [counts.normal, counts.urgencia, counts.emergencia];
-  if(chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets:[{ label:'Chamados (mês)', data, backgroundColor:['#2ecc71','#f1c40f','#e74c3c'] }]},
-    options: { responsive:true, plugins:{ legend:{display:false} } }
-  });
-}
-
-/* ---------- busca em tempo real ---------- */
-document.getElementById('search').addEventListener('input', (e)=>{
-  renderTabela(e.target.value);
-});
-
-/* ---------- adicionar novas opções via prompt ---------- */
-function promptAddOption(message, list, selId){
-  const v = prompt(message);
+/* ---------------- ADD OPTIONS ---------------- */
+$('btnAddEndereco').onclick = ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco');
+$('btnAddEndereco').addEventListener('click', ()=> {}); // noop for clarity
+$('btnAddPrioridade').onclick = ()=> promptAddOption('Digite nova prioridade:', prioridadeLista, 'prioridade');
+$('btnAddDestino').onclick = ()=> promptAddOption('Digite novo destino:', destinoLista, 'destino');
+$('btnAddEnderecoManual').onclick = ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco');
+function promptAddOption(msg, list, selId){
+  const v = prompt(msg);
   if(!v) return;
-  // avoid duplicates
   if(list && !list.includes(v)) list.push(v);
-  const sel = document.getElementById(selId);
-  const opt = document.createElement('option'); opt.value = v; opt.text = v; sel.appendChild(opt);
-  sel.value = v;
-  localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridades: getSelectOptions('prioridade'), destinos: getSelectOptions('destino')}));
+  const sel = $(selId);
+  const o = new Option(v,v); sel.add(o); sel.value = v;
+  // save options
+  localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista}));
 }
-document.getElementById('btn-add-endereco-manual').addEventListener('click', ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco'));
-document.getElementById('btn-add-endereco').addEventListener('click', ()=> promptAddOption('Digite novo endereço:', enderecoLista, 'endereco'));
-document.getElementById('add-destino').addEventListener('click', ()=> { promptAddOption('Digite novo destino:', [], 'destino'); });
-document.getElementById('add-prioridade').addEventListener('click', ()=> { promptAddOption('Digite nova prioridade:', [], 'prioridade'); });
 
-/* ---------- atualizar endereços (tenta buscar da fonte; se CORS bloquear, instruções) ---------- */
-document.getElementById('btn-atualizar-enderecos').addEventListener('click', async ()=>{
+/* ---------------- UPDATE ENDEREÇOS (try fetch, else user adds manually) ---------------- */
+$('btnAtualizarEnd').onclick = async ()=>{
   const source = prompt('Cole a URL da fonte de endereços (ex: https://cep.guiamais.com.br/sp/guaicara/logradouros):');
   if(!source) return;
   try{
     const res = await fetch(source);
-    if(!res.ok) throw new Error('Erro ao buscar lista (status '+res.status+')');
+    if(!res.ok) throw new Error('status '+res.status);
     const text = await res.text();
-    // tentativa heurística simples: extrair nomes de logradouro (palavras comuns)
+    // try to extract probable logradouro names (heuristic)
     const matches = Array.from(text.matchAll(/>([^<]*?(?:Rua|R |Avenida|Av |Alameda|Praça|Tv |Travessa|Via de Acesso)[^<]*)</gi)).map(m=>m[1].trim());
-    if(matches.length>0){
-      matches.forEach(m=>{ if(!enderecoLista.includes(m)) enderecoLista.push(m); });
-      populateEnderecoOptions();
-      alert('Endereços atualizados ('+matches.length+') — verifique a lista.');
-      localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridades: getSelectOptions('prioridade'), destinos: getSelectOptions('destino')}));
+    if(matches.length){
+      matches.forEach(m => { if(!enderecoLista.includes(m)) enderecoLista.push(m); });
+      populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista}));
+      alert('Endereços atualizados ('+matches.length+'). Revise a lista.');
     } else {
-      alert('Não foi possível detectar endereços automaticamente (provável bloqueio CORS). Use o botão ➕ para adicionar manualmente ou crie um Apps Script para fornecer um JSON/CSV sem CORS.');
+      alert('Não foi possível detectar endereços automaticamente. Use o botão ➕ para acrescentar manualmente.');
     }
   }catch(err){
-    console.warn(err);
-    alert('Falha ao atualizar (CORS ou formato da página). Recomendo: 1) criar um Apps Script que retorne o CSV/JSON ou 2) usar o botão ➕ para acrescentar manualmente.');
+    console.warn(err); alert('Falha ao buscar (provável bloqueio CORS). Use o botão ➕ ou crie um Apps Script para fornecer um CSV/JSON sem CORS.');
   }
-});
+};
 
-/* ---------- salvar / carregar local ---------- */
-function saveLocal(){
-  try{
-    localStorage.setItem('chamados_backup', JSON.stringify(chamados));
-  }catch(e){ console.warn('Erro salvar local', e); }
-}
-function loadLocal(){
-  try{
-    const s = localStorage.getItem('chamados_backup');
-    if(s) chamados = JSON.parse(s);
-  }catch(e){ console.warn('Erro ler local', e); }
+/* ---------------- CHART ---------------- */
+function atualizarGrafico(){
+  const ctx = document.getElementById('graficoMensal').getContext('2d');
+  const counts = {Normal:0,Urgência:0, Emergência:0};
+  chamados.forEach(c=>{
+    const k = (c.Chamado||'').toLowerCase();
+    if(k.includes('urg')) counts['Urgência']++;
+    else if(k.includes('emerg')) counts['Emergência']++;
+    else counts['Normal']++;
+  });
+  const labels = Object.keys(counts), data = Object.values(counts);
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Chamados', data, backgroundColor:['#2ecc71','#f1c40f','#c92b2b'] }] }, options:{responsive:true,plugins:{legend:{display:false}} }});
 }
 
-/* ---------- carregar opções salvas ---------- */
-function loadSavedOptions(){
+/* ---------------- IMAGE IMPORT (base64 or try-drive) ---------------- */
+$('btnImportBase64').onclick = async ()=>{
+  const paste = prompt('Cole aqui a imagem em Base64 (data:image/…). Se você não souber, cole a URL pública da imagem (Drive).');
+  if(!paste) return;
+  // if paste starts with data:, set and persist
+  if(paste.startsWith('data:')){
+    localStorage.setItem('logo_base64', paste);
+    $('logo').src = paste;
+    alert('Imagem salva e fixa (base64).');
+    return;
+  }
+  // else try to fetch the URL and convert to base64 in-browser (may fail due to CORS)
+  try{
+    const res = await fetch(paste);
+    if(!res.ok) throw new Error('status '+res.status);
+    const blob = await res.blob();
+    const reader = new FileReader();
+    reader.onloadend = ()=>{ localStorage.setItem('logo_base64', reader.result); $('logo').src = reader.result; alert('Imagem carregada e salva (base64).'); };
+    reader.readAsDataURL(blob);
+  }catch(err){
+    console.warn(err);
+    alert('Falha ao buscar/convertir automaticamente (provável CORS). Você pode abrir a imagem localmente, convertê-la para base64 (há sites/tools) e colar o resultado aqui.');
+  }
+};
+$('btnClearImage').onclick = ()=>{
+  localStorage.removeItem('logo_base64');
+  $('logo').src = 'https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB';
+  alert('Imagem resetada (tente novamente a importação se quiser fixar em base64).');
+};
+
+/* ---------------- SEARCH ---------------- */
+$('search').addEventListener('input', (e)=> renderTabela(e.target.value));
+
+/* ---------------- SAVE OPTIONS RESTORE ---------------- */
+function loadAppOptions(){
   try{
     const s = localStorage.getItem('app_options');
-    if(s){
-      const obj = JSON.parse(s);
-      if(obj.enderecoLista) {
-        // merge saved addresses with built-in list
-        obj.enderecoLista.forEach(e=>{ if(!enderecoLista.includes(e)) enderecoLista.push(e); });
-      }
-      if(obj.prioridades){
-        const sel = document.getElementById('prioridade'); sel.innerHTML = '<option value="">Selecione a prioridade</option>';
-        obj.prioridades.forEach(p=> { const o = document.createElement('option'); o.value=p; o.text=p; sel.appendChild(o); });
-      }
-      if(obj.destinos){
-        const sel = document.getElementById('destino'); sel.innerHTML = '<option value="">Selecione o destino</option>';
-        obj.destinos.forEach(p=> { const o = document.createElement('option'); o.value=p; o.text=p; sel.appendChild(o); });
-      }
-    }
+    if(!s) return;
+    const o = JSON.parse(s);
+    if(o.enderecoLista) enderecoLista = Array.from(new Set([...enderecoLista, ...o.enderecoLista]));
+    if(o.prioridadeLista) prioridadeLista = Array.from(new Set([...prioridadeLista, ...o.prioridadeLista]));
+    if(o.destinoLista) destinoLista = Array.from(new Set([...destinoLista, ...o.destinoLista]));
   }catch(e){ console.warn(e); }
 }
 
-/* ---------- inicialização ---------- */
-async function inicializar(){
-  loadSavedOptions();
-  populateEnderecoOptions();
-  if(!getSelectOptions('prioridade').length) populatePrioridadeDestinoDefaults();
-  if(!getSelectOptions('destino').length) populatePrioridadeDestinoDefaults(); // ensures destino initial values too (function handles both)
+/* ---------------- INIT ---------------- */
+async function init(){
+  // restore logo if base64 saved
+  const base = localStorage.getItem('logo_base64'); if(base) $('logo').src = base;
+  loadAppOptions();
+  populateSelects();
   loadLocal();
-  await carregarCSVinicial();
+  await carregarCSV(); // tries CSV (falls back to local)
   renderTabela();
-  document.getElementById('adicionar').addEventListener('click', adicionarChamado);
-  setInterval(saveLocal, 15000);
+  // save beforeunload
+  window.addEventListener('beforeunload', ()=> saveLocal());
 }
-inicializar();
-
-/* ---------- imagem fallback (se der erro no src) ---------- */
-document.getElementById('logoImg').addEventListener('error', function(){
-  // fallback to inline SVG ambulance
-  this.style.display = 'none';
-  const svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
-  svg.setAttribute('width','56'); svg.setAttribute('height','56'); svg.setAttribute('viewBox','0 0 64 64');
-  svg.innerHTML = '<rect width="64" height="64" rx="8" fill="#b71c1c"></rect><path d="M10 40h36v8H10z" fill="#fff" opacity="0.9"></path><circle cx="18" cy="50" r="4" fill="#222"></circle><circle cx="34" cy="50" r="4" fill="#222"></circle><text x="32" y="36" font-size="12" text-anchor="middle" fill="#fff" font-family="Arial">192</text>';
-  this.parentNode.insertBefore(svg, this);
-});
-
-/* optional: update UI when atendente typed */
-document.getElementById('atendente').addEventListener('change', ()=>{
-  // small console log helpful for debugging in tablet
-  console.log('Atendente atual:', document.getElementById('atendente').value.trim());
-});
+init();
 </script>
 </body>
 </html>
