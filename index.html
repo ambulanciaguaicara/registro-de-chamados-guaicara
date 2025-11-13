@@ -1,228 +1,512 @@
-<!<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Registro de Chamados de ambulância - Guaicara</title>
-<link rel="icon" href="data:;base64,iVBORw0KGgo="/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--samu:#b71c1c;--bg:#f6f7f8;--card:#fff;--muted:#6b7280;--ok:#10b981}
-*{box-sizing:border-box}
-body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:#0b1220}
-.header{background:linear-gradient(90deg,var(--samu),#910000);color:#fff;padding:14px 18px}
-.header h1{margin:0;font-size:20px}
-.container{max-width:1200px;margin:18px auto;padding:12px}
-.panel{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 1px 6px rgba(2,6,23,0.06);margin-bottom:12px}
-.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.button{background:var(--samu);color:#fff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
-.button.ghost{background:transparent;color:var(--samu);border:1px solid rgba(183,28,28,0.12);padding:8px 10px;border-radius:8px}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:8px;border-bottom:1px solid #f1f1f1;text-align:left;vertical-align:top}
-th{background:rgba(183,28,28,0.06);color:var(--samu)}
-tr.urgencia{background:#fff7eb}
-tr.emergencia{background:#fff0f0}
-tr.normal{background:#f3fdf6}
-.select-small{width:100%;padding:6px;border-radius:6px;border:1px solid #e6eefc}
-.input-small{padding:6px;border-radius:6px;border:1px solid #e6eefc;width:100%}
-.grid{display:grid;grid-template-columns:1fr 360px;gap:12px}
-.chat{display:flex;flex-direction:column;height:420px;border-radius:8px;overflow:hidden}
-.chat-messages{flex:1;padding:8px;overflow:auto;background:linear-gradient(180deg,#fbfdff,#fff)}
-.small{font-size:13px;color:var(--muted)}
-.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:12px}
-@media(max-width:900px){.grid{grid-template-columns:1fr} .controls{flex-direction:column}}
+/* ===== Estilo Geral / Tema SAMU ===== */
+:root{
+  --samu-dark:#b71c1c;
+  --samu-red:#e74c3c;
+  --samu-yellow:#f1c40f;
+  --samu-green:#2ecc71;
+  --blue:#2980b9;
+  --card:#fff;
+  --bg:#f4f4f4;
+}
+body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:var(--bg);color:#222}
+header{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:16px 20px;border-radius:8px;margin-bottom:18px;box-shadow:0 4px 8px rgba(0,0,0,0.08)}
+header img{height:56px;margin-right:16px;border-radius:6px}
+header h1{font-size:28px;margin:0;font-weight:700}
+
+/* Form */
+#form-chamado{background:var(--card);padding:12px;border-radius:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;box-shadow:0 3px 8px rgba(0,0,0,0.06);margin-bottom:14px}
+#form-chamado input,#form-chamado select,#form-chamado button{padding:10px;border-radius:6px;border:1px solid #d0d0d0}
+#form-chamado button{background:var(--samu-red);color:#fff;border:none;cursor:pointer;grid-column:span 2}
+#form-chamado button:hover{background:#c0392b}
+
+/* Buttons top */
+.top-buttons{margin-bottom:8px}
+button.top-btn{padding:10px 14px;border-radius:6px;border:none;cursor:pointer;margin-right:8px}
+#btn-excluir{background:var(--samu-red);color:#fff}
+#btn-exportar{background:var(--blue);color:#fff}
+#btn-relatorio{background:#27ae60;color:#fff}
+
+/* Table */
+.table-card{background:var(--card);border-radius:8px;overflow:auto;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+th{background:var(--samu-dark);color:#fff;position:sticky;top:0}
+tr:hover td{background:#fbfbfb}
+.dup-btn{background:var(--blue);color:#fff;padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
+.sel-item{cursor:pointer}
+
+/* Status chips */
+.status{display:inline-block;padding:6px 8px;border-radius:6px;font-weight:600}
+.status[data-status="normal"]{background:var(--samu-green);color:#fff}
+.status[data-status="urgencia"]{background:var(--samu-yellow);color:#000}
+.status[data-status="emergencia"]{background:var(--samu-red);color:#fff}
+
+/* Duplicado / alerta */
+.duplicado td{background:#3498db;color:#fff}
+.alerta td{animation:pulse 1.2s infinite;border:2px solid orange}
+@keyframes pulse{0%{background:#fef3cf}50%{background:#fde3b6}100%{background:#fef3cf}}
+
+/* Chat */
+.chat-container{margin-top:14px}
+.chat-input{width:100%;padding:12px;border-radius:8px;border:1px solid #ddd;background:var(--samu-red);color:#fff}
+
+/* Graficos */
+#graficos{margin-top:20px;background:var(--card);padding:12px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.06)}
+h2.section-title{margin:0 0 10px 0;font-size:18px}
+
+/* Responsive */
+@media (max-width:900px){
+ header h1{font-size:20px}
+ #form-chamado button{grid-column:span 1}
+ table{min-width:800px}
+}
 </style>
 </head>
 <body>
-  <div class="header">
-    <div class="container">
-      <h1>Registro de Chamados – Ambulância Municipal – Guaicara/SP</h1>
-      <div class="small">Tema SAMU — vermelho escuro • Salvar automaticamente na planilha</div>
-    </div>
-  </div>
 
-  <div class="container">
-    <div class="panel controls">
-      <input id="searchInput" class="input-small" placeholder="🔎 Buscar paciente..." style="width:48%" oninput="doSearch()"/>
-      <button class="button" onclick="addRow()">➕ Novo chamado</button>
-      <button class="button ghost" onclick="exportCSV()">📤 Exportar CSV</button>
-      <button class="button ghost" onclick="downloadHTML()">⬇️ Baixar HTML</button>
-      <button class="button ghost" id="connectButton" onclick="handleSignIn()">🔗 Conectar ao Google</button>
-      <div style="margin-left:auto" class="small">Site: <strong>Registro de Chamados de ambulância</strong></div>
-    </div>
+<header>
+  <img src="https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB" alt="Ambulância 192">
+  <h1>Registro de Chamados – Ambulância Municipal – Guaicara/SP</h1>
+</header>
 
-    <div class="grid">
-      <main class="panel">
-        <div style="margin-bottom:8px;display:flex;gap:8px;align-items:center;">
-          <label style="display:flex;gap:8px;align-items:center;"><strong>Importar CSV:</strong> <input id="importFile" type="file" accept=".csv" onchange="importCSV(event)"></label>
-          <button class="button ghost" onclick="pasteJsonPrompt()">Colar JSON</button>
-        </div>
+<div class="top-buttons">
+  <button id="btn-excluir" class="top-btn">🗑️ Excluir Selecionados</button>
+  <button id="btn-exportar" class="top-btn">📥 Exportar CSV</button>
+  <button id="btn-relatorio" class="top-btn">📊 Relatório Mensal</button>
+</div>
 
-        <div class="table-wrap" style="max-height:520px;overflow:auto;">
-          <table id="chamadosTable">
-            <thead>
-              <tr>
-                <th>Sel</th><th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Telefone</th>
-                <th>Tipo</th><th>Destino <button onclick="addDestino()" title="Adicionar destino" style="margin-left:6px">➕</button></th>
-                <th>Prioridade <button onclick="addPrioridade()" title="Adicionar prioridade" style="margin-left:6px">➕</button></th>
-                <th>Atendente</th><th>Motorista</th><th>Observações</th><th>Replicar</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+<div id="form-chamado">
+  <input id="nome" placeholder="Nome do paciente" type="text">
+  <input id="telefone" placeholder="Telefone" type="text">
+  <select id="endereco"><option value="">Selecione o endereço</option></select>
+  <input id="numero" placeholder="Número" type="text">
+  <select id="chamado">
+    <option value="normal">Normal</option>
+    <option value="urgencia">Urgência</option>
+    <option value="emergencia">Emergência</option>
+  </select>
+  <input id="destino" placeholder="Destino" type="text">
+  <input id="prioridade" placeholder="Prioridade" type="text">
+  <input id="atendente" placeholder="Atendente" type="text">
+  <input id="motorista" placeholder="Motorista" type="text">
+  <input id="observacoes" placeholder="Observações" type="text">
+  <button id="adicionar">Adicionar Chamado</button>
+</div>
 
-        <div id="relatorios" style="margin-top:12px" class="panel">
-          <h3>📊 Relatório Mensal</h3>
-          <div id="relatorioConteudo" class="small">Nenhum dado disponível.</div>
-          <canvas id="graficoChamados" style="max-width:720px;margin-top:8px"></canvas>
-        </div>
-      </main>
+<div class="table-card">
+  <table id="tabela-chamados" aria-label="Tabela de chamados">
+    <thead>
+      <tr>
+        <th>Sel</th>
+        <th>Data</th>
+        <th>Hora</th>
+        <th>Paciente</th>
+        <th>Endereço</th>
+        <th>Número</th>
+        <th>Telefone</th>
+        <th>Chamado</th>
+        <th>Destino</th>
+        <th>Prioridade</th>
+        <th>Atendente</th>
+        <th>Motorista</th>
+        <th>Observações</th>
+        <th>Duplicar</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-      <aside style="display:flex;flex-direction:column;gap:12px">
-        <div class="panel">
-          <h4>Usuário</h4>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span id="usernameDisplay" class="small"></span>
-            <button class="button ghost" onclick="promptUser()">Trocar nome</button>
-          </div>
-          <div class="small" style="margin-top:6px">Nome obrigatório para postar no chat.</div>
-        </div>
+<div class="chat-container">
+  <input class="chat-input" placeholder="Chat interno (mensagens não são persistidas aqui)" />
+</div>
 
-        <div class="panel chat">
-          <div style="padding:8px;border-bottom:1px solid #eef2ff"><strong>Chat interno</strong> <span class="small"> (salvo na aba "Chat")</span></div>
-          <div class="chat-messages" id="chatMessages"></div>
-          <div class="chat-input" style="display:flex;gap:8px;padding:8px;border-top:1px solid #eef2ff;background:#fff">
-            <input id="chatInput" placeholder="Escreva uma mensagem..." onkeydown="if(event.key==='Enter') sendChat()" style="flex:1;padding:8px;border-radius:6px;border:1px solid #e6eefc" />
-            <button class="button" onclick="sendChat()">Enviar</button>
-            <button class="button ghost" onclick="exportChat()">Exportar Chat</button>
-          </div>
-        </div>
+<div id="graficos">
+  <h2 class="section-title">Gráfico Mensal de Chamados</h2>
+  <canvas id="graficoMensal" height="140"></canvas>
+</div>
 
-        <div class="panel small">
-          <strong>Ajuda rápida</strong>
-          <ul>
-            <li>Use a busca para localizar um paciente rapidamente</li>
-            <li>Adicione destinos/prioridades com o botão ➕</li>
-            <li>Para sincronizar com a planilha: Conectar → Carregar → Salvar</li>
-          </ul>
-        </div>
-      </aside>
-    </div>
-
-    <div class="footer">Desenvolvido para Prefeitura Municipal de Guaicara • Versão pronta para publicar</div>
-  </div>
-
-  <script src="https://apis.google.com/js/api.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-const CLIENT_ID = "864225953887-s8vg683v8t3lesrsdmcd5rd77hmafl5f.apps.googleusercontent.com";
-const API_KEY = "";
-const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
-const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
-const spreadsheetId = "1M9ZTOHGIvcZcqLw5i6Z6ZVhe3RS73qCnxDeVYuy_SbQ";
-const SHEET_NAME = "Sheet1";
-const CHAT_SHEET_NAME = "Chat";
+/* =================== CONFIG - COLE AQUI SUA URL DO APPS SCRIPT =================== */
+// Se quiser sincronizar automaticamente com Google Sheets coloque aqui a URL do seu Apps Script (doGet/doPost).
+// Exemplo: const API_URL = 'https://script.google.com/macros/s/AAA.../exec';
+const API_URL = 'COLE_AQUI_A_URL_DO_SEU_APLICATIVO_DO_GOOGLE_SCRIPT';
+/* ============================================================================== */
 
-/* listas iniciais */
-let destinosList = JSON.parse(localStorage.getItem('destinosList')||'null') || ["CSIII","COHAB","DOM BOSCO","VILA SAÚDE","HGP","Santa Casa","AME","HEMODIÁLISE","CTA","HAPVIDA","UNIMED","FISIOTERAPIA","CAPS","AGAR-Gestante alto risco","CANJARANA","TARAMA","NÁUTICA BRANDA","IML"];
-let prioridadesList = JSON.parse(localStorage.getItem('prioridadesList')||'null') || ["Nenhuma","Curativo","Doenças crônicas ou complicações","AUTISTA","DEFICIÊNTE","FIBROMIALGIA","GESTANTE","IDOSO","ACAMADO","MOBILIDADE REDUZIDA","PEDIATRA","ACIDENTE"];
-let chart = null;
+/* Link público do CSV no Drive (o que você passou) */
+const DRIVE_CSV_ID = '1bT5H1ZP_H1FWmkBF6N2pq-WAgplqdgOa';
+const DRIVE_CSV_URL = `https://drive.google.com/uc?export=download&id=${DRIVE_CSV_ID}`;
 
-function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+/* Lista inicial de endereços (você pode substituir pelo conteúdo da planilha/CSV) */
+const csvEnderecos = `Rua A,123
+Rua B,45
+Rua C,67
+Avenida Central,10
+Rua das Flores,200
+Praça da Matriz,50`;
 
-/* TABELA */
-function addRow(){ const tbody=document.querySelector('#chamadosTable tbody'); const row=tbody.insertRow(); row.innerHTML = `<td><input type="checkbox" class="sel"></td>
-    <td><input value=""></td>
-    <td><input value=""></td>
-    <td><input value=""></td>
-    <td><input value=""></td>
-    <td><input value=""></td>
-    <td><select><option>Normal</option><option>Urgência</option><option>Emergência</option></select></td>
-    <td><select>${destinosList.map(x=>`<option>${escapeHtml(x)}</option>`).join('')}</select></td>
-    <td><select>${prioridadesList.map(x=>`<option>${escapeHtml(x)}</option>`).join('')}</select></td>
-    <td><input value=""></td>
-    <td><input value=""></td>
-    <td><textarea></textarea></td>
-    <td><button onclick="replicar(this)">🔁</button></td>`;
-  row.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{ saveLocal(); updateReport(); }));
-  updateReport();
+/* Estado da aplicação */
+let chamadosArray = []; // objetos {Data, Hora, Paciente, Endereco, Numero, Telefone, Chamado, Destino, Prioridade, Atendente, Motorista, Observacoes}
+const selectEndereco = document.getElementById('endereco');
+
+/* ---------- util: parse CSV robusto (suporta aspas) ---------- */
+function parseCSV(text){
+  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim()!=='');
+  if(lines.length===0) return [];
+  const rows = [];
+  // naïve but robust: parse with state machine
+  for(const line of lines){
+    const cols = [];
+    let cur = '';
+    let inQuotes = false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"' ){
+        if(inQuotes && line[i+1]==='"'){ cur += '"'; i++; continue; }
+        inQuotes = !inQuotes;
+        continue;
+      }
+      if(ch===',' && !inQuotes){ cols.push(cur); cur=''; continue; }
+      cur += ch;
+    }
+    cols.push(cur);
+    rows.push(cols.map(c=>c.trim()));
+  }
+  return rows;
 }
 
-function addRowFromData(d){ const tbody=document.querySelector('#chamadosTable tbody'); const row=tbody.insertRow(); row.innerHTML = `<td><input type="checkbox" class="sel"></td>
-    <td><input value="${escapeHtml(d.data||'')}"></td>
-    <td><input value="${escapeHtml(d.hora||'')}"></td>
-    <td><input value="${escapeHtml(d.paciente||'')}"></td>
-    <td><input value="${escapeHtml(d.endereco||'')}"></td>
-    <td><input value="${escapeHtml(d.telefone||'')}"></td>
-    <td><select><option ${d.tipo==='Normal'?'selected':''}>Normal</option><option ${d.tipo==='Urgência'?'selected':''}>Urgência</option><option ${d.tipo==='Emergência'?'selected':''}>Emergência</option></select></td>
-    <td><select>${destinosList.map(x=>`<option ${x===d.destino?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select></td>
-    <td><select>${prioridadesList.map(x=>`<option ${x===d.prioridade?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select></td>
-    <td><input value="${escapeHtml(d.atendente||'')}"></td>
-    <td><input value="${escapeHtml(d.motorista||'')}"></td>
-    <td><textarea>${escapeHtml(d.observacoes||'')}</textarea></td>
-    <td><button onclick="replicar(this)">🔁</button></td>`;
-  row.querySelectorAll('input,select,textarea').forEach(el=>el.addEventListener('input',()=>{ saveLocal(); updateReport(); }));
+/* ---------- Popula dropdown de endereços ---------- */
+function populateEnderecosFromCSV(txt){
+  selectEndereco.innerHTML = '<option value="">Selecione o endereço</option>';
+  txt.split('\n').filter(x=>x.trim()).forEach(e=>{
+    const opt=document.createElement('option'); opt.value = e.trim(); opt.text = e.trim(); selectEndereco.appendChild(opt);
+  });
 }
 
-function getAllRows(){ return Array.from(document.querySelectorAll('#chamadosTable tbody tr')).map(tr=>{ const inputs=tr.querySelectorAll('input,select,textarea'); return { data:inputs[1].value,hora:inputs[2].value,paciente:inputs[3].value,endereco:inputs[4].value,telefone:inputs[5].value,tipo:inputs[6].value,destino:inputs[7].value,prioridade:inputs[8].value,atendente:inputs[9].value,motorista:inputs[10].value,observacoes:inputs[11].value }; }); }
+/* ---------- Render tabela ---------- */
+function renderTabela(){
+  const tbody = document.querySelector('#tabela-chamados tbody');
+  tbody.innerHTML = '';
+  chamadosArray.forEach((c, idx) => {
+    const tr = document.createElement('tr');
+    const duplicadosHoje = chamadosArray.filter(x=>x.Paciente===c.Paciente && x.Data===c.Data).length > 1;
+    const totalMesmo = chamadosArray.filter(x=>x.Paciente===c.Paciente && x.Data===c.Data).length;
+    if(duplicadosHoje) tr.classList.add('duplicado');
+    if(totalMesmo>3) tr.classList.add('alerta');
 
-function replicar(btn){ const tr=btn.closest('tr'); const idx=Array.from(tr.parentElement.children).indexOf(tr); const data=getAllRows()[idx]; const tbody=tr.parentElement; addRowFromData(data); const newTr=tbody.children[idx+1]; newTr.classList.add('agrupado'); saveLocal(); updateReport(); }
+    const chamadoLabel = (c.Chamado || '').charAt(0).toUpperCase() + (c.Chamado || '').slice(1);
+    tr.innerHTML = `
+      <td><input type="checkbox" class="sel-item"></td>
+      <td>${c.Data||''}</td>
+      <td>${c.Hora||''}</td>
+      <td>${c.Paciente||''}</td>
+      <td>${c.Endereco||''}</td>
+      <td>${c.Numero||''}</td>
+      <td>${c.Telefone||''}</td>
+      <td class="status" data-status="${(c.Chamado||'').toLowerCase()}">${chamadoLabel}</td>
+      <td>${c.Destino||''}</td>
+      <td>${c.Prioridade||''}</td>
+      <td>${c.Atendente||''}</td>
+      <td>${c.Motorista||''}</td>
+      <td>${c.Observacoes||''}</td>
+      <td><button class="dup-btn">➕</button></td>
+    `;
+    tbody.appendChild(tr);
 
-/* Busca */
-function doSearch(){ const q=(document.getElementById('searchInput').value||'').toLowerCase(); document.querySelectorAll('#chamadosTable tbody tr').forEach(r=>{ const name=(r.querySelectorAll('input')[3]||{value:''}).value.toLowerCase(); r.style.display = name.includes(q) ? '' : 'none'; }); }
+    // duplicar botão
+    tr.querySelector('.dup-btn').addEventListener('click', ()=> duplicarLinha(c));
+  });
+  atualizarGraficoMensal();
+}
 
-/* Import/Export CSV */
-function exportCSV(){ const rows=getAllRows(); if(!rows.length) return alert('Nada para exportar'); const lines=rows.map(r=>[r.data,r.hora,r.paciente,r.endereco,r.telefone,r.tipo,r.destino,r.prioridade,r.atendente,r.motorista,r.observacoes].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')); const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='chamados_export.csv'; a.click(); }
-function importCSV(e){ const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ const text=r.result; const lines=text.split(/\r?\n/).filter(l=>l.trim()); lines.forEach(line=>{ const parts=parseCsvLine(line); addRowFromData({data:parts[0]||'',hora:parts[1]||'',paciente:parts[2]||'',endereco:parts[3]||'',telefone:parts[4]||'',tipo:parts[5]||'Normal',destino:parts[6]||'',prioridade:parts[7]||'',atendente:parts[8]||'',motorista:parts[9]||'',observacoes:parts[10]||''}); }); updateReport(); saveLocal(); alert('Importação concluída — revise e Salve na planilha.'); }; r.readAsText(f,'UTF-8'); e.target.value=''; }
-function parseCsvLine(line){ const out=[]; let cur='', inQuotes=false; for(let i=0;i<line.length;i++){ const ch=line[i]; if(inQuotes){ if(ch==='\"'){ if(line[i+1]==='\"'){ cur+='\"'; i++; } else inQuotes=false; } else cur+=ch; } else { if(ch==='\"'){ inQuotes=true; } else if(ch===','){ out.push(cur); cur=''; } else cur+=ch; } } out.push(cur); return out; }
+/* ---------- Carrega CSV do Drive e injeta (somente inicial) ---------- */
+async function carregarCSVinicial(){
+  try{
+    const res = await fetch(DRIVE_CSV_URL);
+    if(!res.ok) throw new Error('Falha ao baixar CSV (status '+res.status+')');
+    const text = await res.text();
+    const rows = parseCSV(text);
+    // assume header exists
+    const header = rows[0].map(h=>h.replace(/\uFEFF/g,'').trim());
+    const dataRows = rows.slice(1);
+    const objs = dataRows.map(r=>{
+      const obj = {};
+      header.forEach((h,i)=> {
+        const key = h || `col${i}`; // fallback
+        obj[key] = r[i] || '';
+      });
+      return obj;
+    });
+    // Normalize keys to our expected keys if headers differ
+    const mapped = objs.map(o=>{
+      // try common header names (case-insensitive)
+      const get = (names)=> {
+        names = Array.isArray(names)?names:[names];
+        for(const n of names){
+          for(const k of Object.keys(o)){
+            if(k.replace(/\s+/g,'').toLowerCase() === n.toLowerCase()) return o[k];
+          }
+        }
+        return '';
+      };
+      return {
+        Data: get(['Data','data','DATE','Data/Date']) || '',
+        Hora: get(['Hora','hora','Time','time']) || '',
+        Paciente: get(['Paciente','Nome','nome','patient']) || '',
+        Endereco: get(['Endereço','Endereco','Logradouro','logradouro','Endereço/Address']) || '',
+        Numero: get(['Número','Numero','Nº','num']) || '',
+        Telefone: get(['Telefone','telefone','Tel','phone']) || '',
+        Chamado: get(['Chamado','Tipo','tipo','Tipo de chamado','Chamado/Type']) || '',
+        Destino: get(['Destino','destino']) || '',
+        Prioridade: get(['Prioridade','prioridade']) || '',
+        Atendente: get(['Atendente','atendente']) || '',
+        Motorista: get(['Motorista','motorista']) || '',
+        Observacoes: get(['Observações','Observacoes','Obs','observacoes']) || ''
+      };
+    });
 
-/* Destino/Prioridade dinâmicos */
-function addPrioridade(){ const v=prompt('Nova prioridade:'); if(!v) return; if(!prioridadesList.includes(v)){ prioridadesList.push(v); localStorage.setItem('prioridadesList',JSON.stringify(prioridadesList)); document.querySelectorAll('#chamadosTable tbody tr').forEach(tr=>{ const sel=tr.querySelectorAll('select')[1]; const opt=document.createElement('option'); opt.textContent=v; sel.appendChild(opt); }); alert('Prioridade adicionada'); } }
-function addDestino(){ const v=prompt('Novo destino:'); if(!v) return; if(!destinosList.includes(v)){ destinosList.push(v); localStorage.setItem('destinosList',JSON.stringify(destinosList)); document.querySelectorAll('#chamadosTable tbody tr').forEach(tr=>{ const sel=tr.querySelectorAll('select')[0]; const opt=document.createElement('option'); opt.textContent=v; sel.appendChild(opt); }); alert('Destino adicionado'); } }
+    // merge into chamadosArray without duplicar entradas já presentes (por Data+Hora+Paciente)
+    for(const item of mapped){
+      const exists = chamadosArray.some(c => (c.Data===item.Data && c.Hora===item.Hora && c.Paciente === item.Paciente));
+      if(!exists){
+        chamadosArray.push(item);
+        // if API_URL provided, POST to sync (non-blocking)
+        if(API_URL && !API_URL.includes('COLE_AQUI')) {
+          // send but don't await overall
+          fetch(API_URL,{method:'POST',body:JSON.stringify(item)}).catch(e=>console.warn('sync post error',e));
+        }
+      }
+    }
+    renderTabela();
+  }catch(err){
+    console.warn('Erro ao carregar CSV do Drive:', err);
+    // fallback: se CORS bloquear, você pode hospedar CSV no repositório ou me pedir para inserir manualmente.
+  }
+}
 
-/* Relatório e gráfico */
-function updateReport(){ const data=getAllRows(); if(!data.length){ document.getElementById('relatorioConteudo').innerText='Nenhum dado disponível.'; if(chart){ chart.destroy(); chart=null; } return; } const tipos={Normal:0,'Urgência':0,'Emergência':0}; const prioridades={}; let pos=0; data.forEach(d=>{ tipos[d.tipo]=(tipos[d.tipo]||0)+1; if(d.prioridade) prioridades[d.prioridade]=(prioridades[d.prioridade]||0)+1; }); document.querySelectorAll('#chamadosTable tbody tr').forEach(r=>{ if(r.classList.contains('agrupado')) pos++; }); let html = `<b>Total geral:</b> ${data.length}<br> <b>Normal:</b> ${tipos.Normal} | <b>Urgência:</b> ${tipos['Urgência']} | <b>Emergência:</b> ${tipos['Emergência']}<br> <b>Pós-consulta:</b> ${pos}<br><br> <b>Prioridades:</b><br>`; if(Object.keys(prioridades).length===0) html+='Nenhuma prioridade registrada.<br>'; else Object.keys(prioridades).forEach(p=>{ html+=`• ${p}: ${prioridades[p]}<br>`; }); document.getElementById('relatorioConteudo').innerHTML=html; const labels=['Normal','Urgência','Emergência','Pós-consulta']; const values=[tipos.Normal,tipos['Urgência'],tipos['Emergência'],pos]; const ctx=document.getElementById('graficoChamados').getContext('2d'); if(chart) chart.destroy(); chart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Chamados',data:values,backgroundColor:['#10b981','#fff59d','#f1948a','#93c5fd']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}}); }
+/* ---------- Adicionar chamado (via formulário) ---------- */
+async function adicionarChamado(){
+  const now = new Date();
+  const data = now.toLocaleDateString('pt-BR');
+  const hora = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const obj = {
+    Data: data,
+    Hora: hora,
+    Paciente: document.getElementById('nome').value.trim(),
+    Endereco: document.getElementById('endereco').value.trim(),
+    Numero: document.getElementById('numero').value.trim(),
+    Telefone: document.getElementById('telefone').value.trim(),
+    Chamado: document.getElementById('chamado').value,
+    Destino: document.getElementById('destino').value.trim(),
+    Prioridade: document.getElementById('prioridade').value.trim(),
+    Atendente: document.getElementById('atendente').value.trim(),
+    Motorista: document.getElementById('motorista').value.trim(),
+    Observacoes: document.getElementById('observacoes').value.trim()
+  };
+  // push locally
+  chamadosArray.push(obj);
+  renderTabela();
+  // sync to API if available
+  if(API_URL && !API_URL.includes('COLE_AQUI')){
+    try{ await fetch(API_URL,{method:'POST',body:JSON.stringify(obj)}); }
+    catch(e){ console.warn('Erro ao enviar para API',e); }
+  }
+  // limpar form
+  document.getElementById('form-chamado').reset();
+}
 
-/* Chat interno (local + planilha) */
-function promptUser(){ const cur=localStorage.getItem('chat_username')||''; const name=prompt('Digite seu nome (será exibido no chat):',cur); if(name){ localStorage.setItem('chat_username',name); document.getElementById('usernameDisplay').textContent=name; } }
-function ensureUser(){ const name=localStorage.getItem('chat_username'); if(!name) promptUser(); else document.getElementById('usernameDisplay').textContent=name; }
-function loadChatLocal(){ const msgs=JSON.parse(localStorage.getItem('chat_local')||'[]'); renderChat(msgs); }
-function renderChat(msgs){ const el=document.getElementById('chatMessages'); el.innerHTML=''; msgs.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.user===localStorage.getItem('chat_username')?'me':'other'); d.innerHTML=`<div><strong>${escapeHtml(m.user)}</strong> <span class="small"> - ${escapeHtml(m.time)}</span></div><div style="margin-top:6px">${escapeHtml(m.text)}</div>`; el.appendChild(d); }); el.scrollTop=el.scrollHeight; }
-function sendChat(){ const text=document.getElementById('chatInput').value.trim(); if(!text) return; ensureUser(); const user=localStorage.getItem('chat_username'); const time=new Date().toLocaleString(); const msgs=JSON.parse(localStorage.getItem('chat_local')||'[]'); msgs.push({user,text,time}); localStorage.setItem('chat_local',JSON.stringify(msgs)); renderChat(msgs); document.getElementById('chatInput').value=''; if(window.gapi && gapi.auth2 && gapi.auth2.getAuthInstance && gapi.auth2.getAuthInstance().isSignedIn.get()){ appendChatToSheet({user,text,time}); } }
-function appendChatToSheet(msg){ try{ const values=[[msg.time,msg.user,msg.text]]; gapi.client.sheets.spreadsheets.values.append({ spreadsheetId, range:`${CHAT_SHEET_NAME}!A:C`, valueInputOption:'RAW', insertDataOption:'INSERT_ROWS', resource:{values} }).then(()=>{}).catch(e=>console.warn('Erro append chat to sheet',e)); }catch(e){ console.warn(e); } }
-function loadChatFromSheet(){ try{ gapi.client.sheets.spreadsheets.values.get({ spreadsheetId, range:`${CHAT_SHEET_NAME}!A1:C10000` }).then(resp=>{ const values=resp.result.values||[]; const msgs=values.map(r=>({time:r[0]||'',user:r[1]||'',text:r[2]||''})); localStorage.setItem('chat_local',JSON.stringify(msgs)); renderChat(msgs); }).catch(e=>console.warn('Erro ao carregar chat da planilha',e)); }catch(e){ console.warn(e); } }
+/* ---------- Duplicar linha (botão) ---------- */
+async function duplicarLinha(chamado){
+  const now = new Date();
+  const dup = {...chamado};
+  dup.Data = now.toLocaleDateString('pt-BR');
+  dup.Hora = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  chamadosArray.push(dup);
+  renderTabela();
+  if(API_URL && !API_URL.includes('COLE_AQUI')) {
+    try{ await fetch(API_URL,{method:'POST',body:JSON.stringify(dup)}); } catch(e){console.warn(e)}
+  }
+}
 
-/* Google Sheets: carregar e salvar */
-function handleSignIn(){ if(!window.gapi){ alert('Google API não carregada ainda. Aguarde e tente novamente.'); return; } gapi.load('client:auth2', async ()=>{ try{ await gapi.client.init({ apiKey: API_KEY||undefined, clientId: CLIENT_ID, discoveryDocs: DISCOVERY_DOCS, scope: SCOPES }); const auth = gapi.auth2.getAuthInstance(); if(!auth.isSignedIn.get()) await auth.signIn(); document.getElementById('connectButton').textContent='🔗 Conectado'; await loadFromSheet(); await loadChatFromSheet(); }catch(e){ console.error(e); alert('Erro ao conectar: veja console.'); } }); }
+/* ---------- Excluir selecionados (cliente) ---------- */
+document.getElementById('btn-excluir').addEventListener('click', ()=> {
+  const checked = Array.from(document.querySelectorAll('.sel-item:checked'));
+  if(checked.length===0){ alert('Nenhum chamado selecionado!'); return; }
+  checked.forEach(cb => {
+    const tr = cb.closest('tr');
+    const nome = tr.children[3].innerText;
+    const data = tr.children[1].innerText;
+    // remove localmente (first match)
+    const idx = chamadosArray.findIndex(c => c.Paciente===nome && c.Data===data);
+    if(idx>-1) chamadosArray.splice(idx,1);
+    tr.remove();
+  });
+  atualizarGraficoMensal();
+  // Note: remoção na planilha requer endpoint de DELETE no Apps Script (opcional)
+});
 
-function loadFromSheet(){ if(!gapi.client) return alert('Clique em Conectar ao Google'); return gapi.client.sheets.spreadsheets.values.get({ spreadsheetId, range:`${SHEET_NAME}!A1:K10000` }).then(resp=>{ const values=resp.result.values||[]; document.querySelector('#chamadosTable tbody').innerHTML=''; values.forEach((r,idx)=>{ if(idx===0 && (String(r[0]).toLowerCase().includes('data')||String(r[2]).toLowerCase().includes('paciente'))) return; while(r.length<11) r.push(''); addRowFromData({data:r[0]||'',hora:r[1]||'',paciente:r[2]||'',endereco:r[3]||'',telefone:r[4]||'',tipo:r[5]||'Normal',destino:r[6]||'',prioridade:r[7]||'',atendente:r[8]||'',motorista:r[9]||'',observacoes:r[10]||''}); }); updateReport(); return Promise.resolve(); }).catch(e=>{ console.error(e); alert('Erro ao carregar da planilha — veja console.'); }); }
+/* ---------- Exportar CSV da tabela ---------- */
+document.getElementById('btn-exportar').addEventListener('click', ()=> {
+  const rows = document.querySelectorAll('#tabela-chamados tr');
+  const csv = [];
+  for(let i=0;i<rows.length;i++){
+    const cols = rows[i].querySelectorAll('td, th');
+    const row = [];
+    for(let j=0;j<cols.length;j++){
+      let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s\s+/g,' ').trim();
+      data = data.replace(/"/g,'""');
+      row.push(`"${data}"`);
+    }
+    csv.push(row.join(','));
+  }
+  const csvString = csv.join('\n');
+  const filename = `export_chamados_${new Date().toLocaleDateString().replace(/\//g,'-')}.csv`;
+  const link = document.createElement('a');
+  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvString);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+});
 
-function saveToSheet(){ if(!gapi.client) return alert('Clique em Conectar ao Google'); const rows=getAllRows(); const values=[['Data','Hora','Paciente','Endereço','Telefone','Tipo','Destino','Prioridade','Atendente','Motorista','Observações']]; rows.forEach(r=>values.push([r.data||'',r.hora||'',r.paciente||'',r.endereco||'',r.telefone||'',r.tipo||'',r.destino||'',r.prioridade||'',r.atendente||'',r.motorista||'',r.observacoes||''])); return gapi.client.sheets.spreadsheets.values.update({ spreadsheetId, range:`${SHEET_NAME}!A1:K${values.length}`, valueInputOption:'RAW', resource:{values} }).then(()=>{ alert('Planilha atualizada.'); }).catch(e=>{ console.error(e); alert('Erro ao salvar — veja console.'); }); }
+/* ---------- Relatório Mensal (CSV resumido) ---------- */
+document.getElementById('btn-relatorio').addEventListener('click', ()=> {
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+  const chamadosMes = chamadosArray.filter(c=>{
+    if(!c.Data) return false;
+    const d = new Date(c.Data.split('/').reverse().join('-'));
+    return d.getMonth()===mesAtual && d.getFullYear()===anoAtual;
+  });
+  const tipos = {Normal:0, Urgência:0, Emergência:0};
+  const prioridades = {};
+  const destinos = {};
+  chamadosMes.forEach(c=>{
+    const tipo = (c.Chamado||'').charAt(0).toUpperCase() + (c.Chamado||'').slice(1);
+    if(tipos[tipo] !== undefined) tipos[tipo]++; // only counting known ones
+    const pr = c.Prioridade || 'Não Definida'; prioridades[pr] = (prioridades[pr]||0)+1;
+    const dest = c.Destino || 'Não Definido'; destinos[dest] = (destinos[dest]||0)+1;
+  });
+  let csv = `Relatório Mensal - ${hoje.toLocaleDateString()}\n\n`;
+  csv += 'Tipo de Chamado,Quantidade\n';
+  for(const t in tipos) csv += `${t},${tipos[t]}\n`;
+  csv += '\nPrioridade,Quantidade\n';
+  for(const p in prioridades) csv += `${p},${prioridades[p]}\n`;
+  csv += '\nDestino,Quantidade\n';
+  for(const d in destinos) csv += `${d},${destinos[d]}\n`;
 
-/* Import JSON, local save/load */
-function pasteJsonPrompt(){ const text=prompt('Cole aqui o JSON (array) com os registros recuperados'); if(!text) return; try{ const arr=JSON.parse(text); if(!Array.isArray(arr)) throw new Error('JSON precisa ser array'); arr.forEach(o=>addRowFromData(o)); updateReport(); saveLocal(); alert('Registros colados.'); }catch(e){ alert('JSON inválido: '+e.message); } }
+  const filename = `relatorio_mensal_${hoje.toLocaleDateString().replace(/\//g,'-')}.csv`;
+  const link = document.createElement('a');
+  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+});
 
-function saveLocal(){ try{ const data=getAllRows(); localStorage.setItem('chamados_local',JSON.stringify(data)); }catch(e){} }
-function loadLocal(){ try{ const data=JSON.parse(localStorage.getItem('chamados_local')||'[]'); if(Array.isArray(data) && data.length) data.forEach(d=>addRowFromData(d)); }catch(e){} updateReport(); }
+/* ---------- Gráfico Mensal ---------- */
+let grafico;
+function atualizarGraficoMensal(){
+  const ctx = document.getElementById('graficoMensal').getContext('2d');
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+  const chamadosMes = chamadosArray.filter(c=>{
+    if(!c.Data) return false;
+    const d = new Date(c.Data.split('/').reverse().join('-'));
+    return d.getMonth()===mesAtual && d.getFullYear()===anoAtual;
+  });
+  const tipos = {normal:0, urgencia:0, emergencia:0};
+  chamadosMes.forEach(c=>{
+    const k = (c.Chamado||'').toLowerCase();
+    if(k in tipos) tipos[k]++;
+  });
+  const labels = ['Normal','Urgência','Emergência'];
+  const values = [tipos.normal,tipos.urgencia,tipos.emergencia];
+  if(grafico) grafico.destroy();
+  grafico = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label:'Chamados (mês)', data: values, backgroundColor: ['#2ecc71','#f1c40f','#e74c3c'] }] },
+    options: { responsive:true, plugins:{legend:{display:false}} }
+  });
+}
 
-function downloadHTML(){ const html=document.documentElement.outerHTML; const blob=new Blob([html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='index.html'; a.click(); }
+/* ---------- Preenchimento automático ao digitar nome (busca em chamadosArray/pacientes) ---------- */
+document.getElementById('nome').addEventListener('input', function(){
+  const nome = this.value.trim();
+  // procura o último registro com esse nome
+  const found = [...chamadosArray].reverse().find(c=>c.Paciente === nome);
+  if(found){
+    document.getElementById('telefone').value = found.Telefone || '';
+    // se endereço não existir, tenta selecionar a opção
+    if(found.Endereco) {
+      for(const opt of selectEndereco.options) if(opt.value === found.Endereco){ selectEndereco.value = opt.value; break; }
+      document.getElementById('numero').value = found.Numero || '';
+    }
+  }
+});
 
-/* Init */
-window.addEventListener('load', ()=>{ loadLocal(); loadChatLocal(); updateReport(); document.getElementById('usernameDisplay').textContent = localStorage.getItem('chat_username') || ''; document.getElementById('chatInput') && document.getElementById('chatInput').addEventListener('keydown',(ev)=>{ if(ev.key==='Enter') sendChat(); }); });
+/* ---------- Inicialização: popula endereços e carrega CSV (e opcionalmente dados do API) ---------- */
+function initLocalEnderecos(){ populateEnderecosFromCSV(csvEnderecos); }
+async function carregarChamadosDaAPI(){
+  if(API_URL && !API_URL.includes('COLE_AQUI')){
+    try{
+      const res = await fetch(API_URL);
+      if(res.ok){
+        const dados = await res.json();
+        // normaliza keys (se vierem como headers da sheet)
+        chamadosArray = dados.map(r=>{
+          // Alguns Apps Script retornam objetos com headers exatos; assumimos nomes iguais aos usados
+          return {
+            Data: r.Data || r.data || r.Date || '',
+            Hora: r.Hora || r.hora || r.Time || '',
+            Paciente: r.Paciente || r.Nome || r.paciente || r.nome || '',
+            Endereco: r.Endereço || r.Endereco || r.endereco || r.address || '',
+            Numero: r.Número || r.Numero || r.numero || '',
+            Telefone: r.Telefone || r.telefone || r.phone || '',
+            Chamado: r.Tipo || r.Chamado || r.chamado || r.tipo || '',
+            Destino: r.Destino || r.destino || '',
+            Prioridade: r.Prioridade || r.prioridade || '',
+            Atendente: r.Atendente || r.atendente || '',
+            Motorista: r.Motorista || r.motorista || '',
+            Observacoes: r.Observacoes || r.Observacoes || r.observacoes || ''
+          };
+        });
+        renderTabela();
+        return true;
+      }
+    }catch(e){ console.warn('erro carregar api',e); }
+  }
+  return false;
+}
+
+/* ---------- Inicial: popula endereços, carrega API (se houver) e CSV do Drive ---------- */
+async function inicializarTudo(){
+  initLocalEnderecos();
+  // 1) tenta carregar do API (planilha centralizada). Se OK, não precisa importar CSV.
+  const loadedFromAPI = await carregarChamadosDaAPI();
+  if(!loadedFromAPI){
+    // 2) tenta carregar CSV do Drive e inserir localmente (e sincronizar para API opcionalmente)
+    await carregarCSVinicial();
+  }
+  // finalmente render e grafico
+  renderTabela();
+}
+
+/* ---------- Event listeners ---------- */
+document.getElementById('adicionar').addEventListener('click', adicionarChamado);
+
+/* Inicializa */
+inicializarTudo();
 </script>
-</body>
-</html>
- html>
-
-<html>
-<head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
-</head>
-<body>
-  <h1>
-    Hello, World!
-  </h1>
 </body>
 </html>
