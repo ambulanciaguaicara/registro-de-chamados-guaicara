@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Login – Ambulância Guaiçara</title>
+<link rel="manifest" href="/manifest.json" />
+<script type="module" src="/src/main.js"></script>
+<style>
+body { font-family: Arial; background:#f2f2f2; display:flex; justify-content:center; align-items:center; height:100vh; }
+.box { background:white; padding:30px; border-radius:10px; width:300px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+input { width:100%; padding:10px; margin:10px 0; border-radius:6px; border:1px solid #ccc; }
+button { width:100%; padding:10px; background:#b50000; color:white; border:none; border-radius:8px; cursor:pointer; font-size:18px; }
+</style>
+</head>
+<body>
+<div class="box">
+<h2>🚑 Registro de Chamados</h2>
+<input type="email" id="email" placeholder="E-mail">
+<input type="password" id="senha" placeholder="Senha">
+<button onclick="login()">Entrar</button>
+</div>
+
+<script type="module">
+import { auth, signInWithEmailAndPassword } from "./src/firebase.js";
+
+window.login = function () {
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+
+    signInWithEmailAndPassword(auth, email, senha)
+    .then(() => {
+        window.location.href = "/";
+    })
+    .catch(err => alert("Erro ao logar: " + err.message));
+}
+</script>
+</body>
+</html>
