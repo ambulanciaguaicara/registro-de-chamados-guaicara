@@ -12,7 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <style>
-/* -------------------- LAYOUT A + D --------------------*/
+/* -------------------- LAYOUT --------------------*/
 
 body {
     margin: 0;
@@ -20,7 +20,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* 🔴 Cabeçalho institucional + vermelho SAMU */
+/* Cabeçalho */
 header {
     background: #b50000;
     color: white;
@@ -29,10 +29,9 @@ header {
     font-size: 28px;
     font-weight: bold;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    letter-spacing: .5px;
 }
 
-/* Container central */
+/* Container */
 .container {
     margin: 25px auto;
     max-width: 1100px;
@@ -42,7 +41,6 @@ header {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Inputs */
 input, select, textarea {
     width: 100%;
     padding: 10px;
@@ -52,7 +50,6 @@ input, select, textarea {
     font-size: 16px;
 }
 
-/* Botões */
 button {
     padding: 12px 20px;
     border: none;
@@ -63,29 +60,10 @@ button {
     font-weight: bold;
 }
 
-.btn-add {
-    background: #b50000;
-    color: white;
-}
-.btn-add:hover {
-    background: #7d0000;
-}
+.btn-add { background: #b50000; color: white; }
+.btn-urgencia { background: #ffcc00; color: black; border: 2px solid #b50000; }
+.btn-del { background: #444; color: white; }
 
-.btn-del {
-    background: #444;
-    color: white;
-}
-.btn-del:hover {
-    background: #222;
-}
-
-.btn-urgencia {
-    background: #ffcc00;
-    color: black;
-    border: 2px solid #b50000;
-}
-
-/* Tabela */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -111,7 +89,7 @@ tr:hover {
     background: #ffe4e4;
 }
 
-/* 🔵 Chat corporativo */
+/* CHAT */
 .chat-box {
     margin-top: 30px;
     background: #fff;
@@ -127,19 +105,6 @@ tr:hover {
     border-radius: 8px;
 }
 
-.msg-actions {
-    font-size: 12px;
-    margin-top: 5px;
-    text-align: right;
-}
-
-.msg-actions span {
-    margin-left: 12px;
-    cursor: pointer;
-    color: #b50000;
-}
-
-/* Rodapé fixo */
 footer {
     position: fixed;
     bottom: 0;
@@ -195,33 +160,28 @@ footer {
 <button class="btn-urgencia" onclick="marcarUrgencia()">⚠ URGÊNCIA</button>
 <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
 
-
 <h2>Chamados</h2>
 
 <table>
-    <thead>
-        <tr>
-            <th>Sel</th>
-            <th>Data</th>
-            <th>Hora</th>
-            <th>Paciente</th>
-            <th>Endereço</th>
-            <th>Destino</th>
-            <th>Motorista</th>
-            <th>Observações</th>
-        </tr>
-    </thead>
-    <tbody id="corpoTabela"></tbody>
+<thead>
+    <tr>
+        <th>Sel</th>
+        <th>Data</th>
+        <th>Hora</th>
+        <th>Paciente</th>
+        <th>Endereço</th>
+        <th>Destino</th>
+        <th>Motorista</th>
+        <th>Observações</th>
+    </tr>
+</thead>
+<tbody id="corpoTabela"></tbody>
 </table>
 
-<!-- 🔵 CHAT -->
 <div class="chat-box">
     <h2>Chat Interno</h2>
-
     <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()">
-
     <button class="btn-add" onclick="enviarMsg()">Enviar</button>
-
     <div id="chatArea"></div>
 </div>
 
@@ -232,187 +192,95 @@ footer {
     <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
     <div id="usuarioLogado">Usuário: —</div>
     <div id="ultimaSync">Última sync: —</div>
-    <div>Versão: 1.0.0</div>
+
+    <!-- 🔴 AQUI está o botão SAIR -->
+    <button onclick="logout()" style="background:#222;color:white;padding:6px 12px;border-radius:6px;">Sair</button>
 </footer>
 
 <script>
-/* --------------------------------------------------------------
-   🔥 CONFIG FIREBASE (SEU PROJETO)
-----------------------------------------------------------------*/
+/* FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
-  authDomain: "registro-ambulancia192.firebaseapp.com",
-  projectId: "registro-ambulancia192",
-  storageBucket: "registro-ambulancia192.firebasestorage.app",
-  messagingSenderId: "549498386461",
-  appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
-  measurementId: "G-NM7EQL6E83",
-  databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com/"
+    apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
+    authDomain: "registro-ambulancia192.firebaseapp.com",
+    projectId: "registro-ambulancia192",
+    storageBucket: "registro-ambulancia192.firebasestorage.app",
+    messagingSenderId: "549498386461",
+    appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
+    measurementId: "G-NM7EQL6E83",
+    databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com/"
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* --------------------------------------------------------------
-   LOGIN AUTOMÁTICO ANÔNIMO
-----------------------------------------------------------------*/
-auth.signInAnonymously();
-
+/* 🔒 Impede acesso sem login */
 auth.onAuthStateChanged(user => {
-    if (user) {
-        document.getElementById("usuarioLogado").innerHTML =
-            "Usuário: " + user.uid.substring(0, 6) + "...";
-    }
-});
-
-/* --------------------------------------------------------------
-   SINCRONIZAÇÃO DE STATUS
-----------------------------------------------------------------*/
-function atualizarSync() {
-    document.getElementById("ultimaSync").innerText =
-        "Última sync: " + new Date().toLocaleTimeString();
-}
-
-/* --------------------------------------------------------------
-   MONITORAR CONEXÃO
-----------------------------------------------------------------*/
-firebase.database().ref(".info/connected").on("value", snap => {
-    const el = document.getElementById("statusConexao");
-    if (snap.val() === true) {
-        el.innerHTML = 'Status: <span class="status-online">Conectado</span>';
+    if (!user) {
+        window.location.href = "login.html";
     } else {
-        el.innerHTML = 'Status: <span class="status-offline">Offline</span>';
+        document.getElementById("usuarioLogado").innerHTML = "Usuário: " + user.email;
     }
 });
 
-/* --------------------------------------------------------------
-   ADICIONAR CHAMADO
-----------------------------------------------------------------*/
-let urgenciaAtivada = false;
+/* LOGOUT */
+window.logout = function () {
+    auth.signOut().then(() => window.location.href = "login.html");
+};
 
-function marcarUrgencia() {
-    urgenciaAtivada = true;
-    alert("Chamado marcado como URGÊNCIA.");
-}
+/* FUNÇÕES DO SISTEMA */
+
+let urgenciaAtivada = false;
+function marcarUrgencia() { urgenciaAtivada = true; alert("Chamado marcado como URGÊNCIA."); }
 
 function adicionarChamado() {
-    const data = document.getElementById("data").value;
-    const horario = document.getElementById("horario").value;
-    const paciente = document.getElementById("paciente").value;
-    const endereco = document.getElementById("endereco").value;
-    const destino = document.getElementById("destino").value;
-    const motorista = document.getElementById("motorista").value;
-    const obs = document.getElementById("obs").value;
-
     db.ref("chamados").push({
-        data, horario, paciente, endereco, destino, motorista, obs,
-        urgencia: urgenciaAtivada,
-        createdBy: auth.currentUser.uid
+        data: data.value, horario: horario.value, paciente: paciente.value,
+        endereco: endereco.value, destino: destino.value, motorista: motorista.value,
+        obs: obs.value, urgencia: urgenciaAtivada, createdBy: auth.currentUser.uid
     });
-
     urgenciaAtivada = false;
-    atualizarSync();
 }
 
-/* --------------------------------------------------------------
-   LISTAR CHAMADOS EM TEMPO REAL
-----------------------------------------------------------------*/
 db.ref("chamados").on("value", snap => {
-    const corpo = document.getElementById("corpoTabela");
-    corpo.innerHTML = "";
-
+    corpoTabela.innerHTML = "";
     snap.forEach(item => {
-        const ch = item.val();
+        const c = item.val();
         const id = item.key;
-
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
+        corpoTabela.innerHTML += `
+        <tr>
             <td><input type="checkbox" data-id="${id}"></td>
-            <td>${ch.data}</td>
-            <td>${ch.horario}</td>
-            <td style="${ch.urgencia ? 'background:#ffcc00;font-weight:bold;' : ''}">
-                ${ch.paciente}
-            </td>
-            <td>${ch.endereco}</td>
-            <td>${ch.destino}</td>
-            <td>${ch.motorista}</td>
-            <td>${ch.obs}</td>
-        `;
-
-        corpo.appendChild(tr);
+            <td>${c.data}</td>
+            <td>${c.horario}</td>
+            <td style="${c.urgencia?'background:#ffcc00;font-weight:bold;':''}">${c.paciente}</td>
+            <td>${c.endereco}</td>
+            <td>${c.destino}</td>
+            <td>${c.motorista}</td>
+            <td>${c.obs}</td>
+        </tr>`;
     });
-
-    atualizarSync();
 });
 
-/* --------------------------------------------------------------
-   EXCLUIR SELECIONADOS
-----------------------------------------------------------------*/
 function excluirSelecionados() {
-    document.querySelectorAll("input[type=checkbox]:checked")
-        .forEach(c => {
-            const id = c.dataset.id;
-            db.ref("chamados/" + id).remove();
-        });
-
-    atualizarSync();
+    document.querySelectorAll("input[type=checkbox]:checked").forEach(chk => {
+        db.ref("chamados/" + chk.dataset.id).remove();
+    });
 }
 
-/* --------------------------------------------------------------
-   CHAT EM TEMPO REAL
-----------------------------------------------------------------*/
+/* CHAT */
 function enviarMsg() {
-    const txt = document.getElementById("chatMsg").value;
-    if (!txt.trim()) return;
-
-    db.ref("chat").push({
-        msg: txt,
-        uid: auth.currentUser.uid,
-        hora: new Date().toLocaleTimeString()
-    });
-
-    document.getElementById("chatMsg").value = "";
+    if (!chatMsg.value) return;
+    db.ref("chat").push({ msg: chatMsg.value, uid: auth.currentUser.uid, hora: new Date().toLocaleTimeString() });
+    chatMsg.value = "";
 }
 
 db.ref("chat").on("value", snap => {
-    const area = document.getElementById("chatArea");
-    area.innerHTML = "";
-
+    chatArea.innerHTML = "";
     snap.forEach(item => {
         const m = item.val();
-        const id = item.key;
-
-        const div = document.createElement("div");
-        div.className = "message";
-
-        div.innerHTML = `
-            <b>${m.hora}</b> — ${m.msg}
-            <div class="msg-actions">
-                ${m.uid === auth.currentUser.uid ? `
-                    <span onclick="editarMsg('${id}', '${m.msg}')">Editar</span>
-                    <span onclick="delMsg('${id}')">Excluir</span>
-                `: ""}
-            </div>
-        `;
-
-        area.appendChild(div);
+        chatArea.innerHTML += `<div class="message"><b>${m.hora}</b> — ${m.msg}</div>`;
     });
-
-    atualizarSync();
 });
-
-function editarMsg(id, atual) {
-    const novo = prompt("Editar mensagem:", atual);
-    if (!novo) return;
-    db.ref("chat/" + id).update({ msg: novo });
-}
-
-function delMsg(id) {
-    db.ref("chat/" + id).remove();
-}
 
 </script>
 
