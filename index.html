@@ -1,610 +1,419 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <style>
-:root{
-  --samu-dark:#7a1212;
-  --samu-red:#c92b2b;
-  --samu-yellow:#f1c40f;
-  --samu-green:#2ecc71;
-  --blue:#2b7bd3;
-  --card:#fff;
-  --bg:#f5f6f8;
-  --muted:#6b7280;
+/* -------------------- LAYOUT A + D --------------------*/
+
+body {
+    margin: 0;
+    background: #f2f2f2;
+    font-family: Arial, sans-serif;
 }
-*{box-sizing:border-box}
-body{font-family:Inter,system-ui,Arial,Helvetica,sans-serif;margin:0;background:linear-gradient(180deg,#f7f9fb,#eef2f6);color:#111}
-.header-wrap{display:flex;align-items:center;gap:14px;padding:18px}
-.header-card{display:flex;align-items:center;background:var(--samu-dark);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.08);flex:1}
-.header-img{height:56px;width:56px;border-radius:8px;background:#fff;padding:6px;object-fit:contain;flex:0 0 56px}
-.header-title{margin:0;font-weight:700;font-size:18px}
-.toolbar{display:flex;gap:8px;align-items:center;margin:10px 18px;flex-wrap:wrap;justify-content:space-between}
-.toolbar-left{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
-.btn.primary{background:var(--samu-red);color:#fff}
-.btn.blue{background:var(--blue);color:#fff}
-.btn.green{background:var(--samu-green);color:#fff}
-.btn.warn{background:#f39c12;color:#fff}
-.search-input{padding:8px 12px;border-radius:10px;border:1px solid #e5e7eb;width:320px}
-.container{padding:0 18px 120px 18px}
-.panel{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-.input, select{padding:10px;border-radius:8px;border:1px solid #e5e7eb;background:transparent;font-size:14px}
-.add-small{padding:8px 10px;border-radius:8px;border:0;background:var(--blue);color:#fff;cursor:pointer}
-.table-card{overflow:auto;border-radius:12px}
-table{width:100%;border-collapse:collapse;min-width:980px}
-th,td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left;font-size:13px}
-th{background:var(--samu-dark);color:#fff;position:sticky;top:0;z-index:2}
-tr:hover td{background:#fbfcfd}
-.status{display:inline-block;padding:6px 8px;border-radius:8px;font-weight:700;font-size:12px}
-.status.normal{background:var(--samu-green);color:#fff}
-.status.urgencia{background:var(--samu-yellow);color:#111}
-.status.emergencia{background:var(--samu-red);color:#fff}
-.duplicado td{background:#2b7bd3;color:#fff}
-.alerta td{animation:pulse 1.2s infinite;border:2px solid orange}
-@keyframes pulse{0%{background:#fff4db}50%{background:#fff0c2}100%{background:#fff4db}}
-.small-muted{font-size:13px;color:var(--muted)}
-.chat-footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e6e6e6;padding:8px 12px;display:flex;gap:8px;align-items:center;z-index:6}
-.chat-input{flex:1;padding:8px;border-radius:8px;border:1px solid #e5e7eb}
-.chat-send{padding:8px 12px;border-radius:8px;border:0;background:var(--blue);color:#fff;cursor:pointer}
-.chat-list{max-height:160px;overflow:auto;padding:6px;border-radius:8px;border:1px solid #eee;background:#fafafa;margin-bottom:8px}
-.footer-small{font-size:12px;color:#777}
-.hidden { display: none !important; }
-.fade { transition: all 260ms ease; opacity: 1; }
-.fade.hidden { opacity: 0; height: 0; padding: 0; margin: 0; overflow: hidden; }
-@media (max-width:900px){.search-input{width:100%}}
+
+/* 🔴 Cabeçalho institucional + vermelho SAMU */
+header {
+    background: #b50000;
+    color: white;
+    padding: 35px 20px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    letter-spacing: .5px;
+}
+
+/* Container central */
+.container {
+    margin: 25px auto;
+    max-width: 1100px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Inputs */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 15px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+/* Botões */
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.btn-add {
+    background: #b50000;
+    color: white;
+}
+.btn-add:hover {
+    background: #7d0000;
+}
+
+.btn-del {
+    background: #444;
+    color: white;
+}
+.btn-del:hover {
+    background: #222;
+}
+
+.btn-urgencia {
+    background: #ffcc00;
+    color: black;
+    border: 2px solid #b50000;
+}
+
+/* Tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th {
+    background: #b50000;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background: #ffe4e4;
+}
+
+/* 🔵 Chat corporativo */
+.chat-box {
+    margin-top: 30px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.message {
+    padding: 10px 12px;
+    background: #f7f7f7;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.msg-actions {
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.msg-actions span {
+    margin-left: 12px;
+    cursor: pointer;
+    color: #b50000;
+}
+
+/* Rodapé fixo */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 45px;
+    background: #ffffff;
+    border-top: 2px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 20px;
+    font-size: 14px;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+}
+
+.status-online { color: green; font-weight: bold; }
+.status-offline { color: red; font-weight: bold; }
+
 </style>
 </head>
+
 <body>
 
-<!-- HEADER -->
-<div class="header-wrap">
-  <div class="header-card" style="flex:1">
-    <img id="logoImg" class="header-img" src="https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB" alt="Ambulância 192">
-    <div style="margin-left:12px">
-      <h1 class="header-title">Registro de Chamados – Ambulância Municipal – Guaiçara/SP</h1>
-      <div class="small-muted" id="subtitle">tema samu — sincronização em tempo real (firebase)</div>
-    </div>
-  </div>
+<header>🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAIÇARA/SP</header>
 
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <button id="btnImportBase64" class="btn warn">📤 importar imagem base64</button>
-    <button id="btnResetLogo" class="btn">🔁 reset imagem</button>
-  </div>
-</div>
-
-<!-- CONTROLS -->
-<div class="toolbar container">
-  <div class="toolbar-left">
-    <button id="btnExcluir" class="btn primary">🗑️ excluir selecionados</button>
-    <button id="btnExportar" class="btn blue">📥 exportar csv</button>
-    <button id="btnRelatorio" class="btn green">📊 relatório mensal</button>
-    <button id="btnAtualizarEnd" class="btn warn">🔄 atualizar endereços</button>
-    <button id="btnAddEndereco" class="btn">➕ acrescentar endereços</button>
-  </div>
-
-  <input id="search" class="search-input" placeholder="Buscar paciente, motorista, destino ou observação..." />
-</div>
-
-<!-- MAIN -->
 <div class="container">
-  <div class="panel">
-    <form id="formChamado" onsubmit="return false;">
-      <div class="form-grid">
-        <div>
-          <label for="nome">Nome do paciente</label><br>
-          <input id="nome" class="input" placeholder="Nome do paciente" required>
-        </div>
-        <div>
-          <label for="telefone">Telefone</label><br>
-          <input id="telefone" class="input" placeholder="Telefone">
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="flex:1">
-            <label for="endereco">📍 Endereço</label><br>
-            <select id="endereco" class="input" aria-label="Endereço"></select>
-          </div>
-          <button id="btnAddEnderecoManual" type="button" class="add-small">➕</button>
-        </div>
 
-        <div>
-          <label for="numero">Número</label><br>
-          <input id="numero" class="input" placeholder="Número">
-        </div>
+<h2>Novo Chamado</h2>
 
-        <div>
-          <label for="chamado">Chamado</label><br>
-          <select id="chamado" class="input">
-            <option value="normal">Normal</option>
-            <option value="urgencia">Urgência</option>
-            <option value="emergencia">Emergência</option>
-          </select>
-        </div>
+<label>Data</label>
+<input type="date" id="data">
 
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="flex:1">
-            <label for="destino">Destino</label><br>
-            <select id="destino" class="input"></select>
-          </div>
-          <button id="btnAddDestino" type="button" class="add-small">➕</button>
-        </div>
+<label>Horário</label>
+<input type="time" id="horario">
 
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="flex:1">
-            <label for="prioridade">Prioridade</label><br>
-            <select id="prioridade" class="input"></select>
-          </div>
-          <button id="btnAddPrioridade" type="button" class="add-small">➕</button>
-        </div>
+<label>Paciente</label>
+<input type="text" id="paciente">
 
-        <div>
-          <label for="atendente">Atendente (seu nome)</label><br>
-          <input id="atendente" class="input" placeholder="Atendente" required>
-        </div>
+<label>Endereço</label>
+<input type="text" id="endereco">
 
-        <div>
-          <label for="motorista">Motorista</label><br>
-          <input id="motorista" class="input" placeholder="Motorista">
-        </div>
+<label>Destino</label>
+<input type="text" id="destino">
 
-        <div style="grid-column:1/-1">
-          <label for="observacoes">Observações</label><br>
-          <input id="observacoes" class="input" placeholder="Observações">
-        </div>
+<label>Motorista</label>
+<input type="text" id="motorista">
 
-        <div style="grid-column:1/-1;display:flex;justify-content:flex-end">
-          <button id="btnAdicionar" type="button" class="btn primary">➕ adicionar chamado</button>
-        </div>
-      </div>
-    </form>
-    <div class="small-muted">Atenção: somente o atendente/usuário que criou o chamado poderá editá-lo/duplicá-lo/excluí-lo.</div>
-  </div>
+<label>Observações</label>
+<textarea id="obs" rows="3"></textarea>
 
-  <div class="panel table-card">
-    <table id="tabelaChamados" aria-label="Tabela de chamados">
-      <thead>
+<button class="btn-add" onclick="adicionarChamado()">Adicionar</button>
+<button class="btn-urgencia" onclick="marcarUrgencia()">⚠ URGÊNCIA</button>
+<button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
+
+
+<h2>Chamados</h2>
+
+<table>
+    <thead>
         <tr>
-          <th><input id="selAll" type="checkbox"></th>
-          <th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Número</th><th>Telefone</th>
-          <th>Chamado</th><th>Destino</th><th>Prioridade</th><th>Atendente</th><th>Motorista</th><th>Observações</th><th>Ações</th>
+            <th>Sel</th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Paciente</th>
+            <th>Endereço</th>
+            <th>Destino</th>
+            <th>Motorista</th>
+            <th>Observações</th>
         </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    </thead>
+    <tbody id="corpoTabela"></tbody>
+</table>
 
-  <div class="panel fade hidden" id="graficoPanel">
-    <h3 class="section-title">Gráfico Mensal de Chamados</h3>
-    <canvas id="graficoMensal" height="120"></canvas>
-  </div>
+<!-- 🔵 CHAT -->
+<div class="chat-box">
+    <h2>Chat Interno</h2>
+
+    <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()">
+
+    <button class="btn-add" onclick="enviarMsg()">Enviar</button>
+
+    <div id="chatArea"></div>
 </div>
 
-<!-- CHAT FIXED FOOTER -->
-<div class="chat-footer">
-  <div style="width:360px;max-width:40%;">
-    <div class="chat-list" id="chatList"></div>
-    <div style="display:flex;gap:8px;">
-      <input id="chatInput" class="chat-input" placeholder="Mensagem rápida (enter para enviar)">
-      <button id="chatSend" class="chat-send">Enviar</button>
-    </div>
-  </div>
-  <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;">
-    <div class="footer-small">Conectado ao Firebase • Sincronização em tempo real</div>
-  </div>
 </div>
 
-<!-- FIREBASE SCRIPTS (compat) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<!-- RODAPÉ -->
+<footer>
+    <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
+    <div id="usuarioLogado">Usuário: —</div>
+    <div id="ultimaSync">Última sync: —</div>
+    <div>Versão: 1.0.0</div>
+</footer>
 
 <script>
-/* ================== CONFIG (sua config enviada) ================== */
+/* --------------------------------------------------------------
+   🔥 CONFIG FIREBASE (SEU PROJETO)
+----------------------------------------------------------------*/
 const firebaseConfig = {
   apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
   authDomain: "registro-ambulancia192.firebaseapp.com",
-  databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com",
   projectId: "registro-ambulancia192",
   storageBucket: "registro-ambulancia192.firebasestorage.app",
   messagingSenderId: "549498386461",
   appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
-  measurementId: "G-NM7EQL6E83"
+  measurementId: "G-NM7EQL6E83",
+  databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com/"
 };
-/* ================================================================= */
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+
 const auth = firebase.auth();
+const db = firebase.database();
 
-let currentUID = null;
-let chamadosLocal = {}; // mirror of DB
-let chart = null;
+/* --------------------------------------------------------------
+   LOGIN AUTOMÁTICO ANÔNIMO
+----------------------------------------------------------------*/
+auth.signInAnonymously();
 
-/* CSV URL (sua planilha publicada) */
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR3_8QPyI7v109xYun_zxMKwqpoSmzPwbGaB4kvyHizG4IeJjR9ZGZHr1VF5WKsJWhcMFYnqeuosmrU/pub?gid=140252754&single=true&output=csv";
-
-/* inicial lists */
-let enderecoLista = [
-  "Av Duque de Caxias","Av Nove de Julho","Rua Rui Barbosa","Rua Otávio Maitan",
-  "Avenida Brasil","Rua XV de Novembro","Alameda das Rosas","Praça Central"
-];
-let prioridadeLista = ["Nenhuma","Curativo","Doenças crônicas ou complicações","Urgência","Emergência","Normal","Pós-consulta"];
-let destinoLista = [
-  "HGP","SANTA CASA LINS","CTA","CAPS","AME","TRANSFERÊNCIA",
-  "AGAR GRAVIDEZ DE RISCO","HAPVIDA","UNIMED","FISIOTERAPIA PARTICULAR","FISIOTERAPIA","+" 
-];
-
-/* ---------- helpers ---------- */
-const $ = id => document.getElementById(id);
-function nowDateTime(){ const d=new Date(); return {date:`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`, time:`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}; }
-function parseCSV(text){
-  const lines = text.replace(/\r\n/g,'\n').split('\n').filter(l=>l.trim());
-  if(!lines.length) return [];
-  const headers = lines.shift().split(',').map(h=>h.replace(/(^"|"$)/g,'').trim());
-  return lines.map(line=>{
-    const cols=[]; let cur='', inQ=false;
-    for(let i=0;i<line.length;i++){
-      const ch=line[i];
-      if(ch === '"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else inQ=!inQ; continue; }
-      if(ch === ',' && !inQ){ cols.push(cur); cur=''; continue; }
-      cur += ch;
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById("usuarioLogado").innerHTML =
+            "Usuário: " + user.uid.substring(0, 6) + "...";
     }
-    cols.push(cur);
-    const obj = {};
-    headers.forEach((h,idx)=> obj[h] = (cols[idx]||'').replace(/(^"|"$)/g,'').trim());
-    return obj;
-  });
-}
-function populateSelects(){
-  const end = $('endereco'); end.innerHTML = '<option value="">Selecione...</option>';
-  enderecoLista.forEach(e=> end.add(new Option(e,e)));
-  const pri = $('prioridade'); pri.innerHTML = '<option value="">Selecione...</option>';
-  prioridadeLista.forEach(p=> pri.add(new Option(p,p)));
-  const des = $('destino'); des.innerHTML = '<option value="">Selecione...</option>';
-  destinoLista.forEach(d=> des.add(new Option(d,d)));
-}
-
-/* ---------- AUTH (anonymous) ---------- */
-auth.signInAnonymously().catch(()=>{}).then(()=> {
-  if(auth.currentUser) {
-    currentUID = auth.currentUser.uid;
-    console.log('Auth anon OK, uid=', currentUID);
-  }
 });
 
-/* ---------- Firebase refs and listeners ---------- */
-const chamadosRef = db.ref('chamados');
-const chatRef = db.ref('chat');
+/* --------------------------------------------------------------
+   SINCRONIZAÇÃO DE STATUS
+----------------------------------------------------------------*/
+function atualizarSync() {
+    document.getElementById("ultimaSync").innerText =
+        "Última sync: " + new Date().toLocaleTimeString();
+}
 
-// Listen full snapshot changes once (value) to update table only when DB changes -> reduces flicker
-chamadosRef.on('value', snap => {
-  chamadosLocal = snap.val() || {};
-  renderTabelaFromFirebase();
-  atualizarGrafico();
+/* --------------------------------------------------------------
+   MONITORAR CONEXÃO
+----------------------------------------------------------------*/
+firebase.database().ref(".info/connected").on("value", snap => {
+    const el = document.getElementById("statusConexao");
+    if (snap.val() === true) {
+        el.innerHTML = 'Status: <span class="status-online">Conectado</span>';
+    } else {
+        el.innerHTML = 'Status: <span class="status-offline">Offline</span>';
+    }
 });
 
-// chat: handle add/change/remove to update messages live and show edit/delete for owner
-chatRef.limitToLast(500).on('child_added', snap => { appendChatMessageObj(snap.key, snap.val()); });
-chatRef.limitToLast(500).on('child_changed', snap => { updateChatMessageObj(snap.key, snap.val()); });
-chatRef.limitToLast(500).on('child_removed', snap => { removeChatMessageObj(snap.key); });
+/* --------------------------------------------------------------
+   ADICIONAR CHAMADO
+----------------------------------------------------------------*/
+let urgenciaAtivada = false;
 
-/* ---------- render tabela (from Firebase) ---------- */
-function renderTabelaFromFirebase(filter=''){
-  const tbody = $('tabelaChamados').querySelector('tbody');
-  // build rows using DocumentFragment for smoother rendering
-  const frag = document.createDocumentFragment();
-  const keys = Object.keys(chamadosLocal || {});
-  keys.forEach((k)=>{
-    const c = chamadosLocal[k];
-    if(!c) return;
-    const text = ((c.Paciente||'') + (c.Telefone||'') + (c.Endereco||'') + (c.Atendente||'') + (c.Destino||'') + (c.Observacoes||'')).toLowerCase();
-    if(filter && !text.includes(filter.toLowerCase())) return;
-    // duplication logic
-    const duplicadosHoje = keys.filter(kk => {
-      const x = chamadosLocal[kk];
-      return x && x.Paciente === c.Paciente && x.Data === c.Data;
-    }).length > 1;
-    const totalMesmo = keys.filter(kk => {
-      const x = chamadosLocal[kk];
-      return x && x.Data === c.Data;
-    }).length;
-    const tr = document.createElement('tr');
-    if(duplicadosHoje) tr.classList.add('duplicado');
-    if(totalMesmo > 3) tr.classList.add('alerta');
-    const chamadoClass = (c.Chamado||'').toLowerCase().includes('urg') ? 'urgencia' : ((c.Chamado||'').toLowerCase().includes('emerg') ? 'emergencia' : 'normal');
-    tr.dataset.key = k;
-    tr.innerHTML = `
-      <td><input class="sel-item" type="checkbox" data-key="${k}"></td>
-      <td>${c.Data||''}</td>
-      <td>${c.Hora||''}</td>
-      <td>${c.Paciente||''}</td>
-      <td>${c.Endereco||''}</td>
-      <td>${c.Numero||''}</td>
-      <td>${c.Telefone||''}</td>
-      <td><span class="status ${chamadoClass}">${(c.Chamado||'normal').toLowerCase()}</span></td>
-      <td>${c.Destino||''}</td>
-      <td>${c.Prioridade||''}</td>
-      <td>${c.Atendente||''}</td>
-      <td>${c.Motorista||''}</td>
-      <td>${c.Observacoes||''}</td>
-      <td>
-        <button class="btn" data-action="dup" data-key="${k}">➕</button>
-        <button class="btn" data-action="edit" data-key="${k}">✏️</button>
-        <button class="btn" data-action="del" data-key="${k}">🗑️</button>
-      </td>
-    `;
-    frag.appendChild(tr);
-  });
-  // replace tbody content
-  tbody.innerHTML = '';
-  tbody.appendChild(frag);
-  attachTableHandlers();
+function marcarUrgencia() {
+    urgenciaAtivada = true;
+    alert("Chamado marcado como URGÊNCIA.");
 }
 
-/* ---------- attach table handlers ---------- */
-function attachTableHandlers(){
-  document.querySelectorAll('[data-action]').forEach(btn=>{
-    btn.onclick = async (e)=>{
-      const action = e.currentTarget.dataset.action;
-      const key = e.currentTarget.dataset.key;
-      const record = chamadosLocal[key];
-      if(!record) return alert('Registro não encontrado (já removido).');
-      const currentAtendenteName = $('atendente').value.trim();
-      const ownerUID = record.createdBy || null;
-      const canAct = (currentUID && ownerUID && currentUID === ownerUID) || (!currentUID && record.Atendente && record.Atendente === currentAtendenteName);
-      if(!canAct){ alert('Somente o atendente/usuário que criou pode realizar esta ação.'); return; }
-      if(action === 'dup'){
-        const dt = nowDateTime();
-        const newKey = chamadosRef.push().key;
-        const copy = {...record, Data: dt.date, Hora: dt.time, createdBy: currentUID || record.createdBy, createdAt: Date.now()};
-        const u = {}; u[newKey] = copy;
-        await chamadosRef.update(u);
-        return;
-      }
-      if(action === 'edit'){
-        const novoPaciente = prompt('Editar nome:', record.Paciente || '');
-        if(novoPaciente === null) return;
-        const novoTelefone = prompt('Telefone:', record.Telefone || '') || record.Telefone;
-        const novoEndereco = prompt('Endereço:', record.Endereco || '') || record.Endereco;
-        const novoNumero = prompt('Número:', record.Numero || '') || record.Numero;
-        const novoDestino = prompt('Destino:', record.Destino || '') || record.Destino;
-        const novaPrior = prompt('Prioridade:', record.Prioridade || '') || record.Prioridade;
-        const novasObs = prompt('Observações:', record.Observacoes || '') || record.Observacoes;
-        await chamadosRef.child(key).update({
-          Paciente: novoPaciente, Telefone: novoTelefone, Endereco: novoEndereco, Numero: novoNumero,
-          Destino: novoDestino, Prioridade: novaPrior, Observacoes: novasObs
-        });
-        return;
-      }
-      if(action === 'del'){
-        if(!confirm('Confirmar exclusão deste chamado?')) return;
-        await chamadosRef.child(key).remove();
-        return;
-      }
-    };
-  });
-  $('selAll').onchange = function(){ document.querySelectorAll('.sel-item').forEach(cb=>cb.checked = this.checked); };
-}
+function adicionarChamado() {
+    const data = document.getElementById("data").value;
+    const horario = document.getElementById("horario").value;
+    const paciente = document.getElementById("paciente").value;
+    const endereco = document.getElementById("endereco").value;
+    const destino = document.getElementById("destino").value;
+    const motorista = document.getElementById("motorista").value;
+    const obs = document.getElementById("obs").value;
 
-/* ---------- adicionar chamado (salva no Firebase) ---------- */
-$('btnAdicionar').onclick = async ()=>{
-  const nome = $('nome').value.trim(); const atendente = $('atendente').value.trim();
-  if(!nome || !atendente){ alert('Preencha nome do paciente e atendente'); return; }
-  const dt = nowDateTime();
-  const obj = {
-    Data: dt.date, Hora: dt.time, Paciente: nome,
-    Endereco: $('endereco').value || '', Numero: $('numero').value || '',
-    Telefone: $('telefone').value || '', Chamado: $('chamado').value || 'normal',
-    Destino: $('destino').value || '', Prioridade: $('prioridade').value || '',
-    Atendente: atendente, Motorista: $('motorista').value || '', Observacoes: $('observacoes').value || '',
-    createdBy: currentUID || atendente, createdAt: Date.now()
-  };
-  const key = chamadosRef.push().key;
-  const u = {}; u[key] = obj;
-  await chamadosRef.update(u);
-  // clear form
-  $('nome').value=''; $('telefone').value=''; $('numero').value=''; $('observacoes').value='';
-};
-
-/* ---------- excluir selecionados (respeita autor) ---------- */
-$('btnExcluir').onclick = async ()=>{
-  const checked = Array.from(document.querySelectorAll('.sel-item:checked'));
-  if(!checked.length){ alert('Nenhum chamado selecionado'); return; }
-  if(!confirm(`Excluir ${checked.length} chamados selecionados?`)) return;
-  const currentAtendenteName = $('atendente').value.trim();
-  let blocked = 0;
-  for(const cb of checked){
-    const key = cb.dataset.key;
-    const rec = chamadosLocal[key];
-    if(!rec) continue;
-    const ownerUID = rec.createdBy || null;
-    const canAct = (currentUID && ownerUID && currentUID === ownerUID) || (!currentUID && rec.Atendente && rec.Atendente === currentAtendenteName);
-    if(!canAct){ blocked++; continue; }
-    await chamadosRef.child(key).remove();
-  }
-  if(blocked) alert(`${blocked} chamado(s) não puderam ser excluídos — pertencem a outro atendente/usuário.`);
-};
-
-/* ---------- export CSV (from Firebase snapshot) ---------- */
-$('btnExportar').onclick = ()=>{
-  const keys = Object.keys(chamadosLocal || {});
-  if(!keys.length){ alert('Sem dados para exportar'); return; }
-  const header = ['Data','Hora','Paciente','Endereco','Numero','Telefone','Chamado','Destino','Prioridade','Atendente','Motorista','Observacoes'];
-  const rows = [header.join(',')];
-  keys.forEach(k=>{
-    const r = chamadosLocal[k];
-    const line = [r.Data,r.Hora,r.Paciente,r.Endereco,r.Numero,r.Telefone,r.Chamado,r.Destino,r.Prioridade,r.Atendente,r.Motorista,r.Observacoes]
-      .map(cell => `"${(cell||'').toString().replace(/"/g,'""')}"`).join(',');
-    rows.push(line);
-  });
-  const csv = rows.join('\n');
-  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = `chamados_guai_${new Date().toISOString().slice(0,10)}.csv`; a.click();
-};
-
-/* ---------- relatorio mensal (toggle grafico) ---------- */
-$('btnRelatorio').onclick = ()=>{
-  const panel = $('graficoPanel');
-  const shown = !panel.classList.contains('hidden');
-  if(shown){
-    panel.classList.add('hidden');
-  } else {
-    panel.classList.remove('hidden');
-    // update chart when shown
-    atualizarGrafico();
-  }
-};
-
-/* ---------- grafico ---------- */
-function atualizarGrafico(){
-  const ctx = document.getElementById('graficoMensal').getContext('2d');
-  const counts = {Normal:0, Urgência:0, Emergência:0};
-  Object.values(chamadosLocal || {}).forEach(c=>{
-    const k = (c.Chamado||'').toLowerCase();
-    if(k.includes('urg')) counts['Urgência']++;
-    else if(k.includes('emerg')) counts['Emergência']++;
-    else counts['Normal']++;
-  });
-  const labels = Object.keys(counts), data = Object.values(counts);
-  if(chart) chart.destroy();
-  chart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'Chamados (mês)', data, backgroundColor:['#2ecc71','#f1c40f','#c92b2b'] }] }, options:{responsive:true,plugins:{legend:{display:false}} }});
-}
-
-/* ---------- search ---------- */
-$('search').addEventListener('input', (e)=> renderTabelaFromFirebase(e.target.value));
-
-/* ---------- chat (real-time) ---------- */
-function appendChatMessageObj(key, m){
-  const list = $('chatList');
-  const row = document.createElement('div');
-  row.id = 'chat_' + key;
-  const time = new Date(m.time || Date.now()).toLocaleTimeString();
-  const mine = (m.uid && currentUID && m.uid === currentUID);
-  row.innerHTML = `<div style="font-size:13px;display:flex;justify-content:space-between"><strong>${m.userName||'Usuário'}</strong> <span style="color:#777;font-size:12px">(${time})</span></div><div style="font-size:14px;margin-top:4px">${m.text}</div>`;
-  if(mine){
-    const actions = document.createElement('div'); actions.style.marginTop='6px';
-    const edt = document.createElement('button'); edt.className='btn'; edt.textContent='✏️'; edt.onclick = ()=> editChatMessage(key, m);
-    const del = document.createElement('button'); del.className='btn'; del.textContent='🗑️'; del.onclick = ()=> deleteChatMessage(key);
-    actions.appendChild(edt); actions.appendChild(del);
-    row.appendChild(actions);
-  }
-  list.appendChild(row); list.scrollTop = list.scrollHeight;
-}
-function updateChatMessageObj(key, m){
-  const node = $('chat_' + key);
-  if(!node) return appendChatMessageObj(key, m);
-  node.querySelector('div:nth-child(2)').innerHTML = m.text || '';
-}
-function removeChatMessageObj(key){
-  const node = $('chat_' + key);
-  if(node) node.remove();
-}
-function appendChatMessage(m){
-  // not used directly; left for compatibility
-  chatRef.push(m);
-}
-function editChatMessage(key, m){
-  const novo = prompt('Editar mensagem:', m.text);
-  if(novo === null) return;
-  chatRef.child(key).update({ text: novo });
-}
-function deleteChatMessage(key){
-  if(!confirm('Excluir sua mensagem?')) return;
-  chatRef.child(key).remove();
-}
-$('chatSend').onclick = ()=> {
-  const text = $('chatInput').value.trim(); if(!text) return;
-  const userName = $('atendente').value.trim() || 'Usuário';
-  const payload = { text, userName, uid: currentUID, time: Date.now() };
-  chatRef.push(payload);
-  $('chatInput').value = '';
-};
-$('chatInput').addEventListener('keypress', (e)=> { if(e.key==='Enter'){ e.preventDefault(); $('chatSend').click(); } });
-
-/* ---------- import CSV once into Firebase (only-if not imported before) ---------- */
-async function importCSVOnceToFirebase(){
-  try{
-    if(localStorage.getItem('csv_imported')) return;
-    // use allorigins to avoid CORS
-    const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(CSV_URL));
-    if(!res.ok) throw new Error('status '+res.status);
-    const j = await res.json();
-    const parsed = parseCSV(j.contents || '');
-    if(!parsed.length) { localStorage.setItem('csv_imported','1'); return; }
-    const updates = {};
-    parsed.forEach(row=>{
-      const key = chamadosRef.push().key;
-      updates[key] = {
-        Data: row['Data']||row['data']||'',
-        Hora: row['Hora']||row['hora']||'',
-        Paciente: row['Paciente']||row['Nome']||'',
-        Endereco: row['Endereço']||row['Endereco']||row['logradouro']||'',
-        Numero: row['Número']||row['Numero']||'',
-        Telefone: row['Telefone']||'',
-        Chamado: (row['Chamado']||row['Tipo']||'normal').toLowerCase(),
-        Destino: row['Destino']||'',
-        Prioridade: row['Prioridade']||'',
-        Atendente: row['Atendente']||'',
-        Motorista: row['Motorista']||'',
-        Observacoes: row['Observações']||row['Obs']||'',
-        createdBy: currentUID || (row['Atendente']||''),
-        createdAt: Date.now()
-      };
+    db.ref("chamados").push({
+        data, horario, paciente, endereco, destino, motorista, obs,
+        urgencia: urgenciaAtivada,
+        createdBy: auth.currentUser.uid
     });
-    await chamadosRef.update(updates);
-    localStorage.setItem('csv_imported','1');
-    console.log('CSV importado para Firebase (uma vez).');
-  }catch(err){
-    console.warn('Import CSV falhou:', err);
-  }
+
+    urgenciaAtivada = false;
+    atualizarSync();
 }
 
-/* ---------- add-option buttons ---------- */
-$('btnAddEndereco').onclick = ()=> { const v = prompt('Digite novo endereço:'); if(!v) return; enderecoLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
-$('btnAddEnderecoManual').onclick = ()=> { const v = prompt('Digite novo endereço:'); if(!v) return; enderecoLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
-$('btnAddPrioridade').onclick = ()=> { const v = prompt('Digite nova prioridade:'); if(!v) return; prioridadeLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
-$('btnAddDestino').onclick = ()=> { const v = prompt('Digite novo destino:'); if(!v) return; destinoLista.push(v); populateSelects(); localStorage.setItem('app_options', JSON.stringify({enderecoLista, prioridadeLista, destinoLista})); };
+/* --------------------------------------------------------------
+   LISTAR CHAMADOS EM TEMPO REAL
+----------------------------------------------------------------*/
+db.ref("chamados").on("value", snap => {
+    const corpo = document.getElementById("corpoTabela");
+    corpo.innerHTML = "";
 
-/* ---------- logo base64 import/reset ---------- */
-$('btnImportBase64').onclick = async ()=> {
-  const paste = prompt('Cole data:image/... base64 (ou URL pública). Se colar URL e der CORS, converta para base64 e cole.');
-  if(!paste) return;
-  if(paste.startsWith('data:')){ localStorage.setItem('logo_base64', paste); $('logoImg').src = paste; alert('Imagem salva em base64.'); return; }
-  try{
-    const res = await fetch(paste);
-    const blob = await res.blob();
-    const reader = new FileReader();
-    reader.onloadend = ()=>{ localStorage.setItem('logo_base64', reader.result); $('logoImg').src = reader.result; alert('Imagem convertida e salva.'); };
-    reader.readAsDataURL(blob);
-  }catch(e){ alert('Falha ao buscar/convertir imagem (provável CORS). Cole base64 direto.'); }
-};
-$('btnResetLogo').onclick = ()=> { localStorage.removeItem('logo_base64'); $('logoImg').src = 'https://drive.google.com/uc?export=view&id=1ISJU9dEUo14fePstTcknKWKhsf_hixgB'; alert('Imagem resetada.'); };
+    snap.forEach(item => {
+        const ch = item.val();
+        const id = item.key;
 
-/* ---------- load saved app options ---------- */
-function loadAppOptions(){
-  try{
-    const s = localStorage.getItem('app_options'); if(!s) return;
-    const o = JSON.parse(s); if(o.enderecoLista) enderecoLista = Array.from(new Set([...enderecoLista, ...o.enderecoLista])); if(o.prioridadeLista) prioridadeLista = Array.from(new Set([...prioridadeLista, ...o.prioridadeLista])); if(o.destinoLista) destinoLista = Array.from(new Set([...destinoLista, ...o.destinoLista])); 
-  }catch(e){ console.warn(e); }
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td><input type="checkbox" data-id="${id}"></td>
+            <td>${ch.data}</td>
+            <td>${ch.horario}</td>
+            <td style="${ch.urgencia ? 'background:#ffcc00;font-weight:bold;' : ''}">
+                ${ch.paciente}
+            </td>
+            <td>${ch.endereco}</td>
+            <td>${ch.destino}</td>
+            <td>${ch.motorista}</td>
+            <td>${ch.obs}</td>
+        `;
+
+        corpo.appendChild(tr);
+    });
+
+    atualizarSync();
+});
+
+/* --------------------------------------------------------------
+   EXCLUIR SELECIONADOS
+----------------------------------------------------------------*/
+function excluirSelecionados() {
+    document.querySelectorAll("input[type=checkbox]:checked")
+        .forEach(c => {
+            const id = c.dataset.id;
+            db.ref("chamados/" + id).remove();
+        });
+
+    atualizarSync();
 }
 
-/* ---------- init ---------- */
-async function init(){
-  loadAppOptions();
-  const base = localStorage.getItem('logo_base64'); if(base) $('logoImg').src = base;
-  populateSelects();
-  // try import csv once (if not imported)
-  await importCSVOnceToFirebase();
-  // restore atendente name if saved
-  const savedAt = localStorage.getItem('atendente_name');
-  if(savedAt) $('atendente').value = savedAt;
-  $('atendente').addEventListener('change', ()=> localStorage.setItem('atendente_name', $('atendente').value.trim()));
+/* --------------------------------------------------------------
+   CHAT EM TEMPO REAL
+----------------------------------------------------------------*/
+function enviarMsg() {
+    const txt = document.getElementById("chatMsg").value;
+    if (!txt.trim()) return;
+
+    db.ref("chat").push({
+        msg: txt,
+        uid: auth.currentUser.uid,
+        hora: new Date().toLocaleTimeString()
+    });
+
+    document.getElementById("chatMsg").value = "";
 }
-init();
+
+db.ref("chat").on("value", snap => {
+    const area = document.getElementById("chatArea");
+    area.innerHTML = "";
+
+    snap.forEach(item => {
+        const m = item.val();
+        const id = item.key;
+
+        const div = document.createElement("div");
+        div.className = "message";
+
+        div.innerHTML = `
+            <b>${m.hora}</b> — ${m.msg}
+            <div class="msg-actions">
+                ${m.uid === auth.currentUser.uid ? `
+                    <span onclick="editarMsg('${id}', '${m.msg}')">Editar</span>
+                    <span onclick="delMsg('${id}')">Excluir</span>
+                `: ""}
+            </div>
+        `;
+
+        area.appendChild(div);
+    });
+
+    atualizarSync();
+});
+
+function editarMsg(id, atual) {
+    const novo = prompt("Editar mensagem:", atual);
+    if (!novo) return;
+    db.ref("chat/" + id).update({ msg: novo });
+}
+
+function delMsg(id) {
+    db.ref("chat/" + id).remove();
+}
+
 </script>
+
 </body>
 </html>
