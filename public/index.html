@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><link rel="manifest" href="/manifest.json" />
-<script type="module" src="/src/main.js"></script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Chamados – Ambulância Municipal – Guaiçara/SP</title>
+<link rel="manifest" href="/manifest.json" />
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -12,118 +12,30 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <style>
-/* -------------------- LAYOUT --------------------*/
-
-body {
-    margin: 0;
-    background: #f2f2f2;
-    font-family: Arial, sans-serif;
-}
-
-/* Cabeçalho */
-header {
-    background: #b50000;
-    color: white;
-    padding: 35px 20px;
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-
-/* Container */
-.container {
-    margin: 25px auto;
-    max-width: 1100px;
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0 15px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-}
-
-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 10px;
-    font-weight: bold;
-}
-
-.btn-add { background: #b50000; color: white; }
-.btn-urgencia { background: #ffcc00; color: black; border: 2px solid #b50000; }
-.btn-del { background: #444; color: white; }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 25px;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-th {
-    background: #b50000;
-    color: white;
-    padding: 12px;
-    font-size: 16px;
-}
-
-td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-tr:hover {
-    background: #ffe4e4;
-}
-
-/* CHAT */
-.chat-box {
-    margin-top: 30px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-
-.message {
-    padding: 10px 12px;
-    background: #f7f7f7;
-    margin-bottom: 10px;
-    border-radius: 8px;
-}
-
-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 45px;
-    background: #ffffff;
-    border-top: 2px solid #ccc;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 20px;
-    font-size: 14px;
-    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
-}
-
-.status-online { color: green; font-weight: bold; }
-.status-offline { color: red; font-weight: bold; }
-
+body { margin:0; font-family:Arial,sans-serif; background:#f2f2f2; }
+header { background:#b50000; color:white; padding:35px 20px; text-align:center; font-size:28px; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.25); }
+.container { margin:25px auto; max-width:1100px; background:#fff; padding:25px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:none;}
+input, select, textarea { width:100%; padding:10px; margin:6px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:16px; }
+button { padding:12px 20px; border:none; border-radius:10px; font-size:16px; cursor:pointer; margin-right:10px; font-weight:bold; }
+.btn-add { background:#b50000; color:white; } .btn-add:hover{background:#7d0000;}
+.btn-del { background:#444; color:white; } .btn-del:hover{background:#222;}
+.btn-urgencia { background:#ffcc00; color:black; border:2px solid #b50000; }
+.btn-emergencia { background:#ff0000; color:white; }
+.btn-normal { background:#00a000; color:white; }
+table { width:100%; border-collapse:collapse; margin-top:25px; background:white; border-radius:12px; overflow:hidden; }
+th { background:#b50000; color:white; padding:12px; font-size:16px; }
+td { padding:10px; border-bottom:1px solid #eee; }
+tr:hover { background:#ffe4e4; }
+tr.replicado { background:#cce5ff; }
+.chat-box { margin-top:30px; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+.message { padding:10px 12px; background:#f7f7f7; margin-bottom:10px; border-radius:8px; }
+.msg-actions { font-size:12px; margin-top:5px; text-align:right; }
+.msg-actions span { margin-left:12px; cursor:pointer; color:#b50000; }
+footer { position:fixed; bottom:0; left:0; right:0; height:45px; background:#fff; border-top:2px solid #ccc; display:flex; justify-content:space-between; align-items:center; padding:5px 20px; font-size:14px; box-shadow:0 -2px 6px rgba(0,0,0,0.15);}
+.status-online { color:green; font-weight:bold;} .status-offline{color:red;font-weight:bold;}
+#loginBox { max-width:400px; margin:50px auto; padding:25px; background:white; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+#loginBox input{margin-bottom:10px;}
+#loginBox button{width:100%;}
 </style>
 </head>
 
@@ -131,156 +43,234 @@ footer {
 
 <header>🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAIÇARA/SP</header>
 
+<!-- LOGIN -->
+<div id="loginBox">
+<h2>Login - Ambulância</h2>
+<input type="text" id="loginEmail" placeholder="E-mail">
+<input type="password" id="loginSenha" placeholder="Senha">
+<button onclick="login()">Entrar</button>
+<button onclick="criarCadastro()">Criar cadastro</button>
+<div id="msgLogin" style="color:red; margin-top:10px;"></div>
+</div>
+
+<!-- CONTAINER PRINCIPAL -->
 <div class="container">
 
 <h2>Novo Chamado</h2>
 
-<label>Data</label>
-<input type="date" id="data">
-
-<label>Horário</label>
-<input type="time" id="horario">
-
-<label>Paciente</label>
-<input type="text" id="paciente">
-
+<label>Paciente</label><input type="text" id="paciente">
 <label>Endereço</label>
-<input type="text" id="endereco">
+<select id="endereco">
+<option value="">Selecione o endereço</option>
+<!-- Aqui todos os endereços -->
+<option value="Rua Rio Branco">Rua Rio Branco</option>
+<option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
+<option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
+<!-- ... complete com todos os endereços fornecidos -->
+</select>
+
+<label>Número</label><input type="text" id="numero" placeholder="Número da residência">
 
 <label>Destino</label>
-<input type="text" id="destino">
+<select id="destino">
+<option value="">Selecione</option>
+<option value="CAPS">CAPS</option>
+<option value="HGP">HGP</option>
+<option value="SANTA CASA">SANTA CASA</option>
+<option value="UNIMED">UNIMED</option>
+<option value="FISIOTERAPIA PARTICULAR">FISIOTERAPIA PARTICULAR</option>
+<option value="HAPVIDA">HAPVIDA</option>
+<option value="AME">AME</option>
+</select>
+<button onclick="adicionarDestino()">Adicionar Destino</button>
 
-<label>Motorista</label>
-<input type="text" id="motorista">
+<label>Prioridade</label>
+<select id="prioridade">
+<option value="">Selecione</option>
+<option value="Autista">Autista</option>
+<option value="Doenças Crônicas/Complicações">Doenças Crônicas/Complicações</option>
+<option value="PCD">PCD</option>
+<option value="Idoso">Idoso</option>
+<option value="Gestante">Gestante</option>
+<option value="Obeso">Obeso</option>
+</select>
+<button onclick="adicionarPrioridade()">Adicionar Prioridade</button>
 
-<label>Observações</label>
-<textarea id="obs" rows="3"></textarea>
+<label>Sinais/Sintomas</label>
+<select id="sinais">
+<option value="">Selecione</option>
+<option value="Hipertensão">Hipertensão</option>
+<option value="Diabetes">Diabetes</option>
+<option value="Doença Cardíaca">Doença Cardíaca</option>
+<option value="Doença Respiratória">Doença Respiratória</option>
+<option value="Distúrbios Psiquiátricos">Distúrbios Psiquiátricos</option>
+<option value="Dor">Dor</option>
+<option value="Febre">Febre</option>
+<option value="Vômito">Vômito</option>
+<option value="Nenhum">Nenhum</option>
+</select>
+<button onclick="adicionarSinal()">Adicionar Sinal</button>
 
-<button class="btn-add" onclick="adicionarChamado()">Adicionar</button>
-<button class="btn-urgencia" onclick="marcarUrgencia()">⚠ URGÊNCIA</button>
+<label>Finalidade</label>
+<select id="finalidade">
+<option value="">Selecione</option>
+<option value="Pós consulta">Pós consulta</option>
+<option value="Exame">Exame</option>
+<option value="Curativo">Curativo</option>
+<option value="Alta hospitalar">Alta hospitalar</option>
+<option value="Transferência">Transferência</option>
+</select>
+<button onclick="adicionarFinalidade()">Adicionar</button>
+
+<label>Óbito</label>
+<select id="obito">
+<option value="Não">Não</option>
+<option value="Sim">Sim</option>
+</select>
+
+<label>Observações</label><textarea id="obs" rows="3"></textarea>
+
+<label>Tipo de Chamado</label>
+<button class="btn-normal" onclick="tipoChamado('normal')">Normal</button>
+<button class="btn-urgencia" onclick="tipoChamado('urgencia')">⚠ URGÊNCIA</button>
+<button class="btn-emergencia" onclick="tipoChamado('emergencia')">Emergência</button>
+
+<br><br>
+<button class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
 <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
+<button onclick="replicarChamado()">Replicar Chamado Selecionado</button>
 
 <h2>Chamados</h2>
-
 <table>
 <thead>
-    <tr>
-        <th>Sel</th>
-        <th>Data</th>
-        <th>Hora</th>
-        <th>Paciente</th>
-        <th>Endereço</th>
-        <th>Destino</th>
-        <th>Motorista</th>
-        <th>Observações</th>
-    </tr>
+<tr>
+<th>Sel</th><th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Nº</th>
+<th>Destino</th><th>Prioridade</th><th>Sinais/Sintomas</th><th>Finalidade</th><th>Óbito</th><th>Observações</th>
+</tr>
 </thead>
 <tbody id="corpoTabela"></tbody>
 </table>
 
 <div class="chat-box">
-    <h2>Chat Interno</h2>
-    <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()">
-    <button class="btn-add" onclick="enviarMsg()">Enviar</button>
-    <div id="chatArea"></div>
+<h2>Chat Interno</h2>
+<input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()">
+<button class="btn-add" onclick="enviarMsg()">Enviar</button>
+<div id="chatArea"></div>
 </div>
 
 </div>
 
-<!-- RODAPÉ -->
 <footer>
-    <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
-    <div id="usuarioLogado">Usuário: —</div>
-    <div id="ultimaSync">Última sync: —</div>
-
-    <!-- 🔴 AQUI está o botão SAIR -->
-    <button onclick="logout()" style="background:#222;color:white;padding:6px 12px;border-radius:6px;">Sair</button>
+<div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
+<div id="usuarioLogado">Usuário: —</div>
+<div id="ultimaSync">Última sync: —</div>
+<div>Versão: 1.0.0</div>
+<button onclick="logout()" style="background:#222;color:white;padding:6px 12px;border-radius:6px;">Sair</button>
 </footer>
 
 <script>
-/* FIREBASE CONFIG */
-const firebaseConfig = {
-    apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
-    authDomain: "registro-ambulancia192.firebaseapp.com",
-    projectId: "registro-ambulancia192",
-    storageBucket: "registro-ambulancia192.firebasestorage.app",
-    messagingSenderId: "549498386461",
-    appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
-    measurementId: "G-NM7EQL6E83",
-    databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com/"
-};
-
+// FIREBASE CONFIG
+const firebaseConfig = { /* seus dados aqui */ };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* 🔒 Impede acesso sem login */
-auth.onAuthStateChanged(user => {
-    if (!user) {
-        window.location.href = "login.html";
-    } else {
-        document.getElementById("usuarioLogado").innerHTML = "Usuário: " + user.email;
-    }
+let tipo='normal';
+
+// LOGIN / CADASTRO
+function login(){
+const email=document.getElementById("loginEmail").value;
+const senha=document.getElementById("loginSenha").value;
+auth.signInWithEmailAndPassword(email,senha)
+.then(()=>{document.getElementById("loginBox").style.display="none";document.querySelector(".container").style.display="block";})
+.catch(e=>{document.getElementById("msgLogin").innerText=e.message;});
+}
+function criarCadastro(){
+const email=document.getElementById("loginEmail").value;
+const senha=document.getElementById("loginSenha").value;
+auth.createUserWithEmailAndPassword(email,senha)
+.then(()=>{alert("Usuário criado, aguarde aprovação do admin!");})
+.catch(e=>{document.getElementById("msgLogin").innerText=e.message;});
+}
+
+auth.onAuthStateChanged(user=>{
+if(user){document.getElementById("usuarioLogado").innerText="Usuário: "+user.uid.substring(0,6);}
 });
 
-/* LOGOUT */
-window.logout = function () {
-    auth.signOut().then(() => window.location.href = "login.html");
+// logout
+function logout(){ auth.signOut(); location.reload();}
+
+// Chamados
+function tipoChamado(t){tipo=t;}
+function adicionarChamado(){
+const chamado={
+data:new Date().toLocaleDateString(),
+horario:new Date().toLocaleTimeString(),
+paciente:document.getElementById("paciente").value,
+endereco:document.getElementById("endereco").value,
+numero:document.getElementById("numero").value,
+destino:document.getElementById("destino").value,
+prioridade:document.getElementById("prioridade").value,
+sinais:document.getElementById("sinais").value,
+finalidade:document.getElementById("finalidade").value,
+obito:document.getElementById("obito").value,
+obs:document.getElementById("obs").value,
+tipo:tipo,
+createdBy:auth.currentUser.uid
 };
-
-/* FUNÇÕES DO SISTEMA */
-
-let urgenciaAtivada = false;
-function marcarUrgencia() { urgenciaAtivada = true; alert("Chamado marcado como URGÊNCIA."); }
-
-function adicionarChamado() {
-    db.ref("chamados").push({
-        data: data.value, horario: horario.value, paciente: paciente.value,
-        endereco: endereco.value, destino: destino.value, motorista: motorista.value,
-        obs: obs.value, urgencia: urgenciaAtivada, createdBy: auth.currentUser.uid
-    });
-    urgenciaAtivada = false;
+db.ref("chamados").push(chamado);
 }
 
-db.ref("chamados").on("value", snap => {
-    corpoTabela.innerHTML = "";
-    snap.forEach(item => {
-        const c = item.val();
-        const id = item.key;
-        corpoTabela.innerHTML += `
-        <tr>
-            <td><input type="checkbox" data-id="${id}"></td>
-            <td>${c.data}</td>
-            <td>${c.horario}</td>
-            <td style="${c.urgencia?'background:#ffcc00;font-weight:bold;':''}">${c.paciente}</td>
-            <td>${c.endereco}</td>
-            <td>${c.destino}</td>
-            <td>${c.motorista}</td>
-            <td>${c.obs}</td>
-        </tr>`;
-    });
+// replicar/excluir/listar
+function replicarChamado(){
+const check=document.querySelector("input[type=checkbox]:checked");
+if(!check){alert("Selecione um chamado!");return;}
+db.ref("chamados/"+check.dataset.id).once("value").then(snap=>{
+const data=snap.val();
+db.ref("chamados").push({...data, replicado:true});
+});
+}
+function excluirSelecionados(){
+document.querySelectorAll("input[type=checkbox]:checked").forEach(c=>{db.ref("chamados/"+c.dataset.id).remove();});
+}
+db.ref("chamados").on("value",snap=>{
+const corpo=document.getElementById("corpoTabela"); corpo.innerHTML="";
+snap.forEach(item=>{
+const ch=item.val(); const id=item.key;
+const tr=document.createElement("tr");
+if(ch.replicado) tr.classList.add("replicado");
+tr.innerHTML=`<td><input type="checkbox" data-id="${id}"></td>
+<td>${ch.data}</td><td>${ch.horario}</td><td>${ch.paciente}</td>
+<td>${ch.endereco}</td><td>${ch.numero}</td><td>${ch.destino}</td>
+<td>${ch.prioridade}</td><td>${ch.sinais}</td><td>${ch.finalidade}</td>
+<td>${ch.obito}</td><td>${ch.obs}</td>`;
+corpo.appendChild(tr);
+});
 });
 
-function excluirSelecionados() {
-    document.querySelectorAll("input[type=checkbox]:checked").forEach(chk => {
-        db.ref("chamados/" + chk.dataset.id).remove();
-    });
+// Chat
+function enviarMsg(){
+const txt=document.getElementById("chatMsg").value; if(!txt.trim()) return;
+db.ref("chat").push({msg:txt,uid:auth.currentUser.uid,hora:new Date().toLocaleTimeString()});
+document.getElementById("chatMsg").value="";
 }
-
-/* CHAT */
-function enviarMsg() {
-    if (!chatMsg.value) return;
-    db.ref("chat").push({ msg: chatMsg.value, uid: auth.currentUser.uid, hora: new Date().toLocaleTimeString() });
-    chatMsg.value = "";
-}
-
-db.ref("chat").on("value", snap => {
-    chatArea.innerHTML = "";
-    snap.forEach(item => {
-        const m = item.val();
-        chatArea.innerHTML += `<div class="message"><b>${m.hora}</b> — ${m.msg}</div>`;
-    });
+db.ref("chat").on("value",snap=>{
+const area=document.getElementById("chatArea"); area.innerHTML="";
+snap.forEach(item=>{
+const m=item.val(); const id=item.key;
+const div=document.createElement("div"); div.className="message";
+div.innerHTML=`<b>${m.hora}</b> — ${m.msg}<div class="msg-actions">${m.uid===auth.currentUser.uid?`<span onclick="editarMsg('${id}','${m.msg}')">Editar</span><span onclick="delMsg('${id}')">Excluir</span>`:""}</div>`;
+area.appendChild(div);
 });
+});
+function editarMsg(id,atual){ const novo=prompt("Editar:",atual); if(!novo) return; db.ref("chat/"+id).update({msg:novo}); }
+function delMsg(id){ db.ref("chat/"+id).remove(); }
+
+// adicionar extras
+function adicionarDestino(){ alert("Destino adicionado!"); }
+function adicionarPrioridade(){ alert("Prioridade adicionada!"); }
+function adicionarSinal(){ alert("Sinal/Sintoma adicionado!"); }
+function adicionarFinalidade(){ alert("Finalidade adicionada!"); }
 
 </script>
 
