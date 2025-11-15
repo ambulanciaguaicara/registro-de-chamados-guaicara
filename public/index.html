@@ -62,11 +62,53 @@ footer { position:fixed; bottom:0; left:0; right:0; height:45px; background:#fff
 <label>Endereço</label>
 <select id="endereco">
 <option value="">Selecione o endereço</option>
-<!-- Aqui todos os endereços -->
+<!-- TODOS OS ENDEREÇOS -->
 <option value="Rua Rio Branco">Rua Rio Branco</option>
 <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
 <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
-<!-- ... complete com todos os endereços fornecidos -->
+<option value="Rua Pedro Bertolino">Rua Pedro Bertolino</option>
+<option value="Rua Professora Adelaide Baptista Pereira Cruz">Rua Professora Adelaide Baptista Pereira Cruz</option>
+<option value="Av. Roberto Lima Alves">Av. Roberto Lima Alves</option>
+<option value="Rua Rogê Ferreira">Rua Rogê Ferreira</option>
+<option value="Rua Roman Garcia Echeto">Rua Roman Garcia Echeto</option>
+<option value="Rua Rosa Grande">Rua Rosa Grande</option>
+<option value="Rua Rubens Puorro">Rua Rubens Puorro</option>
+<option value="Rua Sabino">Rua Sabino</option>
+<option value="Rua Sebastião de Souza">Rua Sebastião de Souza</option>
+<option value="Rua Pedro Dutra Sobrinho">Rua Pedro Dutra Sobrinho</option>
+<option value="Rua Osvaldo Cruz">Rua Osvaldo Cruz</option>
+<option value="Rua Dirce Camargo Vaz">Rua Dirce Camargo Vaz</option>
+<option value="Rua João Pacífico da Silva">Rua João Pacífico da Silva</option>
+<option value="Rua Ayrton Alves dos Santos">Rua Ayrton Alves dos Santos</option>
+<option value="Rua José Francisco Moco">Rua José Francisco Moco</option>
+<option value="Av. Duque de Caxias">Av. Duque de Caxias</option>
+<option value="Av. Nove de Julho">Av. Nove de Julho</option>
+<option value="Rua Adão Afonso Costa">Rua Adão Afonso Costa</option>
+<option value="Rua Yoshi Sato">Rua Yoshi Sato</option>
+<option value="Rua Sunao Katsuki">Rua Sunao Katsuki</option>
+<option value="Rua Frei Henrique">Rua Frei Henrique</option>
+<option value="Rua José do Patrocínio">Rua José do Patrocínio</option>
+<option value="Rua Tiradentes">Rua Tiradentes</option>
+<option value="Rua Da Amizade">Rua Da Amizade</option>
+<option value="Rua Marechal Deodoro">Rua Marechal Deodoro</option>
+<option value="Rua Ana de Jesus Maia">Rua Ana de Jesus Maia</option>
+<option value="Rua Angelin Garoze">Rua Angelin Garoze</option>
+<option value="Travessa Mariano Martinez">Travessa Mariano Martinez</option>
+<option value="Rua José Gringo dos Santos">Rua José Gringo dos Santos</option>
+<option value="Rua Jovino Faustino Rosa">Rua Jovino Faustino Rosa</option>
+<option value="Rua Hiroshi Suzuki">Rua Hiroshi Suzuki</option>
+<option value="Rua Noé Franco da Rocha">Rua Noé Franco da Rocha</option>
+<option value="Rua Agénor Leme Franco">Rua Agénor Leme Franco</option>
+<option value="Rua Ana Carlotta Arruda Paula">Rua Ana Carlotta Arruda Paula</option>
+<option value="Rua Luiz Caetano">Rua Luiz Caetano</option>
+<option value="Rua Luiz Esperança">Rua Luiz Esperança</option>
+<option value="Rua Ercilio Lima dos Santos">Rua Ercilio Lima dos Santos</option>
+<option value="Rua Orlando Jorge">Rua Orlando Jorge</option>
+<option value="Rua Dirce Camargo">Rua Dirce Camargo</option>
+<option value="Rua Mario Pereira da Silva">Rua Mario Pereira da Silva</option>
+<option value="Rua Antonio Monteiro Paschoal">Rua Antonio Monteiro Paschoal</option>
+<option value="Rua Manoel dos Reis Soares">Rua Manoel dos Reis Soares</option>
+<option value="Rua Luiz Caetano da Silva">Rua Luiz Caetano da Silva</option>
 </select>
 
 <label>Número</label><input type="text" id="numero" placeholder="Número da residência">
@@ -170,11 +212,10 @@ footer { position:fixed; bottom:0; left:0; right:0; height:45px; background:#fff
 
 <script>
 // FIREBASE CONFIG
-const firebaseConfig = { /* seus dados aqui */ };
+const firebaseConfig = { /* COLE SEUS DADOS AQUI */ };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
-
 let tipo='normal';
 
 // LOGIN / CADASTRO
@@ -192,12 +233,9 @@ auth.createUserWithEmailAndPassword(email,senha)
 .then(()=>{alert("Usuário criado, aguarde aprovação do admin!");})
 .catch(e=>{document.getElementById("msgLogin").innerText=e.message;});
 }
-
 auth.onAuthStateChanged(user=>{
 if(user){document.getElementById("usuarioLogado").innerText="Usuário: "+user.uid.substring(0,6);}
 });
-
-// logout
 function logout(){ auth.signOut(); location.reload();}
 
 // Chamados
@@ -216,6 +254,7 @@ finalidade:document.getElementById("finalidade").value,
 obito:document.getElementById("obito").value,
 obs:document.getElementById("obs").value,
 tipo:tipo,
+replicado:false,
 createdBy:auth.currentUser.uid
 };
 db.ref("chamados").push(chamado);
