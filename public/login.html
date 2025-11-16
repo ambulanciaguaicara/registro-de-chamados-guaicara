@@ -6,31 +6,91 @@
 <link rel="manifest" href="/manifest.json" />
 <script type="module" src="/src/main.js"></script>
 <style>
-body { font-family: Arial; background:#f2f2f2; display:flex; justify-content:center; align-items:center; height:100vh; }
-.box { background:white; padding:30px; border-radius:10px; width:300px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.15); }
-input { width:100%; padding:10px; margin:10px 0; border-radius:6px; border:1px solid #ccc; }
-button { width:100%; padding:10px; background:#b50000; color:white; border:none; border-radius:8px; cursor:pointer; font-size:18px; }
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2 url('/img/fundo.jpg') no-repeat center bottom;
+    background-size: contain;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.box {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background: #b50000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+}
+button:hover {
+    background: #7d0000;
+}
 </style>
 </head>
 <body>
 <div class="box">
-<h2>🚑 Registro de Chamados</h2>
-<input type="email" id="email" placeholder="E-mail">
-<input type="password" id="senha" placeholder="Senha">
-<button onclick="login()">Entrar</button>
+    <h2>🚑 Registro de Chamados</h2>
+    <input type="email" id="email" placeholder="E-mail">
+    <input type="password" id="senha" placeholder="Senha">
+    <div id="statusMsg" style="color:red; margin-bottom:10px;"></div>
+    <button id="loginBtn">Entrar</button>
 </div>
 
 <script type="module">
-import { auth, signInWithEmailAndPassword } from "./src/firebase.js";
+import { auth, db, signInWithEmailAndPassword } from "./firebase.js";
 
-window.login = function () {
+const loginBtn = document.getElementById("loginBtn");
+const statusMsg = document.getElementById("statusMsg");
+
+loginBtn.addEventListener("click", async () => {
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
 
-    auth.onAuthStateChanged(async user=>{
-    if(user){
-        const uid = user.uid;
+    if(!email || !senha){
+        statusMsg.innerText = "Preencha e-mail e senha.";
+        return;
+    }
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const uid = userCredential.user.uid;
+
         const snapshot = await db.ref('users/' + uid).once('value');
+        const userData = snapshot.val();
+
+        if(userData && userData.ativo){
+            window.location.href = "index.html";
+        } else {
+            statusMsg.innerText = "Usuário não autorizado.";
+            auth.signOut();
+        }
+    } catch(error){
+        statusMsg.innerText = error.message;
+    }
+});
+
+// Verifica se já está logado
+auth.onAuthStateChanged(async user => {
+    if(user){
+        const snapshot = await db.ref('users/' + user.uid).once('value');
         const userData = snapshot.val();
         if(userData && userData.ativo){
             window.location.href="index.html";
@@ -39,7 +99,6 @@ window.login = function () {
         }
     }
 });
-
-        // Redireciona apenas se estiver ativo
-        window.location.href = "index.html";
-    })
+</script>
+</body>
+</html>
