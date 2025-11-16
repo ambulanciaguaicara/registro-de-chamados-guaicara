@@ -3,99 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login – Registro de Chamados Ambulância</title>
+<title>Registro de Chamados de Ambulância – Login</title>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
 <style>
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: Arial, sans-serif;
-    background: url('https://drive.google.com/uc?id=13dL_ubLFJYCoCYEhuqnCgKuZF4cfDIxZ') no-repeat center center fixed;
-    background-size: cover;
+* {
+    box-sizing: border-box;
 }
 
-.overlay {
-    background: rgba(0,0,0,0.55);
-    height: 100%;
-    width: 100%;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff url("img/fundo.png") no-repeat center bottom fixed;
+    background-size: contain;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
 }
 
-.login-box {
+.container {
+    width: 380px;
     background: #fff;
-    padding: 30px 25px;
-    border-radius: 15px;
-    width: 350px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0px 6px 20px rgba(0,0,0,0.25);
     text-align: center;
 }
 
-.login-box h1 {
-    color: #b50000;
+.logo img {
+    width: 120px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 20px;
+    color: #a00000;
     margin-bottom: 25px;
-    font-size: 24px;
     font-weight: bold;
 }
 
-.login-box label {
+label {
     display: block;
     text-align: left;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-.login-box input {
+input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    border-radius: 10px;
+    border: 1px solid #aaa;
     font-size: 15px;
 }
 
-.login-box button {
+button {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    border: none;
+    padding: 14px;
     background: #b50000;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
+    border: none;
+    color: white;
+    font-size: 17px;
+    border-radius: 10px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
-.login-box button:hover {
+button:hover {
     background: #7d0000;
 }
 
-.login-box .setor {
-    margin-bottom: 15px;
-    font-weight: bold;
-    font-size: 16px;
-    color: #333;
-}
-
-.login-box .novo-cadastro {
-    display: inline-block;
-    margin-top: 10px;
-    font-size: 14px;
+.criar {
+    margin-top: 12px;
     color: #b50000;
     cursor: pointer;
+    font-size: 15px;
+    text-decoration: none;
 }
-.login-box .novo-cadastro:hover {
+
+.criar:hover {
     text-decoration: underline;
 }
 
-.status-msg {
+.status {
     font-size: 14px;
     color: red;
     margin-bottom: 10px;
@@ -104,22 +99,24 @@ body, html {
 </head>
 
 <body>
-<div class="overlay">
-<div class="login-box">
-    <h1>Registro de Chamados – Ambulância</h1>
-    <div class="status-msg" id="statusMsg"></div>
+
+<div class="container">
+    <div class="logo">
+        <img src="img/logo.png" alt="Logo Prefeitura">
+    </div>
+
+    <h2>Registro de Chamados de Ambulância</h2>
+
+    <div class="status" id="statusMsg"></div>
 
     <label>Login</label>
-    <input type="text" id="email" placeholder="Digite seu login">
+    <input type="email" id="email" placeholder="Digite seu login">
 
     <label>Senha</label>
     <input type="password" id="senha" placeholder="Digite sua senha">
 
-    <div class="setor">Setor: Ambulância</div>
-
     <button onclick="login()">Entrar</button>
-    <div class="novo-cadastro" onclick="criarCadastro()">Criar novo cadastro</div>
-</div>
+    <div class="criar" onclick="criarCadastro()">Criar usuário</div>
 </div>
 
 <script>
@@ -149,30 +146,27 @@ function login() {
     }
 
     auth.signInWithEmailAndPassword(email, senha)
-        .then(userCredential => {
-            window.location.href = "index.html";
-        })
-        .catch(error => {
-            status.innerText = error.message;
-        });
+        .then(() => window.location.href = "index.html")
+        .catch(error => status.innerText = error.message);
 }
 
 function criarCadastro() {
     const email = prompt("Digite o email do novo usuário:");
     const senha = prompt("Digite a senha:");
+
     if(!email || !senha) return alert("Cadastro cancelado.");
+
     auth.createUserWithEmailAndPassword(email, senha)
-        .then(() => alert("Usuário criado! Aguarde aprovação do admin."))
+        .then(() => alert("Usuário criado com sucesso."))
         .catch(error => alert(error.message));
 }
 
-// Redireciona se já logado
+// Auto redirecionamento se já logado
 auth.onAuthStateChanged(user=>{
     if(user){
         window.location.href="index.html";
     }
 });
 </script>
-
 </body>
 </html>
