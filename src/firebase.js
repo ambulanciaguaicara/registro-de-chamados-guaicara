@@ -1,3 +1,20 @@
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword 
+} from "firebase/auth";
+
+import { 
+  getDatabase, 
+  ref, 
+  push, 
+  onValue, 
+  update, 
+  remove 
+} from "firebase/database";
+
+// Configuração usando variáveis do Vercel (.env)
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
@@ -9,18 +26,6 @@ const firebaseConfig = {
   databaseURL: import.meta.env.VITE_DATABASE_URL
 };
 
-
-// Configuração usando variáveis do Vercel
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY,
-  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_APP_ID,
-  measurementId: import.meta.env.VITE_MEASUREMENT_ID
-};
-
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
@@ -30,37 +35,33 @@ export function login(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
 }
 
-// Criar conta (botão "Criar novo usuário")
+// Criar novo usuário
 export function register(email, password) {
-  return createUserWithEmailAndPassword(auth, email, password);
+  return createUserWithEmailAndPassword(auth, password);
 }
 
-// 🔥 SALVAR CHAMADO (grava quem criou)
+// Salvar chamado
 export function salvarChamado(data) {
-  const chamadoRef = ref(db, "chamados");
-  return push(chamadoRef, {
+  return push(ref(db, "chamados"), {
     ...data,
     createdBy: auth.currentUser.uid,
     createdAt: new Date().toISOString()
   });
 }
 
-// 🔥 OUVIR CHAMADOS EM TEMPO REAL
+// Ouvir chamados em tempo real
 export function ouvirChamados(callback) {
-  const chamadosRef = ref(db, "chamados");
-  onValue(chamadosRef, (snapshot) => {
+  onValue(ref(db, "chamados"), (snapshot) => {
     callback(snapshot.val());
   });
 }
 
-// 🔥 EDITAR SOMENTE SE FOI O CRIADOR
-export async function editarChamado(id, updates) {
-  const chamadoRef = ref(db, `chamados/${id}`);
-  return update(chamadoRef, updates);
+// Editar chamado
+export function editarChamado(id, updates) {
+  return update(ref(db, `chamados/${id}`), updates);
 }
 
-// 🔥 EXCLUIR (somente criador)
+// Excluir chamado
 export function deletarChamado(id) {
-  const chamadoRef = ref(db, `chamados/${id}`);
-  return remove(chamadoRef);
+  return remove(ref(db, `chamados/${id}`));
 }
