@@ -1,0 +1,70 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: #ffffff;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 380px;
+    margin: 100px auto;
+    text-align: center;
+}
+
+.logo {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #B00000;
+    margin-bottom: 25px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background: #B00000;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #7D0000;
+}
+
+.mensagem {
+    font-size: 14px;
+    color: #b00000;
+    margin-bottom: 10px;
+}
+
+footer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.footer-img {
+    width: 200px;
+    opacity: 0.8;
+}
