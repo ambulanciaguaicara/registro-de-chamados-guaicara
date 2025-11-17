@@ -1,68 +1,31 @@
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword 
-} from "firebase/auth";
-import { 
-  getDatabase, 
-  ref, 
-  push, 
-  onValue, 
-  update, 
-  remove 
-} from "firebase/database";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { getDatabase, ref, push, onValue, update, remove } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY,
-  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_APP_ID,
-  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
-  databaseURL: import.meta.env.VITE_DATABASE_URL
+  apiKey: "SUA_API_KEY",
+  authDomain: "SUA_AUTH_DOMAIN",
+  databaseURL: "SUA_DATABASE_URL",
+  projectId: "SUA_PROJECT_ID",
+  storageBucket: "SUA_STORAGE_BUCKET",
+  messagingSenderId: "SUA_MESSAGING_SENDER_ID",
+  appId: "SUA_APP_ID",
+  measurementId: "SUA_MEASUREMENT_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
 
-// Login
-export function login(email, password) {
-  return signInWithEmailAndPassword(auth, email, password);
+// Funções exportadas para uso no main.js
+export function login(email, senha) {
+  return signInWithEmailAndPassword(auth, email, senha);
 }
 
-// Criar conta
-export function register(email, password) {
-  return createUserWithEmailAndPassword(auth, email, password);
+export function register(email, senha) {
+  return createUserWithEmailAndPassword(auth, senha);
 }
 
-// Salvar chamado
-export function salvarChamado(data) {
-  if (!auth.currentUser) throw new Error("Usuário não autenticado.");
-  return push(ref(db, "chamados"), {
-    ...data,
-    createdBy: auth.currentUser.uid,
-    createdAt: new Date().toISOString()
-  });
-}
-
-// Ouvir chamados
-export function ouvirChamados(callback) {
-  onValue(ref(db, "chamados"), snapshot => {
-    callback(snapshot.val() || {});
-  });
-}
-
-// Editar chamado
-export function editarChamado(id, updates) {
-  if (!auth.currentUser) throw new Error("Usuário não autenticado.");
-  return update(ref(db, `chamados/${id}`), updates);
-}
-
-// Deletar chamado
-export function deletarChamado(id) {
-  if (!auth.currentUser) throw new Error("Usuário não autenticado.");
-  return remove(ref(db, `chamados/${id}`));
+export function logout() {
+  return signOut(auth);
 }
