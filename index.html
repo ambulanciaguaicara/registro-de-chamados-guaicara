@@ -1,53 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel – Registro de Chamados</title>
-<link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel – Registro de Chamados</title>
+  <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
+  <div class="container">
+    <h2>Painel de Chamados</h2>
+    <p>Bem-vindo! Aqui você pode registrar e acompanhar os chamados de ambulância.</p>
+    <button onclick="logout()">Sair</button>
+    <div id="chamados"></div>
+  </div>
 
-<div class="container">
-  <h2>Painel de Chamados</h2>
-  <p>Bem-vindo! Aqui você pode registrar e acompanhar os chamados de ambulância.</p>
-  <button onclick="logout()">Sair</button>
+  <script type="module">
+    import { auth, ouvirChamados } from "./src/firebase.js";
 
-  <div id="chamados"></div>
-</div>
-
-<script type="module">
-import { auth, db, ouvirChamados } from "/src/firebase.js";
-import { ref, onValue } from "firebase/database";
-
-function logout(){
-  auth.signOut().then(()=> window.location.href = "login.html");
-}
-
-auth.onAuthStateChanged(user=>{
-  if(!user){
-    window.location.href = "login.html";
-  } else {
-    carregarChamados();
-  }
-});
-
-function carregarChamados(){
-  const lista = document.getElementById("chamados");
-  lista.innerHTML = "<h3>Chamados em aberto:</h3>";
-
-  ouvirChamados(dados=>{
-    lista.innerHTML = "<h3>Chamados em aberto:</h3>";
-    if(dados){
-      Object.keys(dados).forEach(id=>{
-        const chamado = dados[id];
-        lista.innerHTML += `<p>🚑 ${chamado.descricao || "Sem descrição"} – criado por ${chamado.createdBy}</p>`;
-      });
-    } else {
-      lista.innerHTML += "<p>Nenhum chamado registrado.</p>";
+    function logout(){
+      auth.signOut().then(()=> window.location.href = "login.html");
     }
-  });
-}
-</script>
+
+    auth.onAuthStateChanged(user=>{
+      if(!user){
+        window.location.href = "login.html";
+      } else {
+        carregarChamados();
+      }
+    });
+
+    function carregarChamados(){
+      const lista = document.getElementById("chamados");
+      lista.innerHTML = "<h3>Chamados em aberto:</h3>";
+
+      ouvirChamados(dados=>{
+        lista.innerHTML = "<h3>Chamados em aberto:</h3>";
+        if(dados){
+          Object.keys(dados).forEach(id=>{
+            const chamado = dados[id];
+            lista.innerHTML += `<p>🚑 ${chamado.descricao || "Sem descrição"} – criado por ${chamado.createdBy}</p>`;
+          });
+        } else {
+          lista.innerHTML += "<p>Nenhum chamado registrado.</p>";
+        }
+      });
+    }
+  </script>
 </body>
 </html>
