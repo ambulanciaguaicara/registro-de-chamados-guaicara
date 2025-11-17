@@ -15,7 +15,7 @@ btnLogin.addEventListener("click", async () => {
   try {
     await login(email, senha);
     status.innerText = "✅ Login realizado com sucesso. Redirecionando...";
-    setTimeout(() => window.location.href = "index.html", 1000);
+    setTimeout(() => window.location.href = "/index.html", 1000);
   } catch (err) {
     switch (err.code) {
       case "auth/user-not-found":
@@ -36,7 +36,7 @@ btnLogin.addEventListener("click", async () => {
 // Se já estiver logado e abrir login.html, manda direto para painel
 auth.onAuthStateChanged(user => {
   if (user && window.location.pathname.endsWith("login.html")) {
-    window.location.href = "index.html";
+    window.location.href = "/index.html";
   }
 });
 
