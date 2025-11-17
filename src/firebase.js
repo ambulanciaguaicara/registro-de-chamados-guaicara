@@ -1,6 +1,17 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { getDatabase, ref, push, onValue, update, remove } from "firebase/database";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword 
+} from "firebase/auth";
+import { 
+  getDatabase, 
+  ref, 
+  push, 
+  onValue, 
+  update, 
+  remove 
+} from "firebase/database";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -29,6 +40,9 @@ export function register(email, password) {
 
 // 🔹 Salvar chamado
 export function salvarChamado(data) {
+  if (!auth.currentUser) {
+    throw new Error("Usuário não autenticado.");
+  }
   const chamadoRef = ref(db, "chamados");
   return push(chamadoRef, {
     ...data,
@@ -41,18 +55,24 @@ export function salvarChamado(data) {
 export function ouvirChamados(callback) {
   const chamadosRef = ref(db, "chamados");
   onValue(chamadosRef, snapshot => {
-    callback(snapshot.val());
+    callback(snapshot.val() || {});
   });
 }
 
 // 🔹 Editar chamado (somente criador)
 export async function editarChamado(id, updates) {
+  if (!auth.currentUser) {
+    throw new Error("Usuário não autenticado.");
+  }
   const chamadoRef = ref(db, `chamados/${id}`);
   return update(chamadoRef, updates);
 }
 
 // 🔹 Deletar chamado (somente criador)
 export function deletarChamado(id) {
+  if (!auth.currentUser) {
+    throw new Error("Usuário não autenticado.");
+  }
   const chamadoRef = ref(db, `chamados/${id}`);
   return remove(chamadoRef);
 }
