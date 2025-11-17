@@ -45,8 +45,4 @@ body, html {
     background: #b50000;
     color: #fff;
     font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-}
-
-.login-box button:hover {
+    cursor:
