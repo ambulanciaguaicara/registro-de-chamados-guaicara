@@ -1,51 +1,102 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel – Registro de Chamados</title>
-  <!-- CSS agora vem de /public/css/styles.css -->
-  <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Chamados - Ambulância Municipal - Guaiçara/SP</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
+  <header>
+    REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAIÇARA/SP
+  </header>
+
   <div class="container">
-    <h2>Painel de Chamados</h2>
-    <p>Bem-vindo! Aqui você pode registrar e acompanhar os chamados de ambulância.</p>
-    <button onclick="logout()">Sair</button>
-    <div id="chamados"></div>
+    <h2>Novo Chamado</h2>
+
+    <label for="data">Data</label>
+    <input type="date" id="data" />
+
+    <label for="horario">Horário</label>
+    <input type="time" id="horario" />
+
+    <label for="paciente">Paciente</label>
+    <input type="text" id="paciente" />
+
+    <label for="endereco">Endereço</label>
+    <select id="endereco">
+      <option value="">Selecione o endereço</option>
+      <!-- Endereços de Guaíçara inseridos dinamicamente -->
+    </select>
+
+    <label for="destino">Destino</label>
+    <select id="destino">
+      <option value="">Selecione o destino</option>
+      <option value="CAPS">CAPS</option>
+      <option value="HGP">HGP</option>
+      <option value="SANTA CASA">SANTA CASA</option>
+      <option value="UNIMED">UNIMED</option>
+      <option value="FISIOTERAPIA PARTICULAR">FISIOTERAPIA PARTICULAR</option>
+      <option value="HAPVIDA">HAPVIDA</option>
+      <option value="AME">AME</option>
+    </select>
+    <button class="btn-add" onclick="adicionarDestino()">+ Adicionar destino</button>
+
+    <label for="motorista">Motorista</label>
+    <input type="text" id="motorista" />
+
+    <label for="obs">Observações</label>
+    <textarea id="obs" rows="3"></textarea>
+
+    <div style="margin-bottom: 15px;">
+      <button class="btn-normal" onclick="setPrioridade('normal')">Normal</button>
+      <button class="btn-urgencia" onclick="setPrioridade('urgencia')">URGÊNCIA</button>
+      <button class="btn-emergencia" onclick="setPrioridade('emergencia')">EMERGÊNCIA</button>
+    </div>
+
+    <button class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
+    <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
+    <button class="btn-add" onclick="replicarChamadoSelecionado()">Replicar Chamado</button>
+    <button class="btn-add" onclick="gerarRelatorioMensal()">Gerar Relatório Mensal</button>
+
+    <h2>Chamados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sel</th>
+          <th>Data</th>
+          <th>Hora</th>
+          <th>Paciente</th>
+          <th>Endereço</th>
+          <th>Destino</th>
+          <th>Motorista</th>
+          <th>Prioridade</th>
+          <th>Observações</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabela"></tbody>
+    </table>
+
+    <canvas id="graficoMensal" style="max-width: 100%; margin-top: 20px;"></canvas>
+
+    <div class="chat-box">
+      <h2>Chat Interno</h2>
+      <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key === 'Enter') enviarMsg()" />
+      <button class="btn-add" onclick="enviarMsg()">Enviar</button>
+      <div id="chatArea"></div>
+    </div>
   </div>
 
-  <script type="module">
-    import { auth, ouvirChamados } from "./src/firebase.js";
+  <footer>
+    <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
+    <div id="usuarioLogado">Usuário: -</div>
+    <div id="ultimaSync">Última sync: -</div>
+    <button onclick="logout()" style="background:#222;color:white;padding:6px 12px;border-radius:6px;">Sair</button>
+  </footer>
 
-    function logout(){
-      auth.signOut().then(()=> window.location.href = "/login.html");
-    }
-
-    auth.onAuthStateChanged(user=>{
-      if(!user){
-        window.location.href = "/login.html";
-      } else {
-        carregarChamados();
-      }
-    });
-
-    function carregarChamados(){
-      const lista = document.getElementById("chamados");
-      lista.innerHTML = "<h3>Chamados em aberto:</h3>";
-
-      ouvirChamados(dados=>{
-        lista.innerHTML = "<h3>Chamados em aberto:</h3>";
-        if(dados){
-          Object.keys(dados).forEach(id=>{
-            const chamado = dados[id];
-            lista.innerHTML += `<p>🚑 ${chamado.descricao || "Sem descrição"} – criado por ${chamado.createdBy}</p>`;
-          });
-        } else {
-          lista.innerHTML += "<p>Nenhum chamado registrado.</p>";
-        }
-      });
-    }
-  </script>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
