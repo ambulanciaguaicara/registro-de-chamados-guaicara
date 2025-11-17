@@ -3,82 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registro de Chamados de Ambulância – Login</title>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
+<title>Painel – Registro de Chamados</title>
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<div class="login-container">
-    <img src="img/logo.png" class="logo" alt="Logo Prefeitura">
-    <h1>Registro de Chamados de Ambulância</h1>
+<div class="container">
+  <h2>Painel de Chamados</h2>
+  <p>Bem-vindo! Aqui você pode registrar e acompanhar os chamados de ambulância.</p>
+  <button onclick="logout()">Sair</button>
 
-    <div id="mensagem" class="mensagem"></div>
-
-    <input type="email" id="email" placeholder="Digite seu login">
-    <input type="password" id="senha" placeholder="Digite sua senha">
-
-    <button onclick="login()">Entrar</button>
-    <div class="criar" onclick="criarCadastro()">Criar usuário</div>
+  <div id="chamados"></div>
 </div>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
-  authDomain: "registro-ambulancia192.firebaseapp.com",
-  projectId: "registro-ambulancia192",
-  storageBucket: "registro-ambulancia192.firebasestorage.app",
-  messagingSenderId: "549498386461",
-  appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
-  measurementId: "G-NM7EQL6E83",
-  databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com/"
-};
+<script type="module">
+import { auth, db, ouvirChamados } from "/src/firebase.js";
+import { ref, onValue } from "firebase/database";
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-function escrever(msg) {
-    document.getElementById("mensagem").textContent = msg;
+function logout(){
+  auth.signOut().then(()=> window.location.href = "login.html");
 }
 
-function login(){
-    let email = document.getElementById("email").value.trim();
-    let senha = document.getElementById("senha").value.trim();
-
-    if(!email || !senha){
-        escrever("📌 Preencha todos os campos.");
-        return;
-    }
-
-    auth.signInWithEmailAndPassword(email, senha)
-        .then(() => {
-            escrever("✅ Acesso permitido. Aguarde...");
-            setTimeout(() => window.location.href = "painel.html", 1000);
-        })
-        .catch(error => escrever("⚠️ Erro: " + error.message));
-}
-
-function criarCadastro() {
-    const email = prompt("Digite o email do novo usuário:");
-    const senha = prompt("Digite a senha:");
-
-    if(!email || !senha) return alert("Cadastro cancelado.");
-
-    auth.createUserWithEmailAndPassword(email, senha)
-        .then(() => alert("Usuário criado com sucesso."))
-        .catch(error => alert(error.message));
-}
-
-// Se já estiver logado e abrir login.html, manda direto para painel
 auth.onAuthStateChanged(user=>{
-    if(user && window.location.pathname.endsWith("login.html")){
-        window.location.href = "painel.html";
-    }
+  if(!user){
+    window.location.href = "login.html";
+  } else {
+    carregarChamados();
+  }
 });
+
+function carregarChamados(){
+  const lista = document.getElementById("chamados");
+  lista.innerHTML = "<h3>Chamados em aberto:</h3>";
+
+  ouvirChamados(dados=>{
+    lista.innerHTML = "<h3>Chamados em aberto:</h3>";
+    if(dados){
+      Object.keys(dados).forEach(id=>{
+        const chamado = dados[id];
+        lista.innerHTML += `<p>🚑 ${chamado.descricao || "Sem descrição"} – criado por ${chamado.createdBy}</p>`;
+      });
+    } else {
+      lista.innerHTML += "<p>Nenhum chamado registrado.</p>";
+    }
+  });
+}
 </script>
 </body>
 </html>
