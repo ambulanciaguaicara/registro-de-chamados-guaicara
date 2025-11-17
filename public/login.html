@@ -77,7 +77,7 @@ loginBtn.addEventListener("click", async () => {
         const userData = snapshot.val();
 
         if(userData && userData.ativo){
-            window.location.href = "index.html";
+        then(()=> window.location.href = "paine.html"// "nāo index.html";
         } else {
             statusMsg.innerText = "Usuário não autorizado.";
             auth.signOut();
@@ -90,12 +90,13 @@ loginBtn.addEventListener("click", async () => {
 // Verifica se já está logado
 auth.onAuthStateChanged(async user => {
     if(user){
+        // se já está logado, manda para painel 
         const snapshot = await db.ref('users/' + user.uid).once('value');
         const userData = snapshot.val();
         if(userData && userData.ativo){
-            window.location.href="index.html";
-        } else {
-            auth.signOut();
+            window.location.pathname.endsWith("login.html")){
+                window.location.href ="painel.html";
+            }
         }
     }
 });
