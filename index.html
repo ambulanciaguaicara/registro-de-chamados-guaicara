@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="/css/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
   <header>
     REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAIÇARA/SP
@@ -29,7 +28,6 @@
     <label for="endereco">Endereço</label>
     <select id="endereco">
       <option value="">Selecione o endereço</option>
-      <!-- Endereços de Guaíçara inseridos dinamicamente -->
     </select>
 
     <label for="destino">Destino</label>
@@ -97,14 +95,16 @@
     <button onclick="logout()" style="background:#222;color:white;padding:6px 12px;border-radius:6px;">Sair</button>
   </footer>
 
+  <!-- main.js deve existir em /src/main.js e exportar as funções/ligar listeners -->
   <script type="module" src="/src/main.js"></script>
-</body>
-  <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js")
-      .then(() => console.log("Service Worker registrado com sucesso"))
-      .catch(err => console.error("Erro ao registrar Service Worker:", err));
-  }
-</script>
 
+  <!-- registrar service worker (mantido dentro do body, antes do fechamento) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('Service Worker registrado com sucesso'))
+        .catch(err => console.error('Erro ao registrar Service Worker:', err));
+    }
+  </script>
+</body>
 </html>
