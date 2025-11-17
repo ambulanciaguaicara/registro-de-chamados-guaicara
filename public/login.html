@@ -3,20 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel – Registro de Chamados de Ambulância</title>
-
+<title>Login – Registro de Chamados</title>
 <link rel="stylesheet" href="css/styles.css">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <div class="logo">
-        <img src="img/logo.png" alt="Logo Prefeitura" width="120">
-    </div>
+<div class="login-overlay">
+  <div class="login-box">
+    <img src="/img/logo.png" alt="Logo Prefeitura" class="logo">
+    <h1>Registro de Chamados de Ambulância</h1>
 
-    <h2>Painel de Cham
+    <div id="statusMsg" class="mensagem"></div>
+
+    <input type="email" id="email" placeholder="Digite seu login">
+    <input type="password" id="senha" placeholder="Digite sua senha">
+
+    <button id="btnLogin">Entrar</button>
+    <div class="criar" onclick="criarCadastro()">Criar usuário</div>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
