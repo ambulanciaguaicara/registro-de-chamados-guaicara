@@ -1,20 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword 
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, push, onValue, update, remove } from "firebase/database";
 
-import { 
-  getDatabase, 
-  ref, 
-  push, 
-  onValue, 
-  update, 
-  remove 
-} from "firebase/database";
-
-// Configuração usando variáveis do Vercel (.env)
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
@@ -30,38 +17,42 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
 
-// Login
+// 🔹 Login
 export function login(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
 }
 
-// Criar novo usuário
+// 🔹 Criar conta (somente admin)
 export function register(email, password) {
-  return createUserWithEmailAndPassword(auth, password);
+  return createUserWithEmailAndPassword(auth, email, password);
 }
 
-// Salvar chamado
+// 🔹 Salvar chamado
 export function salvarChamado(data) {
-  return push(ref(db, "chamados"), {
+  const chamadoRef = ref(db, "chamados");
+  return push(chamadoRef, {
     ...data,
     createdBy: auth.currentUser.uid,
     createdAt: new Date().toISOString()
   });
 }
 
-// Ouvir chamados em tempo real
+// 🔹 Ouvir chamados em tempo real
 export function ouvirChamados(callback) {
-  onValue(ref(db, "chamados"), (snapshot) => {
+  const chamadosRef = ref(db, "chamados");
+  onValue(chamadosRef, snapshot => {
     callback(snapshot.val());
   });
 }
 
-// Editar chamado
-export function editarChamado(id, updates) {
-  return update(ref(db, `chamados/${id}`), updates);
+// 🔹 Editar chamado (somente criador)
+export async function editarChamado(id, updates) {
+  const chamadoRef = ref(db, `chamados/${id}`);
+  return update(chamadoRef, updates);
 }
 
-// Excluir chamado
+// 🔹 Deletar chamado (somente criador)
 export function deletarChamado(id) {
-  return remove(ref(db, `chamados/${id}`));
+  const chamadoRef = ref(db, `chamados/${id}`);
+  return remove(chamadoRef);
 }
