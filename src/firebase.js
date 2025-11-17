@@ -28,51 +28,41 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
 
-// 🔹 Login
+// Login
 export function login(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
 }
 
-// 🔹 Criar conta (somente admin)
+// Criar conta
 export function register(email, password) {
   return createUserWithEmailAndPassword(auth, email, password);
 }
 
-// 🔹 Salvar chamado
+// Salvar chamado
 export function salvarChamado(data) {
-  if (!auth.currentUser) {
-    throw new Error("Usuário não autenticado.");
-  }
-  const chamadoRef = ref(db, "chamados");
-  return push(chamadoRef, {
+  if (!auth.currentUser) throw new Error("Usuário não autenticado.");
+  return push(ref(db, "chamados"), {
     ...data,
     createdBy: auth.currentUser.uid,
     createdAt: new Date().toISOString()
   });
 }
 
-// 🔹 Ouvir chamados em tempo real
+// Ouvir chamados
 export function ouvirChamados(callback) {
-  const chamadosRef = ref(db, "chamados");
-  onValue(chamadosRef, snapshot => {
+  onValue(ref(db, "chamados"), snapshot => {
     callback(snapshot.val() || {});
   });
 }
 
-// 🔹 Editar chamado (somente criador)
-export async function editarChamado(id, updates) {
-  if (!auth.currentUser) {
-    throw new Error("Usuário não autenticado.");
-  }
-  const chamadoRef = ref(db, `chamados/${id}`);
-  return update(chamadoRef, updates);
+// Editar chamado
+export function editarChamado(id, updates) {
+  if (!auth.currentUser) throw new Error("Usuário não autenticado.");
+  return update(ref(db, `chamados/${id}`), updates);
 }
 
-// 🔹 Deletar chamado (somente criador)
+// Deletar chamado
 export function deletarChamado(id) {
-  if (!auth.currentUser) {
-    throw new Error("Usuário não autenticado.");
-  }
-  const chamadoRef = ref(db, `chamados/${id}`);
-  return remove(chamadoRef);
+  if (!auth.currentUser) throw new Error("Usuário não autenticado.");
+  return remove(ref(db, `chamados/${id}`));
 }
