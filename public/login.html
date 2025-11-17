@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login – Registro de Chamados</title>
-  <!-- CSS agora vem de /public/css/styles.css -->
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
   <div class="login-overlay">
     <div class="login-box">
-      <img src="/img/logo.png" alt="Logo Prefeitura" class="logo">
-      <h1>Registro de Chamados de Ambulância</h1>
+      <img src="/img/logo.png" alt="Logo Prefeitura" class="logo" />
+      <h1>Serviço de Atendimento de Ambulância</h1>
+      <h2>Guaíçara-SP</h2>
 
       <div id="statusMsg" class="mensagem"></div>
 
-      <input type="email" id="email" placeholder="Digite seu login">
-      <input type="password" id="senha" placeholder="Digite sua senha">
+      <input type="email" id="email" placeholder="Digite seu login" />
+      <input type="password" id="senha" placeholder="Digite sua senha" />
 
       <button id="btnLogin">Entrar</button>
       <div class="criar" onclick="criarCadastro()">Criar usuário</div>
+
+      <div class="logos">
+        <img src="/img/prefeitura.png" alt="Prefeitura" />
+        <img src="/img/saude.png" alt="Saúde Guaíçara" />
+      </div>
     </div>
   </div>
 
