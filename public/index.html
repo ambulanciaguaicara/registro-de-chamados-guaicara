@@ -9,110 +9,17 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-<style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #ffffff url("img/fundo.png") no-repeat center bottom fixed;
-    background-size: contain;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-.container {
-    width: 380px;
-    background: #fff;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0px 6px 20px rgba(0,0,0,0.25);
-    text-align: center;
-}
-
-.logo img {
-    width: 120px;
-    margin-bottom: 10px;
-}
-
-h2 {
-    font-size: 20px;
-    color: #a00000;
-    margin-bottom: 25px;
-    font-weight: bold;
-}
-
-label {
-    display: block;
-    text-align: left;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    border: 1px solid #aaa;
-    font-size: 15px;
-}
-
-button {
-    width: 100%;
-    padding: 14px;
-    background: #b50000;
-    border: none;
-    color: white;
-    font-size: 17px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-button:hover {
-    background: #7d0000;
-}
-
-.criar {
-    margin-top: 12px;
-    color: #b50000;
-    cursor: pointer;
-    font-size: 15px;
-    text-decoration: none;
-}
-
-.criar:hover {
-    text-decoration: underline;
-}
-
-.status {
-    font-size: 14px;
-    color: red;
-    margin-bottom: 10px;
-}
-</style>
+<link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
 
-<div class="container">
-    <div class="logo">
-        <img src="img/logo.png" alt="Logo Prefeitura">
-    </div>
+<div class="login-container">
+    <img src="img/logo.png" class="logo" alt="Logo Prefeitura">
+    <h1>Registro de Chamados de Ambulância</h1>
 
-    <h2>Registro de Chamados de Ambulância</h2>
+    <div id="mensagem" class="mensagem"></div>
 
-    <div class="status" id="statusMsg"></div>
-
-    <label>Login</label>
     <input type="email" id="email" placeholder="Digite seu login">
-
-    <label>Senha</label>
     <input type="password" id="senha" placeholder="Digite sua senha">
 
     <button onclick="login()">Entrar</button>
@@ -134,20 +41,25 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-function login() {
-    const email = document.getElementById('email').value;
-    const senha = document.getElementById('senha').value;
-    const status = document.getElementById('statusMsg');
-    status.innerText = '';
+function escrever(msg) {
+    document.getElementById("mensagem").textContent = msg;
+}
+
+function login(){
+    let email = document.getElementById("email").value.trim();
+    let senha = document.getElementById("senha").value.trim();
 
     if(!email || !senha){
-        status.innerText = 'Preencha login e senha.';
+        escrever("📌 Preencha todos os campos.");
         return;
     }
 
     auth.signInWithEmailAndPassword(email, senha)
-        .then(() => window.location.href = "index.html")
-        .catch(error => status.innerText = error.message);
+        .then(() => {
+            escrever("✅ Acesso permitido. Aguarde...");
+            setTimeout(() => window.location.href = "painel.html", 1000);
+        })
+        .catch(error => escrever("⚠️ Erro: " + error.message));
 }
 
 function criarCadastro() {
@@ -161,10 +73,10 @@ function criarCadastro() {
         .catch(error => alert(error.message));
 }
 
-// Auto redirecionamento se já logado
+// Se já estiver logado e abrir login.html, manda direto para painel
 auth.onAuthStateChanged(user=>{
-    if(user){
-        window.location.href="index.html";
+    if(user && window.location.pathname.endsWith("login.html")){
+        window.location.href = "painel.html";
     }
 });
 </script>
