@@ -45,4 +45,16 @@ body, html {
     background: #b50000;
     color: #fff;
     font-weight: bold;
-    cursor:
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+.login-box button:hover {
+    background: #7d0000;
+}
+
+.mensagem {
+    font-size: 14px;
+    color: #b00000;
+    margin-bottom: 10px;
+}
