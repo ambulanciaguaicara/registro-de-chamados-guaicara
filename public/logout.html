@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Logout – Registro de Chamados</title>
 
-  <!-- Caminho corrigido para CSS -->
+  <!-- Caminho relativo para CSS -->
   <link rel="stylesheet" href="./css/styles.css"/>
 
   <!-- Firebase compat -->
@@ -38,15 +38,19 @@
       auth.signOut()
         .then(() => {
           alert("Sessão encerrada com sucesso!");
-          window.location.href = "./login.html"; // caminho relativo corrigido
+          // redireciona para login
+          window.location.href = "./login.html";
         })
         .catch((error) => {
-          alert("Erro ao sair: " + error.message);
+          console.error("Erro ao sair:", error);
+          alert("Não foi possível encerrar a sessão. Redirecionando para login...");
+          window.location.href = "./login.html"; // força redirecionamento mesmo com erro
         });
     }
 
     function cancelar() {
-      window.location.href = "./index.html"; // volta para o sistema
+      // volta para o sistema principal
+      window.location.href = "./index.html";
     }
   </script>
 </body>
