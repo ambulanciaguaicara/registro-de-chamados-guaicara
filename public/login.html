@@ -4,7 +4,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login – Registro de Chamados</title>
-  <link rel="stylesheet" href="/css/styles.css"/>
+
+  <!-- Caminho corrigido para funcionar no Vercel -->
+  <link rel="stylesheet" href="./css/styles.css"/>
 
   <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -40,7 +42,7 @@
       auth.signInWithEmailAndPassword(email, senha)
         .then(() => {
           alert("Login realizado com sucesso!");
-          window.location.href = "/index.html";
+          window.location.href = "./index.html"; // Caminho corrigido
         })
         .catch((error) => {
           alert("Erro no login: " + error.message);
