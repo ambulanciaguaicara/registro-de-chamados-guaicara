@@ -1,8 +1,9 @@
-/*css/styles.css */
+:root {
+  --vermelho: #b50000; /* vermelho padrão */
+}
 
-/* Cabeçalho */
 header {
-  background: #b50000;
+  background: var(--vermelho);
   color: white;
   padding: 35px 20px;
   text-align: center;
@@ -12,104 +13,16 @@ header {
   letter-spacing: .5px;
 }
 
-/* Container */
-.container {
-  margin: 25px auto;
-  max-width: 1100px;
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.btn-add { 
+  background: var(--vermelho); 
+  color: white; 
+}
+.btn-add:hover { 
+  background: #7d0000; 
 }
 
-/* Inputs */
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0 15px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+.btn-emergencia { 
+  background: var(--vermelho); 
+  color: #fff; 
+  border: 2px solid #7d0000; 
 }
-
-/* Botões */
-button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-right: 10px;
-  font-weight: bold;
-}
-.btn-add { background: #b50000; color: white; }
-.btn-add:hover { background: #7d0000; }
-.btn-del { background: #444; color: white; }
-.btn-del:hover { background: #222; }
-.btn-urgencia { background: #ffcc00; color: black; border: 2px solid #b50000; }
-.btn-normal { background: #28a745; color: #fff; border: 2px solid #1e7e34; }
-.btn-emergencia { background: #b50000; color: #fff; border: 2px solid #7d0000; }
-
-/* Tabela */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 25px;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-}
-th {
-  background: #b50000;
-  color: white;
-  padding: 12px;
-  font-size: 16px;
-}
-td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-tr:hover { background: #ffe4e4; }
-
-/* Chat */
-.chat-box {
-  margin-top: 30px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-.message {
-  padding: 10px 12px;
-  background: #f7f7f7;
-  margin-bottom: 10px;
-  border-radius: 8px;
-}
-.msg-actions {
-  font-size: 12px;
-  margin-top: 5px;
-  text-align: right;
-}
-.msg-actions span {
-  margin-left: 12px;
-  cursor: pointer;
-  color: #b50000;
-}
-
-/* Rodapé */
-footer {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 60px;
-  background: #ffffff;
-  border-top: 2px solid #ccc;
-  display: flex; gap: 18px; justify-content: center; align-items: center;
-  padding: 5px 20px; font-size: 14px;
-  box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
-  flex-wrap: wrap;
-}
-.status-online { color: green; font-weight: bold; }
-.status-offline { color: red; font-weight: bold; }
-
-/* login */
-.mensagem { color: #b50000; margin-bottom: 10px; }
