@@ -1,6 +1,5 @@
+// vercel.json
 {
-  "rewrites": [
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/index", "destination": "/index.html" }
-  ]
+  "cleanUrls": true,
+  "rewrites": [{ "source": "/", "destination": "/index.html" }]
 }
