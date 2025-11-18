@@ -22,9 +22,8 @@
   </header>
 
   <div class="container">
-    <!-- Formulário de novo chamado -->
     <h2>Novo Chamado</h2>
-    <!-- ... seus campos continuam iguais ... -->
+    <!-- Campos do formulário aqui -->
 
     <button class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
     <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
@@ -36,56 +35,3 @@
         <tr>
           <th>Sel</th>
           <th>Data</th>
-          <th>Hora</th>
-          <th>Paciente</th>
-          <th>Endereço</th>
-          <th>Nº</th>
-          <th>Destino</th>
-          <th>Prioridade</th>
-          <th>Sinais/Sintomas</th>
-          <th>Finalidade</th>
-          <th>Óbito</th>
-          <th>Observações</th>
-        </tr>
-      </thead>
-      <tbody id="corpoTabela"></tbody>
-    </table>
-
-    <div class="chat-box">
-      <h2>Chat Interno</h2>
-      <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." 
-             onkeydown="if(event.key==='Enter') enviarMsg()">
-      <button class="btn-add" onclick="enviarMsg()">Enviar</button>
-      <div id="chatArea"></div>
-    </div>
-  </div>
-
-  <footer>
-    <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
-    <div id="usuarioLogado">Usuário: —</div>
-    <div id="ultimaSync">Última sync: —</div>
-    <div>Versão: 1.0.0</div>
-    <button class="btn-del" onclick="logout()">Sair</button>
-  </footer>
-
-  <!-- Firebase Config -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
-      authDomain: "registro-ambulancia192.firebaseapp.com",
-      databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com",
-      projectId: "registro-ambulancia192",
-      storageBucket: "registro-ambulancia192.firebasestorage.app",
-      messagingSenderId: "549498386461",
-      appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
-      measurementId: "G-NM7EQL6E83"
-    };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-  </script>
-
-  <!-- Caminho corrigido para o JS -->
-  <script type="module" src="./src/main.js"></script>
-</body>
-</html>
