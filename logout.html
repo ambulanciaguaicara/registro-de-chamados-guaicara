@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Logout – Registro de Chamados</title>
 
-  <!-- Caminho relativo para CSS -->
+  <!-- Estilo -->
   <link rel="stylesheet" href="./css/styles.css"/>
 
   <!-- Firebase compat -->
@@ -31,15 +31,18 @@
       appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
       measurementId: "G-NM7EQL6E83"
     };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
     const auth = firebase.auth();
 
     function logout() {
       auth.signOut()
         .then(() => {
           alert("Sessão encerrada com sucesso!");
-          // redireciona para login
-          window.location.href = "./login.html";
+          window.location.href = "./login.html"; // redireciona para login
         })
         .catch((error) => {
           console.error("Erro ao sair:", error);
@@ -49,8 +52,7 @@
     }
 
     function cancelar() {
-      // volta para o sistema principal
-      window.location.href = "./index.html";
+      window.location.href = "./index.html"; // volta para o sistema principal
     }
   </script>
 </body>
