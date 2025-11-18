@@ -1,131 +1,85 @@
-:root {
-  --vermelho: #b50000;
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
 }
 
-body {
-  background: #ffffff;
-  color: #222;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-header {
-  background: var(--vermelho);
-  color: white;
-  padding: 35px 20px;
-  text-align: center;
-  font-size: 28px;
-  font-weight: bold;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-}
-
-.container {
-  margin: 25px auto;
-  max-width: 1100px;
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0 15px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-right: 10px;
-  font-weight: bold;
-}
-.btn-add { background: var(--vermelho); color: white; }
-.btn-add:hover { background: #7d0000; }
-.btn-del { background: #444; color: white; }
-.btn-del:hover { background: #222; }
-.btn-urgencia { background: #ffcc00; color: black; border: 2px solid var(--vermelho); }
-.btn-normal { background: #28a745; color: #fff; border: 2px solid #1e7e34; }
-.btn-emergencia { background: var(--vermelho); color: #fff; border: 2px solid #7d0000; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 25px;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-}
-th {
-  background: var(--vermelho);
-  color: white;
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  background: #f5f7fb;
+  border: 1px solid #d6e2f0;
   padding: 12px;
-  font-size: 16px;
-}
-td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-tr:hover { background: #ffe4e4; }
-
-.chat-box {
-  margin-top: 30px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-.message {
-  padding: 10px 12px;
-  background: #f7f7f7;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  height: max-content;
 }
 
-footer {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: 60px;
-  background: #ffffff;
-  border-top: 2px solid #ccc;
-  display: flex; gap: 18px; justify-content: center; align-items: center;
-  padding: 5px 20px; font-size: 14px;
-  box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
-  flex-wrap: wrap;
+.prontuarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
 }
-.status-online { color: green; font-weight: bold; }
-.status-offline { color: red; font-weight: bold; }
-
-.mensagem { color: var(--vermelho); margin-bottom: 10px; }
-
-/* Autocomplete */
-.autocomplete { position: relative; }
-.autocomplete-list {
-  position: absolute;
-  top: 100%;
-  left: 0; right: 0;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  max-height: 240px;
-  overflow-y: auto;
-  z-index: 20;
+.prontuario-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.autocomplete-item {
-  padding: 10px 12px;
+.prontuario-btn {
+  background: #0077cc;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
   cursor: pointer;
 }
-.autocomplete-item:hover, .autocomplete-item.active {
-  background: #ffe4e4;
+.prontuario-count {
+  color: #555;
+  font-size: 12px;
 }
-.autocomplete-item mark {
-  background: transparent;
-  color: var(--vermelho);
-  font-weight: bold;
+
+.motoristas-tabela {
+  width: 100%;
+  font-size: 14px;
 }
+.motoristas-tabela input, .motoristas-tabela select {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.grid .full {
+  grid-column: 1 / -1;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.busca {
+  margin: 12px 0;
+}
+
+.linha-replica {
+  background: #e6f0ff; /* azul claro para réplicas */
+}
+.linha-unida {
+  outline: 2px dashed #0077cc; /* destaca registros unidos */
+}
+
+.btn-replicar {
+  background: #1e88e5;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+/* Respeitando suas cores existentes dos botões:
+   .btn-normal, .btn-urgencia, .btn-emergencia, .btn-add, .btn-del
+   permanecem como estão no /css/styles.css */
