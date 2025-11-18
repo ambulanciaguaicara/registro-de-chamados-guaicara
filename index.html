@@ -1,3 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Chamados – Ambulância Municipal – Guaíçara/SP</title>
+
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="stylesheet" href="/css/styles.css"/>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
 <body>
   <header>
     🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAÍÇARA/SP
@@ -16,21 +34,4 @@
 
   <!-- Área do Sistema (oculta até login) -->
   <div id="sistemaBox" class="container" style="display:none;">
-    <!-- formulário de chamados + tabela + chat -->
-  </div>
-
-  <footer>
-    <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
-    <div id="usuarioLogado">Usuário: —</div>
-    <button class="btn-del" onclick="logout()">Sair</button>
-  </footer>
-
-  <!-- Firebase Config -->
-  <script>
-    const firebaseConfig = { /* suas chaves Firebase */ };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-  </script>
-  <script type="module" src="/src/main.js"></script>
-</body>
+    <h2>Novo Cham
