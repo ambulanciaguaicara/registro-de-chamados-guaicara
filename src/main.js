@@ -1,3 +1,5 @@
+import { auth, login } from "./firebase.js";
+
 window.addEventListener("load", () => {
   const btnLogin = document.getElementById("btnLogin");
   const msg = document.getElementById("statusMsg");
@@ -18,7 +20,7 @@ window.addEventListener("load", () => {
     }
 
     try {
-      await auth.signInWithEmailAndPassword(email, senha);
+      await login(email, senha);   // ✅ usa função modular do firebase.js
       msg.textContent = "Login realizado com sucesso!";
     } catch (e) {
       msg.textContent = "Erro de login: " + (e.message || "Falha desconhecida");
@@ -26,6 +28,7 @@ window.addEventListener("load", () => {
     }
   });
 
+  // Observa mudanças de login
   auth.onAuthStateChanged(user => {
     const loginBox = document.getElementById("loginBox");
     const sistemaBox = document.getElementById("sistemaBox");
