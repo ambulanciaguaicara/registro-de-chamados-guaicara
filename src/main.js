@@ -2,15 +2,27 @@ window.addEventListener("load", () => {
   const btnLogin = document.getElementById("btnLogin");
   const msg = document.getElementById("statusMsg");
 
+  if (!btnLogin) {
+    console.error("Botão de login não encontrado");
+    return;
+  }
+
   btnLogin.addEventListener("click", async () => {
     const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value.trim();
     msg.textContent = "";
 
+    if (!email || !senha) {
+      msg.textContent = "Preencha e-mail e senha.";
+      return;
+    }
+
     try {
       await auth.signInWithEmailAndPassword(email, senha);
+      msg.textContent = "Login realizado com sucesso!";
     } catch (e) {
       msg.textContent = "Erro de login: " + (e.message || "Falha desconhecida");
+      console.error("Erro de login:", e);
     }
   });
 
