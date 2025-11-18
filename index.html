@@ -21,17 +21,186 @@
     🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAÍÇARA/SP
   </header>
 
-  <!-- Área de Login -->
-  <div id="loginBox" class="container">
-    <h2>Login</h2>
-    <div id="statusMsg" class="mensagem"></div>
-    <label>E-mail</label>
-    <input type="email" id="email" placeholder="seu@email.com"/>
-    <label>Senha</label>
-    <input type="password" id="senha" placeholder="••••••••"/>
-    <button class="btn-add" id="btnLogin">Entrar</button>
+  <div class="container">
+    <h2>Novo Chamado</h2>
+
+    <label>Data</label>
+    <input type="date" id="data">
+
+    <label>Horário</label>
+    <input type="time" id="horario">
+
+    <label>Paciente</label>
+    <input type="text" id="paciente">
+
+    <label>Endereço</label>
+    <select id="endereco">
+      <option value="">Selecione o endereço</option>
+      <option value="Rua Rio Branco">Rua Rio Branco</option>
+      <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
+      <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
+      <option value="Rua Pedro Bertolino">Rua Pedro Bertolino</option>
+      <option value="Rua Professora Adelaide Baptista Pereira Cruz">Rua Professora Adelaide Baptista Pereira Cruz</option>
+      <option value="Av. Roberto Lima Alves">Av. Roberto Lima Alves</option>
+      <option value="Rua Rogê Ferreira">Rua Rogê Ferreira</option>
+      <option value="Rua Roman Garcia Echeto">Rua Roman Garcia Echeto</option>
+      <option value="Rua Rosa Grande">Rua Rosa Grande</option>
+      <option value="Rua Rubens Puorro">Rua Rubens Puorro</option>
+      <option value="Rua Sabino">Rua Sabino</option>
+      <option value="Rua Sebastião de Souza">Rua Sebastião de Souza</option>
+      <option value="Rua Pedro Dutra Sobrinho">Rua Pedro Dutra Sobrinho</option>
+      <option value="Rua Osvaldo Cruz">Rua Osvaldo Cruz</option>
+      <option value="Rua Dirce Camargo Vaz">Rua Dirce Camargo Vaz</option>
+      <option value="Rua João Pacífico da Silva">Rua João Pacífico da Silva</option>
+      <option value="Rua Ayrton Alves dos Santos">Rua Ayrton Alves dos Santos</option>
+      <option value="Rua José Francisco Moco">Rua José Francisco Moco</option>
+      <option value="Av. Duque de Caxias">Av. Duque de Caxias</option>
+      <option value="Av. Nove de Julho">Av. Nove de Julho</option>
+      <option value="Rua Adão Afonso Costa">Rua Adão Afonso Costa</option>
+      <option value="Rua Yoshi Sato">Rua Yoshi Sato</option>
+      <option value="Rua Sunao Katsuki">Rua Sunao Katsuki</option>
+      <option value="Rua Frei Henrique">Rua Frei Henrique</option>
+      <option value="Rua José do Patrocínio">Rua José do Patrocínio</option>
+      <option value="Rua Tiradentes">Rua Tiradentes</option>
+      <option value="Rua Da Amizade">Rua Da Amizade</option>
+    </select>
+
+    <label>Nº</label>
+    <input type="text" id="numero" placeholder="Número do endereço">
+
+    <label>Destino</label>
+    <select id="destino">
+      <option value="">Selecione o destino</option>
+      <option value="CAPS">CAPS</option>
+      <option value="HGP">HGP</option>
+      <option value="SANTA CASA">SANTA CASA</option>
+      <option value="UNIMED">UNIMED</option>
+      <option value="FISIOTERAPIA PARTICULAR">FISIOTERAPIA PARTICULAR</option>
+      <option value="HAPVIDA">HAPVIDA</option>
+      <option value="AME">AME</option>
+    </select>
+    <button class="btn-add" onclick="adicionarDestino()">Adicionar destino</button>
+
+    <label>Motorista</label>
+    <input type="text" id="motorista">
+
+    <label>Chegada do Motorista</label>
+    <input type="time" id="chegadaMotorista">
+
+    <label>Prioridade</label>
+    <select id="prioridade">
+      <option value="">Selecione</option>
+      <option value="Autista">Autista</option>
+      <option value="Doenças Crônicas/Complicações">Doenças Crônicas/Complicações</option>
+      <option value="PCD">PCD</option>
+      <option value="Idoso">Idoso</option>
+      <option value="Gestante">Gestante</option>
+      <option value="Obeso">Obeso</option>
+    </select>
+    <button class="btn-add" onclick="adicionarPrioridade()">Adicionar Prioridade</button>
+
+    <label>Sinais/Sintomas</label>
+    <select id="sinais">
+      <option value="">Selecione</option>
+      <option value="Hipertensão">Hipertensão</option>
+      <option value="Diabetes">Diabetes</option>
+      <option value="Doença Cardíaca">Doença Cardíaca</option>
+      <option value="Doença Respiratória">Doença Respiratória</option>
+      <option value="Distúrbios Psiquiátricos">Distúrbios Psiquiátricos</option>
+      <option value="Dor">Dor</option>
+      <option value="Febre">Febre</option>
+      <option value="Vômito">Vômito</option>
+      <option value="Nenhum">Nenhum</option>
+    </select>
+    <button class="btn-add" onclick="adicionarSinal()">Adicionar Sinal</button>
+
+    <label>Finalidade</label>
+    <select id="finalidade">
+      <option value="">Selecione</option>
+      <option value="Pós consulta">Pós consulta</option>
+      <option value="Exame">Exame</option>
+      <option value="Curativo">Curativo</option>
+      <option value="Alta hospitalar">Alta hospitalar</option>
+      <option value="Transferência">Transferência</option>
+    </select>
+    <button class="btn-add" onclick="adicionarFinalidade()">Adicionar</button>
+
+    <label>Óbito</label>
+    <select id="obito">
+      <option value="Não">Não</option>
+      <option value="Sim">Sim</option>
+    </select>
+
+    <label>Observações</label>
+    <textarea id="obs" rows="3"></textarea>
+
+    <label>Tipo de Chamado</label>
+    <div style="margin-bottom: 15px;">
+      <button class="btn-normal" onclick="tipoChamado('normal')">Normal</button>
+      <button class="btn-urgencia" onclick="tipoChamado('urgencia')">⚠ URGÊNCIA</button>
+      <button class="btn-emergencia" onclick="tipoChamado('emergencia')">Emergência</button>
+    </div>
+
+    <button class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
+    <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
+    <button onclick="replicarChamado()">Replicar Chamado Selecionado</button>
+
+    <h2>Chamados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sel</th>
+          <th>Data</th>
+          <th>Hora</th>
+          <th>Paciente</th>
+          <th>Endereço</th>
+          <th>Nº</th>
+          <th>Destino</th>
+          <th>Motorista</th>
+          <th>Chegada</th>
+          <th>Prioridade</th>
+          <th>Sinais/Sintomas</th>
+          <th>Finalidade</th>
+          <th>Óbito</th>
+          <th>Observações</th>
+        
+      </thead>
+      <tbody id="corpoTabela"></tbody>
+    </table>
+
+    <div class="chat-box">
+      <h2>Chat Interno</h2>
+      <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." 
+             onkeydown="if(event.key==='Enter') enviarMsg()">
+      <button class="btn-add" onclick="enviarMsg()">Enviar</button>
+      <div id="chatArea"></div>
+    </div>
   </div>
 
-  <!-- Área do Sistema (oculta até login) -->
-  <div id="sistemaBox" class="container" style="display:none;">
-    <h2>Novo Cham
+  <footer>
+    <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
+    <div id="usuarioLogado">Usuário: —</div>
+    <div id="ultimaSync">Última sync: —</div>
+    <div>Versão: 1.0.0</div>
+    <button class="btn-del" onclick="logout()">Sair</button>
+  </footer>
+  <!-- Firebase Config + main.js -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
+      authDomain: "registro-ambulancia192.firebaseapp.com",
+      databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com",
+      projectId: "registro-ambulancia192",
+      storageBucket: "registro-ambulancia192.firebasestorage.app",
+      messagingSenderId: "549498386461",
+      appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
+      measurementId: "G-NM7EQL6E83"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+  </script>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
