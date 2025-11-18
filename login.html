@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login – Registro de Chamados</title>
 
-  <!-- Estilo -->
   <link rel="stylesheet" href="./css/styles.css"/>
 
   <!-- Firebase compat -->
@@ -35,11 +34,7 @@
       appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
       measurementId: "G-NM7EQL6E83"
     };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
     function login() {
