@@ -1,4 +1,4 @@
-// public/sw.js
+//sw.js
 self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
