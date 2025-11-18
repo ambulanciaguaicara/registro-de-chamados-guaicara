@@ -15,142 +15,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
-  <style>
-    /* 🔴 Cabeçalho institucional + vermelho SAMU */
-    header {
-      background: #b50000;
-      color: white;
-      padding: 35px 20px;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-      letter-spacing: .5px;
-    }
-
-    /* Container central */
-    .container {
-      margin: 25px auto;
-      max-width: 1100px;
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    /* Inputs */
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 6px 0 15px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    /* Botões */
-    button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-right: 10px;
-      font-weight: bold;
-    }
-    .btn-add { background: #b50000; color: white; }
-    .btn-add:hover { background: #7d0000; }
-    .btn-del { background: #444; color: white; }
-    .btn-del:hover { background: #222; }
-    .btn-urgencia { background: #ffcc00; color: black; border: 2px solid #b50000; }
-    .btn-normal { background: #28a745; color: #fff; border: 2px solid #1e7e34; }
-    .btn-emergencia { background: #b50000; color: #fff; border: 2px solid #7d0000; }
-
-    /* Tabela */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 25px;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    th {
-      background: #b50000;
-      color: white;
-      padding: 12px;
-      font-size: 16px;
-    }
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    tr:hover { background: #ffe4e4; }
-
-    /* 🔵 Chat corporativo */
-    .chat-box {
-      margin-top: 30px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-    .message {
-      padding: 10px 12px;
-      background: #f7f7f7;
-      margin-bottom: 10px;
-      border-radius: 8px;
-    }
-    .msg-actions {
-      font-size: 12px;
-      margin-top: 5px;
-      text-align: right;
-    }
-    .msg-actions span {
-      margin-left: 12px;
-      cursor: pointer;
-      color: #b50000;
-    }
-
-    /* Rodapé fixo */
-    footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: #ffffff;
-      border-top: 2px solid #ccc;
-      display: flex;
-      gap: 18px;
-      justify-content: center;
-      align-items: center;
-      padding: 5px 20px;
-      font-size: 14px;
-      box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
-      flex-wrap: wrap;
-    }
-    .status-online { color: green; font-weight: bold; }
-    .status-offline { color: red; font-weight: bold; }
-
-    /* logos área */
-    .logos {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    .logos img { height: 40px; }
-  </style>
 </head>
 
 <body>
+  <!-- Cabeçalho -->
   <header>
-    <img src="/img/logo-ambulancia.png" alt="Logo Ambulância" style="height:60px; vertical-align:middle; margin-right:12px;">
-    REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAÍÇARA/SP
+    🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAÍÇARA/SP
   </header>
 
+  <!-- Container principal -->
   <div class="container">
     <h2>Novo Chamado</h2>
 
@@ -166,7 +39,6 @@
     <label>Endereço</label>
     <select id="endereco">
       <option value="">Selecione o endereço</option>
-      <!-- Adicione ou gere dinamicamente com main.js -->
       <option value="Rua Rio Branco">Rua Rio Branco</option>
       <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
       <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
@@ -271,19 +143,16 @@
       <tbody id="corpoTabela"></tbody>
     </table>
 
+    <!-- 🔵 CHAT -->
     <div class="chat-box">
       <h2>Chat Interno</h2>
       <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()">
       <button class="btn-add" onclick="enviarMsg()">Enviar</button>
       <div id="chatArea"></div>
     </div>
-
-    <div class="logos">
-      <img src="/img/logo-prefeitura.png" alt="Prefeitura de Guaiçara">
-      <img src="/img/fundo.png" alt="Saúde Guaiçara">
-    </div>
   </div>
 
+  <!-- Rodapé -->
   <footer>
     <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
     <div id="usuarioLogado">Usuário: —</div>
@@ -292,16 +161,7 @@
     <button class="btn-del" onclick="logout()">Sair</button>
   </footer>
 
-  <!-- Seu main.js de módulo -->
+  <!-- Script principal -->
   <script type="module" src="/src/main.js"></script>
-
-  <!-- Service worker -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js")
-        .then(() => console.log("Service Worker registrado"))
-        .catch(err => console.error("Erro ao registrar SW:", err));
-    }
-  </script>
 </body>
 </html>
