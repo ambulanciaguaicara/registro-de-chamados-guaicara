@@ -22,9 +22,12 @@ window.addEventListener("load", () => {
     try {
       await login(email, senha);   // ✅ usa função modular do firebase.js
       msg.textContent = "Login realizado com sucesso!";
-    } catch (e) {
-      msg.textContent = "Erro de login: " + (e.message || "Falha desconhecida");
-      console.error("Erro de login:", e);
+      catch (e) {
+  msg.textContent = "Erro de login: " + (e.code || e.message);
+  alert("Erro de login: " + (e.code || e.message)); // ✅ mostra alerta no tablet
+  console.error("Erro de login:", e);
+}
+
     }
   });
 
