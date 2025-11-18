@@ -1,40 +1,33 @@
+<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Chamados – Ambulância Municipal – Guaíçara/SP</title>
 
   <link rel="manifest" href="/manifest.json"/>
   <link rel="stylesheet" href="/css/styles.css"/>
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
-
 <body>
-  <!-- Cabeçalho -->
-  <header>
-    🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAÍÇARA/SP
-  </header>
+  <header>🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAÍÇARA/SP</header>
 
-  <!-- Container principal -->
   <div class="container">
     <h2>Novo Chamado</h2>
 
     <label>Data</label>
-    <input type="date" id="data">
+    <input type="date" id="data"/>
 
     <label>Horário</label>
-    <input type="time" id="horario">
+    <input type="time" id="horario"/>
 
     <label>Paciente</label>
-    <input type="text" id="paciente">
+    <input type="text" id="paciente"/>
 
     <label>Endereço</label>
     <select id="endereco">
@@ -42,11 +35,53 @@
       <option value="Rua Rio Branco">Rua Rio Branco</option>
       <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
       <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
-      <!-- ... demais endereços ... -->
+      <option value="Rua Pedro Bertolino">Rua Pedro Bertolino</option>
+      <option value="Rua Professora Adelaide Baptista Pereira Cruz">Rua Professora Adelaide Baptista Pereira Cruz</option>
+      <option value="Av. Roberto Lima Alves">Av. Roberto Lima Alves</option>
+      <option value="Rua Rogê Ferreira">Rua Rogê Ferreira</option>
+      <option value="Rua Roman Garcia Echeto">Rua Roman Garcia Echeto</option>
+      <option value="Rua Rosa Grande">Rua Rosa Grande</option>
+      <option value="Rua Rubens Puorro">Rua Rubens Puorro</option>
+      <option value="Rua Sabino">Rua Sabino</option>
+      <option value="Rua Sebastião de Souza">Rua Sebastião de Souza</option>
+      <option value="Rua Pedro Dutra Sobrinho">Rua Pedro Dutra Sobrinho</option>
+      <option value="Rua Osvaldo Cruz">Rua Osvaldo Cruz</option>
+      <option value="Rua Dirce Camargo Vaz">Rua Dirce Camargo Vaz</option>
+      <option value="Rua João Pacífico da Silva">Rua João Pacífico da Silva</option>
+      <option value="Rua Ayrton Alves dos Santos">Rua Ayrton Alves dos Santos</option>
+      <option value="Rua José Francisco Moco">Rua José Francisco Moco</option>
+      <option value="Av. Duque de Caxias">Av. Duque de Caxias</option>
+      <option value="Av. Nove de Julho">Av. Nove de Julho</option>
+      <option value="Rua Adão Afonso Costa">Rua Adão Afonso Costa</option>
+      <option value="Rua Yoshi Sato">Rua Yoshi Sato</option>
+      <option value="Rua Sunao Katsuki">Rua Sunao Katsuki</option>
+      <option value="Rua Frei Henrique">Rua Frei Henrique</option>
+      <option value="Rua José do Patrocínio">Rua José do Patrocínio</option>
+      <option value="Rua Tiradentes">Rua Tiradentes</option>
+      <option value="Rua Da Amizade">Rua Da Amizade</option>
+      <option value="Rua Marechal Deodoro">Rua Marechal Deodoro</option>
+      <option value="Rua Ana de Jesus Maia">Rua Ana de Jesus Maia</option>
+      <option value="Rua Angelin Garoze">Rua Angelin Garoze</option>
+      <option value="Travessa Mariano Martinez">Travessa Mariano Martinez</option>
+      <option value="Rua José Gringo dos Santos">Rua José Gringo dos Santos</option>
+      <option value="Rua Jovino Faustino Rosa">Rua Jovino Faustino Rosa</option>
+      <option value="Rua Hiroshi Suzuki">Rua Hiroshi Suzuki</option>
+      <option value="Rua Noé Franco da Rocha">Rua Noé Franco da Rocha</option>
+      <option value="Rua Agénor Leme Franco">Rua Agénor Leme Franco</option>
+      <option value="Rua Ana Carlotta Arruda Paula">Rua Ana Carlotta Arruda Paula</option>
+      <option value="Rua Luiz Caetano">Rua Luiz Caetano</option>
+      <option value="Rua Luiz Esperança">Rua Luiz Esperança</option>
+      <option value="Rua Ercilio Lima dos Santos">Rua Ercilio Lima dos Santos</option>
+      <option value="Rua Orlando Jorge">Rua Orlando Jorge</option>
+      <option value="Rua Dirce Camargo">Rua Dirce Camargo</option>
+      <option value="Rua Mario Pereira da Silva">Rua Mario Pereira da Silva</option>
+      <option value="Rua Antonio Monteiro Paschoal">Rua Antonio Monteiro Paschoal</option>
+      <option value="Rua Manoel dos Reis Soares">Rua Manoel dos Reis Soares</option>
+      <option value="Rua Luiz Caetano da Silva">Rua Luiz Caetano da Silva</option>
     </select>
 
     <label>Nº</label>
-    <input type="text" id="numero" placeholder="Número do endereço">
+    <input type="text" id="numero" placeholder="Número do endereço"/>
 
     <label>Destino</label>
     <select id="destino">
@@ -62,7 +97,7 @@
     <button class="btn-add" onclick="adicionarDestino()">Adicionar destino</button>
 
     <label>Motorista</label>
-    <input type="text" id="motorista">
+    <input type="text" id="motorista"/>
 
     <label>Prioridade</label>
     <select id="prioridade">
@@ -143,16 +178,14 @@
       <tbody id="corpoTabela"></tbody>
     </table>
 
-    <!-- 🔵 CHAT -->
     <div class="chat-box">
       <h2>Chat Interno</h2>
-      <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()">
+      <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()"/>
       <button class="btn-add" onclick="enviarMsg()">Enviar</button>
       <div id="chatArea"></div>
     </div>
   </div>
 
-  <!-- Rodapé -->
   <footer>
     <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
     <div id="usuarioLogado">Usuário: —</div>
@@ -161,7 +194,6 @@
     <button class="btn-del" onclick="logout()">Sair</button>
   </footer>
 
-  <!-- Script principal -->
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
