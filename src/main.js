@@ -1,19 +1,21 @@
-// src/main.js
-
-// PREENCHA com seu config (o mesmo do login.html + databaseURL)
+// Configuração do Firebase (seu projeto)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
+  authDomain: "registro-ambulancia192.firebaseapp.com",
+  databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com",
+  projectId: "registro-ambulancia192",
+  storageBucket: "registro-ambulancia192.firebasestorage.app",
+  messagingSenderId: "549498386461",
+  appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
+  measurementId: "G-NM7EQL6E83"
 };
+
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.database();
 
-// Guarda e rota
+// --- Autenticação ---
 auth.onAuthStateChanged((user) => {
   const uEl = document.getElementById("usuarioLogado");
   if (!user) {
@@ -27,7 +29,7 @@ auth.onAuthStateChanged((user) => {
 
 window.logout = () => auth.signOut().then(() => (window.location.href = "/login.html"));
 
-// Status/sync
+// --- Status de conexão ---
 function atualizarSync() {
   const el = document.getElementById("ultimaSync");
   if (el) el.innerText = "Última sync: " + new Date().toLocaleTimeString();
@@ -40,14 +42,14 @@ firebase.database().ref(".info/connected").on("value", (snap) => {
     : 'Status: <span class="status-offline">Offline</span>';
 });
 
-// Tipo chamado
+// --- Tipo de Chamado ---
 let tipo = "normal";
 window.tipoChamado = (t) => {
   tipo = t;
   alert(`Tipo de Chamado: ${t.toUpperCase()}`);
 };
 
-// Extras
+// --- Extras ---
 let prioridadesSelecionadas = [];
 let sinaisSelecionados = [];
 let finalidadeSelecionada = "";
@@ -68,8 +70,6 @@ window.adicionarPrioridade = () => {
   if (!prioridadesSelecionadas.includes(p)) {
     prioridadesSelecionadas.push(p);
     alert("Prioridade adicionada!");
-  } else {
-    alert("Essa prioridade já foi adicionada.");
   }
 };
 window.adicionarSinal = () => {
@@ -78,8 +78,6 @@ window.adicionarSinal = () => {
   if (!sinaisSelecionados.includes(s)) {
     sinaisSelecionados.push(s);
     alert("Sinal/Sintoma adicionado!");
-  } else {
-    alert("Esse sinal já foi adicionado.");
   }
 };
 window.adicionarFinalidade = () => {
@@ -89,7 +87,7 @@ window.adicionarFinalidade = () => {
   alert("Finalidade adicionada!");
 };
 
-// Adicionar chamado
+// --- Adicionar chamado ---
 window.adicionarChamado = () => {
   if (!auth.currentUser) return alert("Usuário não autenticado");
 
@@ -131,7 +129,7 @@ window.adicionarChamado = () => {
   }).catch((e) => alert("Erro ao adicionar: " + e.message));
 };
 
-// Replicar / Excluir
+// --- Replicar / Excluir ---
 window.replicarChamado = () => {
   const check = document.querySelector('input[type="checkbox"]:checked');
   if (!check) return alert("Selecione um chamado!");
@@ -149,7 +147,7 @@ window.excluirSelecionados = () => {
     .catch((e) => alert("Erro ao excluir: " + e.message));
 };
 
-// Render tabela
+// --- Render chamados ---
 function renderChamados() {
   const corpo = document.getElementById("corpoTabela");
   if (!corpo) return;
@@ -188,7 +186,7 @@ function renderChamados() {
 }
 document.addEventListener("DOMContentLoaded", renderChamados);
 
-// Chat
+// --- Chat ---
 window.enviarMsg = () => {
   const inp = document.getElementById("chatMsg");
   if (!inp) return;
@@ -206,27 +204,4 @@ window.editarMsg = (id, atual) => {
 window.delMsg = (id) => db.ref("chat/" + id).remove();
 
 function renderChat() {
-  const area = document.getElementById("chatArea");
-  if (!area) return;
-  db.ref("chat").on("value", (snap) => {
-    area.innerHTML = "";
-    snap.forEach((item) => {
-      const m = item.val();
-      const id = item.key;
-      const div = document.createElement("div");
-      div.className = "message";
-      div.innerHTML = `<b>${m.hora || ""}</b> — ${m.msg || ""}
-        <div class="msg-actions">
-          ${
-            m.uid === (auth.currentUser && auth.currentUser.uid)
-              ? `<span onclick="editarMsg('${id}','${m.msg || ""}')">Editar</span>
-                 <span onclick="delMsg('${id}')">Excluir</span>`
-              : ""
-          }
-        </div>`;
-      area.appendChild(div);
-    });
-    atualizarSync();
-  });
-}
-document.addEventListener("DOMContentLoaded", renderChat);
+  const area = document.getElementById
