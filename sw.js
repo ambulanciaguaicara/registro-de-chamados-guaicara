@@ -1,4 +1,3 @@
-// sw.js
 const CACHE_NAME = "chamados-cache-v1";
 const URLS_TO_CACHE = [
   "./",
