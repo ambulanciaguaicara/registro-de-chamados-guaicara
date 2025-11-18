@@ -204,4 +204,4 @@ window.editarMsg = (id, atual) => {
 window.delMsg = (id) => db.ref("chat/" + id).remove();
 
 function renderChat() {
-  const area = document.getElementById
+  const area = document
