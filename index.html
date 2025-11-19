@@ -6,8 +6,8 @@
   <title>Registro de Chamados – Ambulância Municipal – Guaíçara/SP</title>
 
   <link rel="manifest" href="manifest.json"/>
-  <link rel="stylesheet" href="css/styles.css"/>
   <link rel="stylesheet" href="src/style.css"/>
+  <link rel="stylesheet" href="css/styles.css"/>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -28,7 +28,7 @@
 
       <h3>Motoristas</h3>
       <button class="btn-add" onclick="adicionarMotorista()">Adicionar motorista</button>
-      <table>
+      <table class="motoristas-tabela">
         <thead>
           <tr><th>Motorista</th><th>Status</th></tr>
         </thead>
@@ -56,10 +56,10 @@
       <label>Endereço</label>
       <select id="endereco">
         <option value="">Selecione o endereço</option>
+        <!-- todos os endereços listados -->
         <option value="Rua Rio Branco">Rua Rio Branco</option>
         <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
         <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
-        <!-- ... todos os demais endereços ... -->
         <option value="Rua Da Amizade">Rua Da Amizade</option>
       </select>
 
@@ -105,7 +105,6 @@
         <option value="Diabetes">Diabetes</option>
         <option value="Doença Cardíaca">Doença Cardíaca</option>
         <option value="Doença Respiratória">Doença Respiratória</option>
-        <option value="Distúrbios Psiquiátricos">Distúrbios Psiquiátricos</option>
         <option value="Dor">Dor</option>
         <option value="Febre">Febre</option>
         <option value="Vômito">Vômito</option>
