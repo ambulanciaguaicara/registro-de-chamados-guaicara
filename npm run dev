@@ -1,0 +1,55 @@
+<<<<<<< HEAD
+{
+  "name": "registro-de-chamados-guaicara",
+  "version": "1.0.0",
+=======
+{
+  "name": "registro-de-chamados-guaicara",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "firebase": "^10.12.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21",
+    "@vitejs/plugin-react": "^4.2.0"
+  }
+}
+
+{
+  "name": "registro-de-chamados-guaicara",
+  "version": "1.0.0",
+  "private": true,
+>>>>>>> 710460a (Resolve conflito em package.json)
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+<<<<<<< HEAD
+  "devDependencies": {
+    "vite": "^5.x.x"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+=======
+  "dependencies": {
+    "firebase": "^10.12.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21"
+  }
+>>>>>>> 962d426 (Atualização completa do layout)
+>>>>>>> 710460a (Resolve conflito em package.json)
+}
+npm install
+

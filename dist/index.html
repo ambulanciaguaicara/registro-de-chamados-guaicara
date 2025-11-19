@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Chamados – Ambulância Municipal – Guaíçara/SP</title>
+
+  <link rel="manifest" href="/assets/manifest-D12d4-hY.json"/>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-I9Y46MNv.css">
+</head>
+<body>
+  <header>
+    🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAÍÇARA/SP
+  </header>
+
+  <!-- Área de Login -->
+  <div id="loginBox" class="container">
+    <h2>Login</h2>
+    <div id="statusMsg" class="mensagem"></div>
+    <label>E-mail</label>
+    <input type="email" id="email" placeholder="seu@email.com"/>
+    <label>Senha</label>
+    <input type="password" id="senha" placeholder="••••••••"/>
+    <button class="btn-add" id="btnLogin">Entrar</button>
+  </div>
+
+  <!-- Área do Sistema (oculta até login) -->
+  <div id="sistemaBox" class="container" style="display:none;">
+    <h2>Novo Cham
