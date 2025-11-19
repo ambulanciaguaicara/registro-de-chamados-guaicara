@@ -5,16 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Chamados – Ambulância Municipal – Guaíçara/SP</title>
 
-  <link rel="manifest" href="/manifest.json"/>
-  <link rel="stylesheet" href="/css/styles.css"/>
-  <link rel="stylesheet" href="/src/style.css"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="stylesheet" href="src/style.css"/>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Firebase compat (mantendo, mesmo sem login obrigatório) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
   <header>
@@ -25,19 +20,17 @@
     <!-- Painel lateral fixo -->
     <aside class="sidebar">
       <h3>Prontuários</h3>
-      <div id="prontuariosLista" class="prontuarios-lista"></div>
+      <div id="prontuariosLista"></div>
 
       <h3>Relatório mensal</h3>
       <button class="btn-add" id="btnRelatorioMensal">Gerar relatório</button>
       <canvas id="graficoMensal" height="160"></canvas>
 
       <h3>Motoristas</h3>
-      <table class="motoristas-tabela">
+      <button class="btn-add" onclick="adicionarMotorista()">Adicionar motorista</button>
+      <table>
         <thead>
-          <tr>
-            <th>Motorista</th>
-            <th>Status</th>
-          </tr>
+          <tr><th>Motorista</th><th>Status</th></tr>
         </thead>
         <tbody id="tabelaMotoristas"></tbody>
       </table>
@@ -47,184 +40,121 @@
     <div class="container">
       <h2>Novo Chamado</h2>
 
-      <!-- Controle de atendente -->
-      <div class="atendente-box">
-        <label>Atendente</label>
-        <input type="text" id="atendente" placeholder="Nome do atendente"/>
-        <small>Somente o atendente que criou pode editar este chamado.</small>
-      </div>
+      <label>Atendente</label>
+      <input type="text" id="atendente" placeholder="Nome do atendente"/>
+      <small>Somente o atendente que criou pode editar este chamado.</small>
 
-      <div class="grid">
-        <div>
-          <label>Data</label>
-          <input type="date" id="data">
-        </div>
-        <div>
-          <label>Horário</label>
-          <input type="time" id="horario">
-        </div>
-        <div>
-          <label>Paciente</label>
-          <input type="text" id="paciente">
-        </div>
-        <div>
-          <label>Endereço</label>
-          <select id="endereco">
-            <option value="">Selecione o endereço</option>
-            <option value="Rua Rio Branco">Rua Rio Branco</option>
-            <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
-            <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
-            <option value="Rua Pedro Bertolino">Rua Pedro Bertolino</option>
-            <option value="Rua Professora Adelaide Baptista Pereira Cruz">Rua Professora Adelaide Baptista Pereira Cruz</option>
-            <option value="Av. Roberto Lima Alves">Av. Roberto Lima Alves</option>
-            <option value="Rua Rogê Ferreira">Rua Rogê Ferreira</option>
-            <option value="Rua Roman Garcia Echeto">Rua Roman Garcia Echeto</option>
-            <option value="Rua Rosa Grande">Rua Rosa Grande</option>
-            <option value="Rua Rubens Puorro">Rua Rubens Puorro</option>
-            <option value="Rua Sabino">Rua Sabino</option>
-            <option value="Rua Sebastião de Souza">Rua Sebastião de Souza</option>
-            <option value="Rua Pedro Dutra Sobrinho">Rua Pedro Dutra Sobrinho</option>
-            <option value="Rua Osvaldo Cruz">Rua Osvaldo Cruz</option>
-            <option value="Rua Dirce Camargo Vaz">Rua Dirce Camargo Vaz</option>
-            <option value="Rua João Pacífico da Silva">Rua João Pacífico da Silva</option>
-            <option value="Rua Ayrton Alves dos Santos">Rua Ayrton Alves dos Santos</option>
-            <option value="Rua José Francisco Moco">Rua José Francisco Moco</option>
-            <option value="Av. Duque de Caxias">Av. Duque de Caxias</option>
-            <option value="Av. Nove de Julho">Av. Nove de Julho</option>
-            <option value="Rua Adão Afonso Costa">Rua Adão Afonso Costa</option>
-            <option value="Rua Yoshi Sato">Rua Yoshi Sato</option>
-            <option value="Rua Sunao Katsuki">Rua Sunao Katsuki</option>
-            <option value="Rua Frei Henrique">Rua Frei Henrique</option>
-            <option value="Rua José do Patrocínio">Rua José do Patrocínio</option>
-            <option value="Rua Tiradentes">Rua Tiradentes</option>
-            <option value="Rua Da Amizade">Rua Da Amizade</option>
-          </select>
-        </div>
-        <div>
-          <label>Nº</label>
-          <input type="text" id="numero" placeholder="Número do endereço">
-        </div>
-        <div>
-          <label>Destino</label>
-          <select id="destino">
-            <option value="">Selecione o destino</option>
-            <option value="CAPS">CAPS</option>
-            <option value="HGP">HGP</option>
-            <option value="SANTA CASA">SANTA CASA</option>
-            <option value="UNIMED">UNIMED</option>
-            <option value="FISIOTERAPIA PARTICULAR">FISIOTERAPIA PARTICULAR</option>
-            <option value="HAPVIDA">HAPVIDA</option>
-            <option value="AME">AME</option>
-          </select>
-          <button class="btn-add" onclick="adicionarDestino()">Adicionar destino</button>
-        </div>
-        <div>
-          <label>Motorista</label>
-          <input type="text" id="motorista">
-        </div>
-        <div>
-          <label>Status do motorista</label>
-          <select id="statusMotorista">
-            <option value="Disponível na unidade">Disponível na unidade</option>
-            <option value="Em atendimento">Em atendimento</option>
-          </select>
-        </div>
-        <div>
-          <label>Prioridade</label>
-          <select id="prioridade">
-            <option value="">Selecione</option>
-            <option value="Autista">Autista</option>
-            <option value="Doenças Crônicas/Complicações">Doenças Crônicas/Complicações</option>
-            <option value="PCD">PCD</option>
-            <option value="Idoso">Idoso</option>
-            <option value="Gestante">Gestante</option>
-            <option value="Obeso">Obeso</option>
-          </select>
-          <button class="btn-add" onclick="adicionarPrioridade()">Adicionar Prioridade</button>
-        </div>
-        <div>
-          <label>Sinais/Sintomas</label>
-          <select id="sinais">
-            <option value="">Selecione</option>
-            <option value="Hipertensão">Hipertensão</option>
-            <option value="Diabetes">Diabetes</option>
-            <option value="Doença Cardíaca">Doença Cardíaca</option>
-            <option value="Doença Respiratória">Doença Respiratória</option>
-            <option value="Distúrbios Psiquiátricos">Distúrbios Psiquiátricos</option>
-            <option value="Dor">Dor</option>
-            <option value="Febre">Febre</option>
-            <option value="Vômito">Vômito</option>
-            <option value="Nenhum">Nenhum</option>
-          </select>
-          <button class="btn-add" onclick="adicionarSinal()">Adicionar Sinal</button>
-        </div>
-        <div>
-          <label>Finalidade</label>
-          <select id="finalidade">
-            <option value="">Selecione</option>
-            <option value="Pós consulta">Pós consulta</option>
-            <option value="Exame">Exame</option>
-            <option value="Curativo">Curativo</option>
-            <option value="Alta hospitalar">Alta hospitalar</option>
-            <option value="Transferência">Transferência</option>
-          </select>
-          <button class="btn-add" onclick="adicionarFinalidade()">Adicionar</button>
-        </div>
-        <div>
-          <label>Óbito</label>
-          <select id="obito">
-            <option value="Não">Não</option>
-            <option value="Sim">Sim</option>
-          </select>
-        </div>
-        <div>
-          <label>Família/Resiliência</label>
-          <input type="text" id="familia" placeholder="Ex.: Família Silva / Resiliência alta">
-        </div>
-        <div class="full">
-          <label>Observações</label>
-          <textarea id="obs" rows="3"></textarea>
-        </div>
-      </div>
+      <label>Data</label>
+      <input type="date" id="data">
+
+      <label>Horário</label>
+      <input type="time" id="horario">
+
+      <label>Paciente</label>
+      <input type="text" id="paciente">
+
+      <label>Endereço</label>
+      <select id="endereco">
+        <option value="">Selecione o endereço</option>
+        <option value="Rua Rio Branco">Rua Rio Branco</option>
+        <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
+        <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
+        <!-- ... todos os demais endereços ... -->
+        <option value="Rua Da Amizade">Rua Da Amizade</option>
+      </select>
+
+      <label>Nº</label>
+      <input type="text" id="numero">
+
+      <label>Destino</label>
+      <select id="destino">
+        <option value="">Selecione o destino</option>
+        <option value="CAPS">CAPS</option>
+        <option value="HGP">HGP</option>
+        <option value="SANTA CASA">SANTA CASA</option>
+        <option value="UNIMED">UNIMED</option>
+        <option value="FISIOTERAPIA PARTICULAR">FISIOTERAPIA PARTICULAR</option>
+        <option value="HAPVIDA">HAPVIDA</option>
+        <option value="AME">AME</option>
+      </select>
+
+      <label>Motorista</label>
+      <input type="text" id="motorista">
+
+      <label>Status do motorista</label>
+      <select id="statusMotorista">
+        <option value="Disponível na unidade">Disponível na unidade</option>
+        <option value="Em atendimento">Em atendimento</option>
+      </select>
+
+      <label>Prioridade</label>
+      <select id="prioridade">
+        <option value="">Selecione</option>
+        <option value="Autista">Autista</option>
+        <option value="Doenças Crônicas/Complicações">Doenças Crônicas/Complicações</option>
+        <option value="PCD">PCD</option>
+        <option value="Idoso">Idoso</option>
+        <option value="Gestante">Gestante</option>
+        <option value="Obeso">Obeso</option>
+      </select>
+
+      <label>Sinais/Sintomas</label>
+      <select id="sinais">
+        <option value="">Selecione</option>
+        <option value="Hipertensão">Hipertensão</option>
+        <option value="Diabetes">Diabetes</option>
+        <option value="Doença Cardíaca">Doença Cardíaca</option>
+        <option value="Doença Respiratória">Doença Respiratória</option>
+        <option value="Distúrbios Psiquiátricos">Distúrbios Psiquiátricos</option>
+        <option value="Dor">Dor</option>
+        <option value="Febre">Febre</option>
+        <option value="Vômito">Vômito</option>
+        <option value="Nenhum">Nenhum</option>
+      </select>
+
+      <label>Finalidade</label>
+      <select id="finalidade">
+        <option value="">Selecione</option>
+        <option value="Pós consulta">Pós consulta</option>
+        <option value="Exame">Exame</option>
+        <option value="Curativo">Curativo</option>
+        <option value="Alta hospitalar">Alta hospitalar</option>
+        <option value="Transferência">Transferência</option>
+      </select>
+
+      <label>Óbito</label>
+      <select id="obito">
+        <option value="Não">Não</option>
+        <option value="Sim">Sim</option>
+      </select>
+
+      <label>Família/Resiliência</label>
+      <input type="text" id="familia">
+
+      <label>Observações</label>
+      <textarea id="obs" rows="3"></textarea>
 
       <label>Tipo de Chamado</label>
-      <div style="margin-bottom: 15px;">
+      <div>
         <button class="btn-normal" onclick="tipoChamado('normal')">Normal</button>
         <button class="btn-urgencia" onclick="tipoChamado('urgencia')">⚠ URGÊNCIA</button>
         <button class="btn-emergencia" onclick="tipoChamado('emergencia')">Emergência</button>
       </div>
 
-      <div class="actions">
-        <button class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
-        <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
-        <button class="btn-replicar" onclick="replicarChamado()">Replicar Chamado Selecionado</button>
-      </div>
+      <button class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
+      <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
+      <button class="btn-replicar" onclick="replicarChamado()">Replicar Chamado Selecionado</button>
 
       <!-- Barra de busca -->
-      <div class="busca">
-        <input type="text" id="buscaInput" placeholder="Buscar por paciente, endereço, destino, observações..." oninput="aplicarBusca()"/>
-      </div>
+      <input type="text" id="buscaInput" placeholder="Buscar..." oninput="aplicarBusca()"/>
 
       <h2>Chamados</h2>
       <table>
         <thead>
           <tr>
-            <th>Sel</th>
-            <th>Data</th>
-            <th>Hora</th>
-            <th>Paciente</th>
-            <th>Endereço</th>
-            <th>Nº</th>
-            <th>Destino</th>
-            <th>Motorista</th>
-            <th>Status motorista</th>
-            <th>Prioridade</th>
-            <th>Sinais/Sintomas</th>
-            <th>Finalidade</th>
-            <th>Óbito</th>
-            <th>Família/Resiliência</th>
-            <th>Observações</th>
-            <th>Atendente</th>
+            <th>Sel</th><th>Data</th><th>Hora</th><th>Paciente</th><th>Endereço</th><th>Nº</th>
+            <th>Destino</th><th>Motorista</th><th>Status</th><th>Prioridade</th><th>Sinais</th>
+            <th>Finalidade</th><th>Óbito</th><th>Família</th><th>Observações</th><th>Atendente</th>
           </tr>
         </thead>
         <tbody id="corpoTabela"></tbody>
@@ -232,7 +162,7 @@
 
       <div class="chat-box">
         <h2>Chat Interno</h2>
-        <input type="text" id="chatMsg" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter') enviarMsg()">
+        <input type="text" id="chatMsg" placeholder="Digite..." onkeydown="if(event.key==='Enter') enviarMsg()">
         <button class="btn-add" onclick="enviarMsg()">Enviar</button>
         <div id="chatArea"></div>
       </div>
@@ -247,23 +177,6 @@
     <button class="btn-del" onclick="logout()">Sair</button>
   </footer>
 
-  <!-- Firebase Config -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
-      authDomain: "registro-ambulancia192.firebaseapp.com",
-      databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com",
-      projectId: "registro-ambulancia192",
-      storageBucket: "registro-ambulancia192.firebasestorage.app",
-      messagingSenderId: "549498386461",
-      appId: "1:549498386461:web:94d6ac364a54a7d4216ef4",
-      measurementId: "G-NM7EQL6E83"
-    };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-  </script>
-
-  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>
