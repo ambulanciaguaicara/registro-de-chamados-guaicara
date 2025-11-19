@@ -1,8 +1,16 @@
-"scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview"
-},
-"devDependencies": {
-  "vite": "^5.x.x"
+{
+  "name": "registro-de-chamados-guaicara",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.x.x"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
 }
