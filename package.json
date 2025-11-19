@@ -1,13 +1,7 @@
 {
-  "name": "registro-de-chamados-guaicara",
-  "version": "1.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "vite": "^5.4.21"
   }
 }
