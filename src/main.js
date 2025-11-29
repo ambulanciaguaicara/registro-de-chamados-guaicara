@@ -375,3 +375,17 @@ window.aplicarBusca = aplicarBusca;
 window.abrirProntuario = abrirProntuario;
 window.editarNomeMotorista = editarNomeMotorista;
 window.editarStatusMotorista = editarStatusMotorista;
+window.adicionarEndereco = function () {
+  const novoEndereco = prompt("Digite o novo endereço:");
+  if (novoEndereco) {
+    const select = document.getElementById("endereco");
+    const option = document.createElement("option");
+    option.value = novoEndereco;
+    option.textContent = novoEndereco;
+    select.appendChild(option);
+    select.value = novoEndereco;
+  }
+};
+
+
+
