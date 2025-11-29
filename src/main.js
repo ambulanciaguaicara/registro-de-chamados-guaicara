@@ -7,8 +7,12 @@ let filtroTexto = "";
 const prontuarios = new Map(); // Map<paciente, Array<chamados>>
 let motoristas = [
   { nome: "João", status: "Disponível na unidade" },
-  { nome: "Maria", status: "Disponível na unidade" },
-  { nome: "Carlos", status: "Disponível na unidade" }
+  { nome: "Francisco", status: "Disponível na unidade" },
+  { nome: "Garcia", status: "Disponível na unidade" },
+  { nome: "Rodrigo", status: "Disponível na unidade" },
+  { nome: "Gustavo", status: "Disponível na unidade" },
+  { nome: "Denilson", status: "Disponível na unidade" },
+  { nome: "Fernando", status: "Disponível na unidade" }
 ];
 
 // Tipo de chamado
