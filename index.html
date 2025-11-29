@@ -109,7 +109,19 @@
           <option value="Rua Sabino">Rua Sabino</option>
         </optgroup>
       </select>
-      <button type="button" onclick="adicionarEndereco()">Adicionar +</button>
+      <button type="button" onclick="adicionarEndereco(){
+        const novoEndereco = prompt("Digite o novo endereço:");
+        if (novoEndereco) {
+        const select = document.getElementById("endereco");
+        const option = document.createElement("option");
+        option.value = novoEndereco;
+        option.textContent = novoEndereco;
+        select.appendChild(option);
+        select.value = novoEndereco;
+        }
+       }
+      </script>
+        ">Adicionar +</button>
 
       <label>Nº</label>
       <input type="text" id="numero">
