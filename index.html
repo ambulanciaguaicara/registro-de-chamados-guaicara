@@ -138,22 +138,7 @@
     <div>Versão: 1.0.0</div>
     <button class="btn-del" onclick="logout()">Sair</button>
   </footer>
-
-  <!-- Script para o botão Adicionar Endereço -->
-  <script>
-    function adicionarEndereco() {
-      const novoEndereco = prompt("Digite o novo endereço:");
-      if (novoEndereco) {
-        const select = document.getElementById("endereco");
-        const option = document.createElement("option");
-        option.value = novoEndereco;
-        option.textContent = novoEndereco;
-        select.appendChild(option);
-        select.value = novoEndereco;
-      }
-    }
-  </script>
-
+  
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
