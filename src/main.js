@@ -36,6 +36,7 @@ function salvarDados() {
     localStorage.setItem('prontuarios', JSON.stringify(Array.from(prontuarios.entries())));
   } catch (e) {
     console.error("Erro ao salvar dados:", e);
+    alert("⚠️ Erro ao salvar dados. Suas alterações podem não ter sido salvas.");
   }
 }
 
@@ -58,6 +59,7 @@ function carregarDados() {
     }
   } catch (e) {
     console.error("Erro ao carregar dados:", e);
+    alert("⚠️ Erro ao carregar dados salvos. Iniciando com dados vazios.");
   }
 }
 
@@ -223,6 +225,9 @@ function editarChamado(id) {
   const c = chamados.find(x => x.id === id);
   if (!c) return;
   
+  // Armazena o chamado original para possível restauração
+  window._chamadoEditando = { ...c };
+  
   // Preenche o formulário para edição
   document.getElementById("data").value = c.data;
   document.getElementById("horario").value = c.hora;
@@ -240,7 +245,7 @@ function editarChamado(id) {
   document.getElementById("obs").value = c.obs || "";
   tipoSelecionado = c.tipo;
 
-  // Ao salvar, substitui o registro
+  // Remove temporariamente - será re-adicionado ao salvar
   chamados = chamados.filter(x => x.id !== id);
   alert("Edite os campos e clique em 'Adicionar Chamado' para salvar as mudanças.");
 }
@@ -637,7 +642,7 @@ function gerarRelatorioMensal() {
   console.log(texto);
 
   // Destroy existing chart if any
-  if (window.chartInstance) {
+  if (window.chartInstance && typeof window.chartInstance.destroy === 'function') {
     window.chartInstance.destroy();
   }
 
