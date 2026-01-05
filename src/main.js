@@ -6,11 +6,6 @@ let tipoSelecionado = "normal";
 let filtroTexto = "";
 const prontuarios = new Map(); // Map<paciente, Array<chamados>>
 let motoristas = [];
-function adicionarMotorista () {
-  const nome = prompt("João"</option>,"Francisco"</option>,
-  "Garcia"</option>, "Rodrigo"</option>, "Gustavo"</option>,"Denilson"</option>, "Fernando"</option>}
-  )";
-  if (!nome) return;
 
 // Tipo de chamado
 function tipoChamado(tipo) {
@@ -21,7 +16,6 @@ function tipoChamado(tipo) {
 // Adicionar chamado
 function adicionarChamado() {
   const atendente = document.getElementById("atendente").value.trim();
-  const chamado = { 
   const data = document.getElementById("data").value;
   const hora = document.getElementById("horario").value;
   const paciente = document.getElementById("paciente").value.trim();
@@ -36,7 +30,6 @@ function adicionarChamado() {
   const obito = document.getElementById("obito").value;
   const familia = document.getElementById("familia").value.trim();
   const obs = document.getElementById("obs").value.trim();
-};
 
   if (!atendente) {
     alert("Informe o nome do atendente.");
@@ -84,7 +77,7 @@ function adicionarChamado() {
   atualizarProntuario(chamado);
   renderChamados(); // função que mostra os chamados na tela
   limparFormulario();
-});
+}
 
 // Renderização de chamados com busca
 function renderChamados() {
@@ -293,45 +286,47 @@ function abrirProntuario(nome) {
 }
 
 // MOTORISTAS (lateral editável)
-function adicionarMotoristas() {
+function exibirMotoristas() {
   const tabela = document.getElementById("tabelaMotoristas");
   tabela.innerHTML = "";
-  const statusOpts = ["Disponível na unidade","Em atendimento","Horário de almoço","Viagem","Folga","Sem Ambulância"];
 
   motoristas.forEach((motorista) => {
     const linha = document.createElement("tr");
     linha.innerHTML = `
-      <td>${motorista.nome }</td>
-      <td>${motorista.status}</td>
-      `;
-      tabela.appendChild(linha);
-  });
-}
-exibirMotoristas();
-        <select onchange="alterarStatus('${Motorista.nome}', this.value)">
-          <option${motorista.status === "Disponível na unidade" ? "selected" : ""}>Disponível na unidade</option>
-          <option${motorista.status === "Em atendimento" ? "selected" : ""}>Em atendimento</option>
-          <optiin${motorista.status === "Horário de almoço" ? "selected" : ""}>Horário de almoço</option>
-          <option${motorista.status === "Folga" ? "selected" : ""}>Folga</option>
+      <td>${motorista.nome}</td>
+      <td>
+        <select onchange="alterarStatus('${motorista.nome}', this.value)">
+          <option ${motorista.status === "Disponível na unidade" ? "selected" : ""}>Disponível na unidade</option>
+          <option ${motorista.status === "Em atendimento" ? "selected" : ""}>Em atendimento</option>
+          <option ${motorista.status === "Horário de almoço" ? "selected" : ""}>Horário de almoço</option>
+          <option ${motorista.status === "Viagem" ? "selected" : ""}>Viagem</option>
+          <option ${motorista.status === "Folga" ? "selected" : ""}>Folga</option>
+          <option ${motorista.status === "Sem Ambulância" ? "selected" : ""}>Sem Ambulância</option>
         </select>
       </td>
     `;
-    tbody.appendChild(tr);
+    tabela.appendChild(linha);
   });
 }
 
-function adicionarMotorista () {
-  const nome = prompt ("Digite o nome o motorista"); 
-if (!nome) return;
+function alterarStatus(nome, novoStatus) {
+  const motorista = motoristas.find(m => m.nome === nome);
+  if (motorista) {
+    motorista.status = novoStatus;
+    exibirMotoristas();
+  }
+}
 
-motoristas.push({ nome, status:"</option>"})yuthgfhfhchhdhfh
-exibirMotoristas();
-<button class="btn-add" onclick ="adicionarMotorista()">Adicionar motorista</button>
+function adicionarMotorista() {
+  const nome = prompt("Digite o nome do motorista:");
+  if (!nome) return;
+  
+  motoristas.push({ nome, status: "Disponível na unidade" });
+  exibirMotoristas();
 }
 
 // RELATÓRIO MENSAL (gráfico de barras)
-const document "getElementById("btnRelatorioMensal").addEventListener("click, gerarRelatorioMensal);
-function gerarRelatorioMensal () {
+function gerarRelatorioMensal() {
   const ctx = document.getElementById("graficoMensal");
   const tipos = { normal:0, urgencia:0, emergencia:0 };
   const prioridades = { Autista:0, "Doenças Crônicas/Complicações":0, PCD:0, Idoso:0, Gestante:0, Obeso:0 };
@@ -368,25 +363,25 @@ function gerarRelatorioMensal () {
 }
 
 // Inicialização
-renderChamados () 
-renderMotoristas ()
+renderChamados();
+exibirMotoristas();
 
 // Expor funções no escopo global para os onclick do HTML
-window const TipoChamado = function tipoChamado ()
-window const adicionarChamado = function adicionarChamado ()
-window const excluirSelecionados = function excluirSelecionados ()
-window const replicarChamado = fuction replicarChamado  ()
-window const adicionarDestino =  function adicionarDestino ()
-window const adicionarPrioridade = function adicionarPrioridade ()
-window const adicionarSinal = function adicionarSinal ()
-window const adicionarFinalidade = function adicionarFinalidade ()
-window const enviarMsg = function enviarMsg ()
-window const logout = function logout ()
-window const aplicarBusca = function aplicarBusca ()
-window const abrirProntuario =  function abrirProntuario ()
-window const adicionarMotorista =  function adicionarMotorista ()
-window const adicionarStatusMotorista = function adicionarStatusMotorista ()
-window const adicionarEndereco = function adicionarNovoEndereço () {
+window.tipoChamado = tipoChamado;
+window.adicionarChamado = adicionarChamado;
+window.excluirSelecionados = excluirSelecionados;
+window.replicarChamado = replicarChamado;
+window.adicionarDestino = adicionarDestino;
+window.adicionarPrioridade = adicionarPrioridade;
+window.adicionarSinal = adicionarSinal;
+window.adicionarFinalidade = adicionarFinalidade;
+window.enviarMsg = enviarMsg;
+window.logout = logout;
+window.aplicarBusca = aplicarBusca;
+window.abrirProntuario = abrirProntuario;
+window.adicionarMotorista = adicionarMotorista;
+window.alterarStatus = alterarStatus;
+window.adicionarNovoEndereco = function adicionarNovoEndereco() {
   const novoEndereco = prompt("Digite o novo endereço:");
   if (novoEndereco) {
     const select = document.getElementById("endereco");
@@ -395,6 +390,13 @@ window const adicionarEndereco = function adicionarNovoEndereço () {
     option.textContent = novoEndereco;
     select.appendChild(option);
     select.value = novoEndereco;
-    <button class="btn-add" onclick="adicionarnovoEndereço()">Adicionar endereço</button>
   }
-}
+};
+
+// Event listener para relatório mensal
+document.addEventListener("DOMContentLoaded", () => {
+  const btnRelatorio = document.getElementById("btnRelatorioMensal");
+  if (btnRelatorio) {
+    btnRelatorio.addEventListener("click", gerarRelatorioMensal);
+  }
+});
