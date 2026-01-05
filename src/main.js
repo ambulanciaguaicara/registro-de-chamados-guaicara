@@ -1,27 +1,88 @@
 // src/main.js
+// Sistema de Registro de Chamados - Ambulância Municipal de Guaicara/SP
+// Versão recuperada: Dezembro/2025
 
-// Estado principal
+// ============================================================================
+// ESTADO PRINCIPAL
+// ============================================================================
+
+/** Estado e variáveis globais */
 let chamados = [];
 let tipoSelecionado = "normal";
 let filtroTexto = "";
 const prontuarios = new Map(); // Map<paciente, Array<chamados>>
-let motoristas = [];
-function adicionarMotorista () {
-  const nome = prompt("João"</option>,"Francisco"</option>,
-  "Garcia"</option>, "Rodrigo"</option>, "Gustavo"</option>,"Denilson"</option>, "Fernando"</option>}
-  )";
-  if (!nome) return;
+let motoristas = [
+  { nome: "João", status: "Disponível na unidade" },
+  { nome: "Francisco", status: "Disponível na unidade" },
+  { nome: "Garcia", status: "Disponível na unidade" },
+  { nome: "Rodrigo", status: "Disponível na unidade" },
+  { nome: "Gustavo", status: "Disponível na unidade" },
+  { nome: "Denilson", status: "Disponível na unidade" },
+  { nome: "Fernando", status: "Disponível na unidade" }
+];
 
-// Tipo de chamado
+// ============================================================================
+// FUNÇÕES DE PERSISTÊNCIA (LOCALSTORAGE)
+// ============================================================================
+
+/**
+ * Salva todos os dados no localStorage
+ * @returns {void}
+ */
+function salvarDados() {
+  try {
+    localStorage.setItem('chamados', JSON.stringify(chamados));
+    localStorage.setItem('motoristas', JSON.stringify(motoristas));
+    localStorage.setItem('prontuarios', JSON.stringify(Array.from(prontuarios.entries())));
+  } catch (e) {
+    console.error("Erro ao salvar dados:", e);
+    alert("⚠️ Erro ao salvar dados. Suas alterações podem não ter sido salvas.");
+  }
+}
+
+/**
+ * Carrega todos os dados do localStorage
+ * @returns {void}
+ */
+function carregarDados() {
+  try {
+    const chamadosSalvos = localStorage.getItem('chamados');
+    const motoristasSalvos = localStorage.getItem('motoristas');
+    const prontuariosSalvos = localStorage.getItem('prontuarios');
+    
+    if (chamadosSalvos) chamados = JSON.parse(chamadosSalvos);
+    if (motoristasSalvos) motoristas = JSON.parse(motoristasSalvos);
+    if (prontuariosSalvos) {
+      const entries = JSON.parse(prontuariosSalvos);
+      prontuarios.clear();
+      entries.forEach(([key, value]) => prontuarios.set(key, value));
+    }
+  } catch (e) {
+    console.error("Erro ao carregar dados:", e);
+    alert("⚠️ Erro ao carregar dados salvos. Iniciando com dados vazios.");
+  }
+}
+
+// ============================================================================
+// FUNÇÕES CORE
+// ============================================================================
+
+/**
+ * Seleciona o tipo de chamado
+ * @param {string} tipo - Tipo do chamado (normal, urgencia, emergencia)
+ * @returns {void}
+ */
 function tipoChamado(tipo) {
   tipoSelecionado = tipo;
   alert("Tipo de chamado: " + tipo.toUpperCase());
 }
 
-// Adicionar chamado
+/**
+ * Adiciona um novo chamado ao sistema com validação
+ * @returns {void}
+ */
 function adicionarChamado() {
   const atendente = document.getElementById("atendente").value.trim();
-  const chamado = { 
   const data = document.getElementById("data").value;
   const hora = document.getElementById("horario").value;
   const paciente = document.getElementById("paciente").value.trim();
@@ -36,8 +97,8 @@ function adicionarChamado() {
   const obito = document.getElementById("obito").value;
   const familia = document.getElementById("familia").value.trim();
   const obs = document.getElementById("obs").value.trim();
-};
 
+  // Validações
   if (!atendente) {
     alert("Informe o nome do atendente.");
     return;
@@ -48,12 +109,16 @@ function adicionarChamado() {
   }
 
   // Unir se for mesma pessoa no mesmo dia
-  const existente = chamados.find(c => c.paciente.toLowerCase() === paciente.toLowerCase() && c.data === data);
+  const existente = chamados.find(c => 
+    c.paciente.toLowerCase() === paciente.toLowerCase() && c.data === data
+  );
+  
   if (existente) {
     existente.obs = (existente.obs ? existente.obs + " | " : "") + `Réplica unida às ${hora}`;
     existente._unido = true;
     renderChamados();
     atualizarProntuario(existente);
+    salvarDados();
     alert("Chamado unido ao registro do mesmo paciente no mesmo dia.");
     limparFormulario();
     return;
@@ -77,18 +142,25 @@ function adicionarChamado() {
     obito,
     familia,
     obs,
-    _replica: false // controle visual
+    _replica: false
   };
 
   chamados.push(chamado);
   atualizarProntuario(chamado);
-  renderChamados(); // função que mostra os chamados na tela
+  renderChamados();
   limparFormulario();
-});
+  salvarDados();
+  alert("Chamado adicionado com sucesso!");
+}
 
-// Renderização de chamados com busca
+/**
+ * Renderiza a lista de chamados com busca
+ * @returns {void}
+ */
 function renderChamados() {
   const corpo = document.getElementById("corpoTabela");
+  if (!corpo) return;
+  
   corpo.innerHTML = "";
 
   const listaFiltrada = chamados.filter(c => {
@@ -144,10 +216,18 @@ function renderChamados() {
   atualizarProntuariosLista();
 }
 
-// Editar chamado (somente criador)
+/**
+ * Edita um chamado existente (apenas criador)
+ * @param {number} id - ID do chamado a ser editado
+ * @returns {void}
+ */
 function editarChamado(id) {
   const c = chamados.find(x => x.id === id);
   if (!c) return;
+  
+  // Armazena o chamado original para possível restauração
+  window._chamadoEditando = { ...c };
+  
   // Preenche o formulário para edição
   document.getElementById("data").value = c.data;
   document.getElementById("horario").value = c.hora;
@@ -165,115 +245,209 @@ function editarChamado(id) {
   document.getElementById("obs").value = c.obs || "";
   tipoSelecionado = c.tipo;
 
-  // Ao salvar, substitui o registro
-  const originalId = c.id;
-  chamados = chamados.filter(x => x.id !== originalId);
+  // Remove temporariamente - será re-adicionado ao salvar
+  chamados = chamados.filter(x => x.id !== id);
   alert("Edite os campos e clique em 'Adicionar Chamado' para salvar as mudanças.");
 }
 
-// Busca
+/**
+ * Aplica filtro de busca nos chamados
+ * @returns {void}
+ */
 function aplicarBusca() {
   filtroTexto = document.getElementById("buscaInput").value.trim();
   renderChamados();
 }
 
-// Excluir selecionados
+/**
+ * Exclui os chamados selecionados
+ * @returns {void}
+ */
 function excluirSelecionados() {
   const sel = Array.from(document.querySelectorAll("#corpoTabela input[type='checkbox']:checked"))
-                   .map(cb => parseInt(cb.dataset.id));
+    .map(cb => parseInt(cb.dataset.id));
+  
+  if (sel.length === 0) {
+    alert("Nenhum chamado selecionado.");
+    return;
+  }
+  
+  if (!confirm(`Deseja realmente excluir ${sel.length} chamado(s)?`)) {
+    return;
+  }
+  
   chamados = chamados.filter(c => !sel.includes(c.id));
   renderChamados();
+  salvarDados();
+  alert(`${sel.length} chamado(s) excluído(s) com sucesso.`);
 }
 
-// Replicar (azul) e unir se mesma pessoa/dia
+/**
+ * Replica um chamado existente
+ * @returns {void}
+ */
 function replicarChamado() {
   const cb = document.querySelector("#corpoTabela input[type='checkbox']:checked");
   if (!cb) {
     alert("Selecione um chamado para replicar.");
     return;
   }
+  
   const id = parseInt(cb.dataset.id);
   const base = chamados.find(c => c.id === id);
   if (!base) return;
 
   const copia = { ...base, id: Date.now(), _replica: true };
+  
   // Se existir outro do mesmo paciente na mesma data, une
-  const existente = chamados.find(c => c.paciente.toLowerCase() === base.paciente.toLowerCase() && c.data === base.data && c.id !== base.id);
+  const existente = chamados.find(c => 
+    c.paciente.toLowerCase() === base.paciente.toLowerCase() && 
+    c.data === base.data && 
+    c.id !== base.id
+  );
+  
   if (existente) {
     existente.obs = (existente.obs ? existente.obs + " | " : "") + "Réplicas unidas";
     existente._unido = true;
     renderChamados();
     atualizarProntuario(existente);
+    salvarDados();
+    alert("Chamado replicado e unido ao existente.");
     return;
   }
 
   chamados.push(copia);
   atualizarProntuario(copia);
   renderChamados();
+  salvarDados();
+  alert("Chamado replicado com sucesso!");
 }
 
-// Auxiliares "adicionar" (mantidos como logs simples)
+// ============================================================================
+// FUNÇÕES AUXILIARES
+// ============================================================================
+
+/**
+ * Adiciona log de destino adicional
+ * @returns {void}
+ */
 function adicionarDestino() {
   const v = document.getElementById("destino").value;
   if (!v) return alert("Selecione um destino.");
   alert("Destino adicional registrado: " + v);
 }
+
+/**
+ * Adiciona log de prioridade adicional
+ * @returns {void}
+ */
 function adicionarPrioridade() {
   const v = document.getElementById("prioridade").value;
   if (!v) return alert("Selecione uma prioridade.");
   alert("Prioridade adicional registrada: " + v);
 }
+
+/**
+ * Adiciona log de sinal/sintoma adicional
+ * @returns {void}
+ */
 function adicionarSinal() {
   const v = document.getElementById("sinais").value;
   if (!v) return alert("Selecione um sinal/sintoma.");
   alert("Sinal/Sintoma adicional registrado: " + v);
 }
+
+/**
+ * Adiciona log de finalidade adicional
+ * @returns {void}
+ */
 function adicionarFinalidade() {
   const v = document.getElementById("finalidade").value;
   if (!v) return alert("Selecione uma finalidade.");
   alert("Finalidade adicional registrada: " + v);
 }
 
-// Chat interno
+/**
+ * Envia mensagem no chat interno
+ * @returns {void}
+ */
 function enviarMsg() {
   const msg = document.getElementById("chatMsg").value.trim();
   if (!msg) return;
+  
+  const chatArea = document.getElementById("chatArea");
+  if (!chatArea) return;
+  
   const p = document.createElement("p");
   p.textContent = "👤 " + msg;
-  document.getElementById("chatArea").appendChild(p);
+  chatArea.appendChild(p);
   document.getElementById("chatMsg").value = "";
 }
 
-// Logout (simples local)
+/**
+ * Desconecta o usuário
+ * @returns {void}
+ */
 function logout() {
-  alert("Usuário desconectado.");
-  document.getElementById("usuarioLogado").textContent = "Usuário: —";
+  if (confirm("Deseja realmente sair?")) {
+    alert("Usuário desconectado.");
+    const elem = document.getElementById("usuarioLogado");
+    if (elem) elem.textContent = "Usuário: —";
+  }
 }
 
-// Limpar formulário
+/**
+ * Limpa todos os campos do formulário
+ * @returns {void}
+ */
 function limparFormulario() {
-  ["data","horario","paciente","endereco","numero","destino","motorista","prioridade",
-   "sinais","finalidade","familia","obs"].forEach(id => {
+  ["data", "horario", "paciente", "endereco", "numero", "destino", "motorista", 
+   "prioridade", "sinais", "finalidade", "familia", "obs"].forEach(id => {
     const el = document.getElementById(id);
-    if (el.tagName === "SELECT") el.value = "";
-    else el.value = "";
+    if (el) {
+      if (el.tagName === "SELECT") {
+        el.value = "";
+      } else {
+        el.value = "";
+      }
+    }
   });
-  document.getElementById("statusMotorista").value = "Disponível na unidade";
-  document.getElementById("obito").value = "Não";
+  
+  const statusMotorista = document.getElementById("statusMotorista");
+  if (statusMotorista) statusMotorista.value = "Disponível na unidade";
+  
+  const obito = document.getElementById("obito");
+  if (obito) obito.value = "Não";
 }
 
-// PRONTUÁRIOS (armazenamento por paciente na lateral)
+// ============================================================================
+// SISTEMA DE PRONTUÁRIOS
+// ============================================================================
+
+/**
+ * Atualiza o prontuário do paciente
+ * @param {Object} chamado - Chamado a ser adicionado ao prontuário
+ * @returns {void}
+ */
 function atualizarProntuario(chamado) {
   const chave = chamado.paciente.trim();
-  if (!prontuarios.has(chave)) prontuarios.set(chave, []);
+  if (!prontuarios.has(chave)) {
+    prontuarios.set(chave, []);
+  }
   prontuarios.get(chave).push(chamado);
   atualizarProntuariosLista();
 }
 
+/**
+ * Atualiza a lista de prontuários na lateral
+ * @returns {void}
+ */
 function atualizarProntuariosLista() {
   const box = document.getElementById("prontuariosLista");
+  if (!box) return;
+  
   box.innerHTML = "";
-  const pacientes = Array.from(prontuarios.keys()).sort((a,b) => a.localeCompare(b));
+  const pacientes = Array.from(prontuarios.keys()).sort((a, b) => a.localeCompare(b));
 
   pacientes.forEach(nome => {
     const item = document.createElement("div");
@@ -286,56 +460,166 @@ function atualizarProntuariosLista() {
   });
 }
 
+/**
+ * Abre e exibe o prontuário de um paciente
+ * @param {string} nome - Nome do paciente
+ * @returns {void}
+ */
 function abrirProntuario(nome) {
   const registros = prontuarios.get(nome) || [];
-  const linhas = registros.map(r => `- ${r.data} ${r.hora} | ${r.destino} | ${r.endereco} ${r.numero || ""} | Óbito: ${r.obito}`).join("\n");
+  const linhas = registros.map(r => 
+    `- ${r.data} ${r.hora} | ${r.destino} | ${r.endereco} ${r.numero || ""} | Óbito: ${r.obito}`
+  ).join("\n");
   alert(`Prontuário de ${nome}:\n${linhas || "Sem registros."}`);
 }
 
-// MOTORISTAS (lateral editável)
-function adicionarMotoristas() {
+// ============================================================================
+// SISTEMA DE MOTORISTAS
+// ============================================================================
+
+/**
+ * Renderiza a tabela de motoristas
+ * @returns {void}
+ */
+function renderMotoristas() {
   const tabela = document.getElementById("tabelaMotoristas");
+  if (!tabela) return;
+  
   tabela.innerHTML = "";
-  const statusOpts = ["Disponível na unidade","Em atendimento","Horário de almoço","Viagem","Folga","Sem Ambulância"];
+  const statusOpts = [
+    "Disponível na unidade",
+    "Em atendimento",
+    "Horário de almoço",
+    "Viagem",
+    "Folga",
+    "Sem Ambulância"
+  ];
 
-  motoristas.forEach((motorista) => {
+  motoristas.forEach((motorista, i) => {
     const linha = document.createElement("tr");
-    linha.innerHTML = `
-      <td>${motorista.nome }</td>
-      <td>${motorista.status}</td>
-      `;
-      tabela.appendChild(linha);
+    
+    const tdNome = document.createElement("td");
+    tdNome.textContent = motorista.nome;
+    
+    const tdStatus = document.createElement("td");
+    const select = document.createElement("select");
+    statusOpts.forEach(opt => {
+      const option = document.createElement("option");
+      option.value = opt;
+      option.textContent = opt;
+      if (opt === motorista.status) option.selected = true;
+      select.appendChild(option);
+    });
+    select.addEventListener("change", (e) => {
+      editarStatusMotorista(i, e.target.value);
+    });
+    tdStatus.appendChild(select);
+    
+    linha.appendChild(tdNome);
+    linha.appendChild(tdStatus);
+    tabela.appendChild(linha);
   });
 }
-exibirMotoristas();
-        <select onchange="alterarStatus('${Motorista.nome}', this.value)">
-          <option${motorista.status === "Disponível na unidade" ? "selected" : ""}>Disponível na unidade</option>
-          <option${motorista.status === "Em atendimento" ? "selected" : ""}>Em atendimento</option>
-          <optiin${motorista.status === "Horário de almoço" ? "selected" : ""}>Horário de almoço</option>
-          <option${motorista.status === "Folga" ? "selected" : ""}>Folga</option>
-        </select>
-      </td>
-    `;
-    tbody.appendChild(tr);
+
+/**
+ * Edita o nome de um motorista
+ * @param {number} i - Índice do motorista
+ * @param {string} val - Novo nome
+ * @returns {void}
+ */
+function editarNomeMotorista(i, val) {
+  if (val && val.trim()) {
+    motoristas[i].nome = val.trim();
+    renderMotoristas();
+    salvarDados();
+  }
+}
+
+/**
+ * Edita o status de um motorista
+ * @param {number} i - Índice do motorista
+ * @param {string} val - Novo status
+ * @returns {void}
+ */
+function editarStatusMotorista(i, val) {
+  motoristas[i].status = val;
+  salvarDados();
+}
+
+/**
+ * Adiciona um novo motorista
+ * @returns {void}
+ */
+function adicionarMotorista() {
+  const nome = prompt("Digite o nome do motorista:");
+  if (!nome || nome.trim() === "") return;
+  
+  // Verificar duplicatas
+  const existe = motoristas.find(m => m.nome.toLowerCase() === nome.trim().toLowerCase());
+  if (existe) {
+    alert("Este motorista já existe na lista.");
+    return;
+  }
+  
+  motoristas.push({ 
+    nome: nome.trim(), 
+    status: "Disponível na unidade" 
   });
+  
+  renderMotoristas();
+  salvarDados();
+  alert(`Motorista "${nome.trim()}" adicionado com sucesso!`);
 }
 
-function adicionarMotorista () {
-  const nome = prompt ("Digite o nome o motorista"); 
-if (!nome) return;
+// ============================================================================
+// FUNÇÕES DE ENDEREÇO
+// ============================================================================
 
-motoristas.push({ nome, status:"</option>"})yuthgfhfhchhdhfh
-exibirMotoristas();
-<button class="btn-add" onclick ="adicionarMotorista()">Adicionar motorista</button>
+/**
+ * Adiciona um novo endereço à lista
+ * @returns {void}
+ */
+function adicionarEndereco() {
+  const novoEndereco = prompt("Digite o novo endereço:");
+  if (!novoEndereco || novoEndereco.trim() === "") return;
+  
+  const select = document.getElementById("endereco");
+  if (!select) return;
+  
+  const option = document.createElement("option");
+  option.value = novoEndereco.trim();
+  option.textContent = novoEndereco.trim();
+  select.appendChild(option);
+  select.value = novoEndereco.trim();
+  
+  alert(`Endereço "${novoEndereco.trim()}" adicionado com sucesso!`);
 }
 
-// RELATÓRIO MENSAL (gráfico de barras)
-const document "getElementById("btnRelatorioMensal").addEventListener("click, gerarRelatorioMensal);
-function gerarRelatorioMensal () {
+// ============================================================================
+// RELATÓRIOS
+// ============================================================================
+
+/**
+ * Gera relatório mensal com gráfico
+ * @returns {void}
+ */
+function gerarRelatorioMensal() {
   const ctx = document.getElementById("graficoMensal");
-  const tipos = { normal:0, urgencia:0, emergencia:0 };
-  const prioridades = { Autista:0, "Doenças Crônicas/Complicações":0, PCD:0, Idoso:0, Gestante:0, Obeso:0 };
-  const locais = {}; // contagem por destino
+  if (!ctx) {
+    alert("Canvas do gráfico não encontrado.");
+    return;
+  }
+  
+  const tipos = { normal: 0, urgencia: 0, emergencia: 0 };
+  const prioridades = { 
+    "Autista": 0, 
+    "Doenças Crônicas/Complicações": 0, 
+    "PCD": 0, 
+    "Idoso": 0, 
+    "Gestante": 0, 
+    "Obeso": 0 
+  };
+  const locais = {};
 
   chamados.forEach(c => {
     if (tipos[c.tipo] !== undefined) tipos[c.tipo]++;
@@ -344,19 +628,25 @@ function gerarRelatorioMensal () {
   });
 
   const dataChart = {
-    labels: ["Normal","Urgência","Emergência"],
+    labels: ["Normal", "Urgência", "Emergência"],
     datasets: [
-      { label: "Tipos de Chamados", data: [tipos.normal, tipos.urgencia, tipos.emergencia], backgroundColor: "#0077cc" },
-      { label: "Prioridades (soma)", data: Object.values(prioridades), backgroundColor: "#ff9800" },
-      { label: "Locais (destinos)", data: Object.values(locais), backgroundColor: "#4caf50" }
+      { 
+        label: "Tipos de Chamados", 
+        data: [tipos.normal, tipos.urgencia, tipos.emergencia], 
+        backgroundColor: "#0077cc" 
+      }
     ]
   };
 
-  // Para alinhar labels das prioridades e destinos, mostramos em alert auxiliar
-  const texto = `Prioridades:\n${Object.entries(prioridades).map(([k,v]) => `${k}: ${v}`).join("\n")}\n\nDestinos:\n${Object.entries(locais).map(([k,v]) => `${k}: ${v}`).join("\n")}`;
+  const texto = `Prioridades:\n${Object.entries(prioridades).map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nDestinos:\n${Object.entries(locais).map(([k, v]) => `${k}: ${v}`).join("\n")}`;
   console.log(texto);
 
-  new Chart(ctx, {
+  // Destroy existing chart if any
+  if (window.chartInstance && typeof window.chartInstance.destroy === 'function') {
+    window.chartInstance.destroy();
+  }
+
+  window.chartInstance = new Chart(ctx, {
     type: "bar",
     data: dataChart,
     options: {
@@ -365,36 +655,47 @@ function gerarRelatorioMensal () {
       scales: { y: { beginAtZero: true } }
     }
   });
+  
+  alert("Relatório mensal gerado! Verifique o console para detalhes.");
 }
 
-// Inicialização
-renderChamados () 
-renderMotoristas ()
+// ============================================================================
+// INICIALIZAÇÃO
+// ============================================================================
 
-// Expor funções no escopo global para os onclick do HTML
-window const TipoChamado = function tipoChamado ()
-window const adicionarChamado = function adicionarChamado ()
-window const excluirSelecionados = function excluirSelecionados ()
-window const replicarChamado = fuction replicarChamado  ()
-window const adicionarDestino =  function adicionarDestino ()
-window const adicionarPrioridade = function adicionarPrioridade ()
-window const adicionarSinal = function adicionarSinal ()
-window const adicionarFinalidade = function adicionarFinalidade ()
-window const enviarMsg = function enviarMsg ()
-window const logout = function logout ()
-window const aplicarBusca = function aplicarBusca ()
-window const abrirProntuario =  function abrirProntuario ()
-window const adicionarMotorista =  function adicionarMotorista ()
-window const adicionarStatusMotorista = function adicionarStatusMotorista ()
-window const adicionarEndereco = function adicionarNovoEndereço () {
-  const novoEndereco = prompt("Digite o novo endereço:");
-  if (novoEndereco) {
-    const select = document.getElementById("endereco");
-    const option = document.createElement("option");
-    option.value = novoEndereco;
-    option.textContent = novoEndereco;
-    select.appendChild(option);
-    select.value = novoEndereco;
-    <button class="btn-add" onclick="adicionarnovoEndereço()">Adicionar endereço</button>
+/**
+ * Inicializa o sistema quando o DOM estiver pronto
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  carregarDados();
+  renderChamados();
+  renderMotoristas();
+  
+  // Bind relatório mensal button
+  const btnRelatorio = document.getElementById("btnRelatorioMensal");
+  if (btnRelatorio) {
+    btnRelatorio.addEventListener("click", gerarRelatorioMensal);
   }
-}
+});
+
+// ============================================================================
+// EXPORTAÇÕES WINDOW (para uso no HTML)
+// ============================================================================
+
+window.tipoChamado = tipoChamado;
+window.adicionarChamado = adicionarChamado;
+window.excluirSelecionados = excluirSelecionados;
+window.replicarChamado = replicarChamado;
+window.adicionarDestino = adicionarDestino;
+window.adicionarPrioridade = adicionarPrioridade;
+window.adicionarSinal = adicionarSinal;
+window.adicionarFinalidade = adicionarFinalidade;
+window.enviarMsg = enviarMsg;
+window.logout = logout;
+window.aplicarBusca = aplicarBusca;
+window.abrirProntuario = abrirProntuario;
+window.adicionarMotorista = adicionarMotorista;
+window.adicionarEndereco = adicionarEndereco;
+window.editarNomeMotorista = editarNomeMotorista;
+window.editarStatusMotorista = editarStatusMotorista;
+window.limparFormulario = limparFormulario;

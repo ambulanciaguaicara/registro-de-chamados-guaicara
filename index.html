@@ -125,8 +125,116 @@
         <option value="HAPVIDA">HAPVIDA</option>
         <option value="AME">AME</option>
       </select>
+      <button type="button" onclick="adicionarDestino()">Adicionar +</button>
 
-      <!-- ... resto do formulário ... -->
+      <label>Motorista</label>
+      <input type="text" id="motorista" placeholder="Nome do motorista">
+
+      <label>Status do Motorista</label>
+      <select id="statusMotorista">
+        <option value="Disponível na unidade">Disponível na unidade</option>
+        <option value="Em atendimento">Em atendimento</option>
+        <option value="Horário de almoço">Horário de almoço</option>
+        <option value="Viagem">Viagem</option>
+        <option value="Folga">Folga</option>
+        <option value="Sem Ambulância">Sem Ambulância</option>
+      </select>
+
+      <label>Prioridade</label>
+      <select id="prioridade">
+        <option value="">Selecione a prioridade</option>
+        <option value="Autista">Autista</option>
+        <option value="Doenças Crônicas/Complicações">Doenças Crônicas/Complicações</option>
+        <option value="PCD">PCD</option>
+        <option value="Idoso">Idoso</option>
+        <option value="Gestante">Gestante</option>
+        <option value="Obeso">Obeso</option>
+      </select>
+      <button type="button" onclick="adicionarPrioridade()">Adicionar +</button>
+
+      <label>Sinais/Sintomas</label>
+      <select id="sinais">
+        <option value="">Selecione sinais/sintomas</option>
+        <option value="Dor no peito">Dor no peito</option>
+        <option value="Falta de ar">Falta de ar</option>
+        <option value="Febre">Febre</option>
+        <option value="Vômito">Vômito</option>
+        <option value="Convulsão">Convulsão</option>
+        <option value="Outros">Outros</option>
+      </select>
+      <button type="button" onclick="adicionarSinal()">Adicionar +</button>
+
+      <label>Finalidade</label>
+      <select id="finalidade">
+        <option value="">Selecione a finalidade</option>
+        <option value="Consulta">Consulta</option>
+        <option value="Exame">Exame</option>
+        <option value="Urgência">Urgência</option>
+        <option value="Retorno">Retorno</option>
+        <option value="Internação">Internação</option>
+        <option value="Alta">Alta</option>
+      </select>
+      <button type="button" onclick="adicionarFinalidade()">Adicionar +</button>
+
+      <label>Óbito</label>
+      <select id="obito">
+        <option value="Não">Não</option>
+        <option value="Sim">Sim</option>
+      </select>
+
+      <label>Família/Acompanhante</label>
+      <input type="text" id="familia" placeholder="Nome do acompanhante">
+
+      <label>Observações</label>
+      <textarea id="obs" rows="3" placeholder="Observações adicionais"></textarea>
+
+      <div style="margin-top: 20px;">
+        <button type="button" class="btn-add" onclick="tipoChamado('normal')">Normal</button>
+        <button type="button" class="btn-add" onclick="tipoChamado('urgencia')">Urgência</button>
+        <button type="button" class="btn-add" onclick="tipoChamado('emergencia')">Emergência</button>
+        <button type="button" class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
+        <button type="button" class="btn-del" onclick="limparFormulario()">Limpar</button>
+      </div>
+
+      <h2>Chamados Registrados</h2>
+      
+      <div style="margin-bottom: 10px;">
+        <input type="text" id="buscaInput" placeholder="Buscar por paciente, endereço, destino...">
+        <button type="button" onclick="aplicarBusca()">Buscar</button>
+        <button type="button" class="btn-add" onclick="replicarChamado()">Replicar Selecionado</button>
+        <button type="button" class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th>Sel</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Paciente</th>
+              <th>Endereço</th>
+              <th>Nº</th>
+              <th>Destino</th>
+              <th>Motorista</th>
+              <th>Status</th>
+              <th>Prioridade</th>
+              <th>Sinais</th>
+              <th>Finalidade</th>
+              <th>Óbito</th>
+              <th>Família</th>
+              <th>Obs</th>
+              <th>Atendente</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabela"></tbody>
+        </table>
+      </div>
+
+      <h3>Chat Interno</h3>
+      <div id="chatArea" style="border: 1px solid #ccc; padding: 10px; height: 150px; overflow-y: auto; margin-bottom: 10px;"></div>
+      <input type="text" id="chatMsg" placeholder="Digite sua mensagem...">
+      <button type="button" onclick="enviarMsg()">Enviar</button>
 
     </div>
   </div>
