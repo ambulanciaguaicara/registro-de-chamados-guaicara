@@ -1,11 +1,69 @@
 // src/main.js
 
+// Importar constantes
+import { 
+  DESTINOS, 
+  PRIORIDADES, 
+  SINAIS_SINTOMAS, 
+  FINALIDADES, 
+  TIPO_CHAMADO, 
+  STATUS_MOTORISTA, 
+  ENDERECOS 
+} from './constants.js';
+
 // Estado principal
 let chamados = [];
 let tipoSelecionado = "normal";
 let filtroTexto = "";
 const prontuarios = new Map(); // Map<paciente, Array<chamados>>
 let motoristas = [];
+
+// Popular selects com as constantes
+function popularSelects() {
+  popularSelect('destino', DESTINOS);
+  popularSelect('prioridade', PRIORIDADES);
+  popularSelect('sinais', SINAIS_SINTOMAS);
+  popularSelect('finalidade', FINALIDADES);
+  popularSelectEnderecos('endereco', ENDERECOS);
+}
+
+function popularSelect(id, opcoes, textoInicial = '') {
+  const select = document.getElementById(id);
+  if (!select) return;
+  
+  // Limpar opções existentes (exceto a primeira se houver)
+  const primeiraOpcao = select.options[0]?.value === '' ? select.options[0].outerHTML : '';
+  select.innerHTML = primeiraOpcao;
+  
+  opcoes.forEach(opcao => {
+    const option = document.createElement('option');
+    option.value = opcao;
+    option.textContent = opcao;
+    select.appendChild(option);
+  });
+}
+
+function popularSelectEnderecos(id, enderecos) {
+  const select = document.getElementById(id);
+  if (!select) return;
+  
+  // Manter primeira opção vazia
+  select.innerHTML = '<option value="">Selecione o endereço</option>';
+  
+  Object.entries(enderecos).forEach(([bairro, ruas]) => {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = bairro;
+    
+    ruas.forEach(rua => {
+      const option = document.createElement('option');
+      option.value = rua;
+      option.textContent = rua;
+      optgroup.appendChild(option);
+    });
+    
+    select.appendChild(optgroup);
+  });
+}
 
 // Tipo de chamado
 function tipoChamado(tipo) {
@@ -205,26 +263,53 @@ function replicarChamado() {
   renderChamados();
 }
 
-// Auxiliares "adicionar" (mantidos como logs simples)
-function adicionarDestino() {
-  const v = document.getElementById("destino").value;
-  if (!v) return alert("Selecione um destino.");
-  alert("Destino adicional registrado: " + v);
+// Auxiliares "adicionar" - funções melhoradas para adicionar novos itens
+function adicionarNovoDestino() {
+  const novoDestino = prompt("Digite o novo destino:");
+  if (novoDestino && novoDestino.trim() && !DESTINOS.includes(novoDestino)) {
+    DESTINOS.push(novoDestino.trim());
+    popularSelect('destino', DESTINOS);
+    document.getElementById('destino').value = novoDestino.trim();
+    console.log('Novo destino adicionado:', novoDestino);
+  } else if (DESTINOS.includes(novoDestino)) {
+    alert('Este destino já existe na lista!');
+  }
 }
-function adicionarPrioridade() {
-  const v = document.getElementById("prioridade").value;
-  if (!v) return alert("Selecione uma prioridade.");
-  alert("Prioridade adicional registrada: " + v);
+
+function adicionarNovaPrioridade() {
+  const novaPrioridade = prompt("Digite a nova prioridade:");
+  if (novaPrioridade && novaPrioridade.trim() && !PRIORIDADES.includes(novaPrioridade)) {
+    PRIORIDADES.push(novaPrioridade.trim());
+    popularSelect('prioridade', PRIORIDADES);
+    document.getElementById('prioridade').value = novaPrioridade.trim();
+    console.log('Nova prioridade adicionada:', novaPrioridade);
+  } else if (PRIORIDADES.includes(novaPrioridade)) {
+    alert('Esta prioridade já existe na lista!');
+  }
 }
-function adicionarSinal() {
-  const v = document.getElementById("sinais").value;
-  if (!v) return alert("Selecione um sinal/sintoma.");
-  alert("Sinal/Sintoma adicional registrado: " + v);
+
+function adicionarNovoSinal() {
+  const novoSinal = prompt("Digite o novo sinal/sintoma:");
+  if (novoSinal && novoSinal.trim() && !SINAIS_SINTOMAS.includes(novoSinal)) {
+    SINAIS_SINTOMAS.push(novoSinal.trim());
+    popularSelect('sinais', SINAIS_SINTOMAS);
+    document.getElementById('sinais').value = novoSinal.trim();
+    console.log('Novo sinal/sintoma adicionado:', novoSinal);
+  } else if (SINAIS_SINTOMAS.includes(novoSinal)) {
+    alert('Este sinal/sintoma já existe na lista!');
+  }
 }
-function adicionarFinalidade() {
-  const v = document.getElementById("finalidade").value;
-  if (!v) return alert("Selecione uma finalidade.");
-  alert("Finalidade adicional registrada: " + v);
+
+function adicionarNovaFinalidade() {
+  const novaFinalidade = prompt("Digite a nova finalidade:");
+  if (novaFinalidade && novaFinalidade.trim() && !FINALIDADES.includes(novaFinalidade)) {
+    FINALIDADES.push(novaFinalidade.trim());
+    popularSelect('finalidade', FINALIDADES);
+    document.getElementById('finalidade').value = novaFinalidade.trim();
+    console.log('Nova finalidade adicionada:', novaFinalidade);
+  } else if (FINALIDADES.includes(novaFinalidade)) {
+    alert('Esta finalidade já existe na lista!');
+  }
 }
 
 // Chat interno
@@ -288,20 +373,22 @@ function abrirProntuario(nome) {
 // MOTORISTAS (lateral editável)
 function exibirMotoristas() {
   const tabela = document.getElementById("tabelaMotoristas");
+  if (!tabela) return;
+  
   tabela.innerHTML = "";
 
   motoristas.forEach((motorista) => {
     const linha = document.createElement("tr");
+    
+    const optionsHTML = STATUS_MOTORISTA.map(status => 
+      `<option ${motorista.status === status ? "selected" : ""}>${status}</option>`
+    ).join('');
+    
     linha.innerHTML = `
       <td>${motorista.nome}</td>
       <td>
         <select onchange="alterarStatus('${motorista.nome}', this.value)">
-          <option ${motorista.status === "Disponível na unidade" ? "selected" : ""}>Disponível na unidade</option>
-          <option ${motorista.status === "Em atendimento" ? "selected" : ""}>Em atendimento</option>
-          <option ${motorista.status === "Horário de almoço" ? "selected" : ""}>Horário de almoço</option>
-          <option ${motorista.status === "Viagem" ? "selected" : ""}>Viagem</option>
-          <option ${motorista.status === "Folga" ? "selected" : ""}>Folga</option>
-          <option ${motorista.status === "Sem Ambulância" ? "selected" : ""}>Sem Ambulância</option>
+          ${optionsHTML}
         </select>
       </td>
     `;
@@ -363,18 +450,30 @@ function gerarRelatorioMensal() {
 }
 
 // Inicialização
-renderChamados();
-exibirMotoristas();
+document.addEventListener("DOMContentLoaded", () => {
+  // Popular todos os selects
+  popularSelects();
+  
+  // Renderizar chamados e motoristas
+  renderChamados();
+  exibirMotoristas();
+  
+  // Event listener para relatório mensal
+  const btnRelatorio = document.getElementById("btnRelatorioMensal");
+  if (btnRelatorio) {
+    btnRelatorio.addEventListener("click", gerarRelatorioMensal);
+  }
+});
 
 // Expor funções no escopo global para os onclick do HTML
 window.tipoChamado = tipoChamado;
 window.adicionarChamado = adicionarChamado;
 window.excluirSelecionados = excluirSelecionados;
 window.replicarChamado = replicarChamado;
-window.adicionarDestino = adicionarDestino;
-window.adicionarPrioridade = adicionarPrioridade;
-window.adicionarSinal = adicionarSinal;
-window.adicionarFinalidade = adicionarFinalidade;
+window.adicionarNovoDestino = adicionarNovoDestino;
+window.adicionarNovaPrioridade = adicionarNovaPrioridade;
+window.adicionarNovoSinal = adicionarNovoSinal;
+window.adicionarNovaFinalidade = adicionarNovaFinalidade;
 window.enviarMsg = enviarMsg;
 window.logout = logout;
 window.aplicarBusca = aplicarBusca;
@@ -392,11 +491,3 @@ window.adicionarNovoEndereco = function adicionarNovoEndereco() {
     select.value = novoEndereco;
   }
 };
-
-// Event listener para relatório mensal
-document.addEventListener("DOMContentLoaded", () => {
-  const btnRelatorio = document.getElementById("btnRelatorioMensal");
-  if (btnRelatorio) {
-    btnRelatorio.addEventListener("click", gerarRelatorioMensal);
-  }
-});

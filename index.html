@@ -56,60 +56,8 @@
       <label>Endereço</label>
       <select id="endereco">
         <option value="">Selecione o endereço</option>
-
-        <optgroup label="Centro">
-          <option value="Rua Rio Branco">Rua Rio Branco</option>
-          <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
-          <option value="Av. Duque de Caxias">Av. Duque de Caxias</option>
-          <option value="Av. Nove de Julho">Av. Nove de Julho</option>
-          <option value="Rua Tiradentes">Rua Tiradentes</option>
-          <option value="Rua Floriano Peixoto">Rua Floriano Peixoto</option>
-          <option value="Rua Osvaldo Cruz">Rua Osvaldo Cruz</option>
-        </optgroup>
-
-        <optgroup label="Bairro São João">
-          <option value="Rua Pedro Bertolino">Rua Pedro Bertolino</option>
-          <option value="Rua Rosa Grande">Rua Rosa Grande</option>
-          <option value="Rua Rubens Puorro">Rua Rubens Puorro</option>
-          <option value="Rua Sebastião de Souza">Rua Sebastião de Souza</option>
-          <option value="Rua João Pacífico da Silva">Rua João Pacífico da Silva</option>
-          <option value="Rua José Francisco Moco">Rua José Francisco Moco</option>
-          <option value="Rua São João">Rua São João</option>
-        </optgroup>
-
-        <optgroup label="Bairro Amizade">
-          <option value="Rua Da Amizade">Rua Da Amizade</option>
-          <option value="Rua Adão Afonso Costa">Rua Adão Afonso Costa</option>
-          <option value="Rua Dirce Camargo Vaz">Rua Dirce Camargo Vaz</option>
-          <option value="Rua Vicente de Paula">Rua Vicente de Paula</option>
-        </optgroup>
-
-        <optgroup label="Outros Endereços">
-          <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
-          <option value="Av. Roberto Lima Alves">Av. Roberto Lima Alves</option>
-          <option value="Rua Professora Adelaide Baptista Pereira Cruz">Rua Professora Adelaide Baptista Pereira Cruz</option>
-          <option value="Rua Rogê Ferreira">Rua Rogê Ferreira</option>
-          <option value="Rua Roman Garcia Echeto">Rua Roman Garcia Echeto</option>
-          <option value="Rua Sunao Katsuki">Rua Sunao Katsuki</option>
-          <option value="Rua Yoshi Sato">Rua Yoshi Sato</option>
-          <option value="Rua Frei Henrique">Rua Frei Henrique</option>
-          <option value="Rua José do Patrocínio">Rua José do Patrocínio</option>
-          <option value="Rua Ayrton Alves dos Santos">Rua Ayrton Alves dos Santos</option>
-          <option value="Rua Antônio Prado">Rua Antônio Prado</option>
-          <option value="Rua Benjamin Constant">Rua Benjamin Constant</option>
-          <option value="Rua Campos Salles">Rua Campos Salles</option>
-          <option value="Rua Cel. Joaquim Anselmo Martins">Rua Cel. Joaquim Anselmo Martins</option>
-          <option value="Rua Dom Pedro II">Rua Dom Pedro II</option>
-          <option value="Rua Francisco Sanches">Rua Francisco Sanches</option>
-          <option value="Rua Manoel Bento">Rua Manoel Bento</option>
-          <option value="Rua Marechal Deodoro">Rua Marechal Deodoro</option>
-          <option value="Rua Miguel Jorge">Rua Miguel Jorge</option>
-          <option value="Rua Nelson Ferreira">Rua Nelson Ferreira</option>
-          <option value="Rua Pedro Dutra Sobrinho">Rua Pedro Dutra Sobrinho</option>
-          <option value="Rua Sabino">Rua Sabino</option>
-        </optgroup>
       </select>
-      <button type="button" onclick="adicionarEndereco()">Adicionar +</button>
+      <button type="button" onclick="adicionarNovoEndereco()">Adicionar +</button>
 
       <label>Nº</label>
       <input type="text" id="numero">
@@ -117,16 +65,103 @@
       <label>Destino</label>
       <select id="destino">
         <option value="">Selecione o destino</option>
-        <option value="CAPS">CAPS</option>
-        <option value="HGP">HGP</option>
-        <option value="SANTA CASA">SANTA CASA</option>
-        <option value="UNIMED">UNIMED</option>
-        <option value="FISIOTERAPIA PARTICULAR">FISIOTERAPIA PARTICULAR</option>
-        <option value="HAPVIDA">HAPVIDA</option>
-        <option value="AME">AME</option>
+      </select>
+      <button type="button" onclick="adicionarNovoDestino()">Adicionar +</button>
+
+      <label>Motorista</label>
+      <input type="text" id="motorista" placeholder="Nome do motorista">
+
+      <label>Status do Motorista</label>
+      <select id="statusMotorista">
+        <option value="Disponível na unidade">Disponível na unidade</option>
+        <option value="Em atendimento">Em atendimento</option>
+        <option value="Horário de almoço">Horário de almoço</option>
+        <option value="Viagem">Viagem</option>
+        <option value="Folga">Folga</option>
+        <option value="Sem Ambulância">Sem Ambulância</option>
       </select>
 
-      <!-- ... resto do formulário ... -->
+      <label>Prioridade</label>
+      <select id="prioridade">
+        <option value="">Selecione a prioridade</option>
+      </select>
+      <button type="button" onclick="adicionarNovaPrioridade()">Adicionar +</button>
+
+      <label>Sinais/Sintomas</label>
+      <select id="sinais">
+        <option value="">Selecione</option>
+      </select>
+      <button type="button" onclick="adicionarNovoSinal()">Adicionar +</button>
+
+      <label>Finalidade</label>
+      <select id="finalidade">
+        <option value="">Selecione</option>
+      </select>
+      <button type="button" onclick="adicionarNovaFinalidade()">Adicionar +</button>
+
+      <label>Óbito</label>
+      <select id="obito">
+        <option value="Não">Não</option>
+        <option value="Sim">Sim</option>
+      </select>
+
+      <label>Família</label>
+      <input type="text" id="familia" placeholder="Informações da família">
+
+      <label>Observações</label>
+      <textarea id="obs" rows="3" placeholder="Observações adicionais"></textarea>
+
+      <div class="form-buttons">
+        <button class="btn-add" onclick="tipoChamado('normal')">Normal</button>
+        <button class="btn-add" onclick="tipoChamado('urgencia')">Urgência</button>
+        <button class="btn-add" onclick="tipoChamado('emergencia')">Emergência</button>
+        <button class="btn-add" onclick="adicionarChamado()">Adicionar Chamado</button>
+      </div>
+
+      <h2>Chamados Registrados</h2>
+      
+      <div class="search-bar">
+        <input type="text" id="buscaInput" placeholder="Buscar por paciente, endereço, destino...">
+        <button class="btn-add" onclick="aplicarBusca()">Buscar</button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-add" onclick="replicarChamado()">Replicar Chamado</button>
+        <button class="btn-del" onclick="excluirSelecionados()">Excluir Selecionados</button>
+      </div>
+
+      <div class="table-container">
+        <table class="chamados-tabela">
+          <thead>
+            <tr>
+              <th>Sel</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Paciente</th>
+              <th>Endereço</th>
+              <th>Nº</th>
+              <th>Destino</th>
+              <th>Motorista</th>
+              <th>Status</th>
+              <th>Prioridade</th>
+              <th>Sinais</th>
+              <th>Finalidade</th>
+              <th>Óbito</th>
+              <th>Família</th>
+              <th>Obs</th>
+              <th>Atendente</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabela"></tbody>
+        </table>
+      </div>
+
+      <div class="chat-section">
+        <h3>Chat Interno</h3>
+        <div id="chatArea" class="chat-area"></div>
+        <input type="text" id="chatMsg" placeholder="Digite sua mensagem...">
+        <button class="btn-add" onclick="enviarMsg()">Enviar</button>
+      </div>
 
     </div>
   </div>
