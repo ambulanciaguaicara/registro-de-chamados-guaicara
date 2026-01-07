@@ -4,24 +4,25 @@ import { setDriverStatus, onDriversChange } from "../firebase.js";
 let drivers = [];
 let isInitialized = false;
 let unsubscribe = null;
+let currentRoot = null;
 const listeners = [];
 
 export function mountDrivers(el) {
+  currentRoot = el;
+
   // Evitar múltiplos listeners
-  if (isInitialized && unsubscribe) {
-    renderDrivers(el);
-    return;
+  if (!isInitialized) {
+    // Escutar mudanças no Firebase
+    unsubscribe = onDriversChange((firebaseDrivers) => {
+      drivers = firebaseDrivers;
+      if (currentRoot) {
+        renderDrivers(currentRoot);
+      }
+      // Notificar outros componentes sobre mudanças
+      listeners.forEach(callback => callback(drivers));
+    });
+    isInitialized = true;
   }
-
-  // Escutar mudanças no Firebase
-  unsubscribe = onDriversChange((firebaseDrivers) => {
-    drivers = firebaseDrivers;
-    renderDrivers(el);
-    // Notificar outros componentes sobre mudanças
-    listeners.forEach(callback => callback(drivers));
-  });
-
-  isInitialized = true;
 
   const html = `
     <h3>Motoristas</h3>
@@ -50,21 +51,34 @@ function renderDrivers(root) {
   const tbody = root.querySelector("#tabelaMotoristas");
   if (!tbody) return;
 
-  tbody.innerHTML = drivers.map(driver => {
+  tbody.innerHTML = drivers.map((driver, index) => {
     const escapedName = escapeHtml(driver.nome);
+    const selectId = `driver-status-${index}`;
     return `
       <tr>
         <td>${escapedName}</td>
         <td>
-          <select onchange="window.changeDriverStatus('${escapedName}', this.value)">
+          <select id="${selectId}" data-driver-name="${escapedName}">
             ${STATUS_MOTORISTA.map(status => 
-              `<option ${driver.status === status ? "selected" : ""}>${status}</option>`
+              `<option value="${escapeHtml(status)}" ${driver.status === status ? "selected" : ""}>${escapeHtml(status)}</option>`
             ).join('')}
           </select>
         </td>
       </tr>
     `;
   }).join('');
+
+  // Adicionar event listeners para os selects
+  drivers.forEach((driver, index) => {
+    const select = tbody.querySelector(`#driver-status-${index}`);
+    if (select) {
+      select.addEventListener('change', (e) => {
+        const driverName = e.target.dataset.driverName;
+        const newStatus = e.target.value;
+        setDriverStatus(driverName, newStatus);
+      });
+    }
+  });
 }
 
 function escapeHtml(text) {
@@ -76,11 +90,6 @@ function escapeHtml(text) {
 export function setDriverOnDuty(driverName, patientName) {
   setDriverStatus(driverName, `Em atendimento - ${patientName}`);
 }
-
-// Expor para onclick
-window.changeDriverStatus = (nome, status) => {
-  setDriverStatus(nome, status);
-};
 
 export function getDrivers() {
   return drivers;

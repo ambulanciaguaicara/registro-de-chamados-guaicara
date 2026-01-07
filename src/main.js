@@ -9,24 +9,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Montar motoristas primeiro (para que o form possa acessar a lista)
   if (sidebar) {
-    // Encontrar e substituir apenas a seção de motoristas
-    const motoristasSection = sidebar.querySelector("h3:last-of-type");
-    if (motoristasSection && motoristasSection.textContent === "Motoristas") {
+    // Usar a tabela de motoristas como referência para encontrar a seção
+    const motoristasTable = sidebar.querySelector("#tabelaMotoristas");
+    if (motoristasTable) {
       // Criar container para motoristas
       const motoristasContainer = document.createElement("div");
       motoristasContainer.id = "motoristasSection";
       
-      // Substituir tudo após o h3 de Motoristas
-      const nextElements = [];
-      let current = motoristasSection.nextElementSibling;
-      while (current) {
-        nextElements.push(current);
-        current = current.nextElementSibling;
-      }
+      // Encontrar todos os elementos da seção de motoristas
+      // (h3, botão e tabela)
+      const table = motoristasTable.closest('table');
+      const button = table.previousElementSibling;
+      const h3 = button.previousElementSibling;
       
       // Remover elementos antigos
-      nextElements.forEach(el => el.remove());
-      motoristasSection.remove();
+      if (table) table.remove();
+      if (button && button.classList.contains('btn-add')) button.remove();
+      if (h3 && h3.tagName === 'H3') h3.remove();
       
       // Adicionar novo container
       sidebar.appendChild(motoristasContainer);
