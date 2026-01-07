@@ -6,6 +6,4 @@ dist/
 package-lock.json
 *.zip
 *.zip.*
-npm run dev
-package.jsonnpm*
 
