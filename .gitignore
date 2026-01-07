@@ -4,3 +4,6 @@ dist/
 .env
 *.log
 package-lock.json
+*.zip
+*.zip.*
+
