@@ -27,7 +27,7 @@ function popularSelects() {
   popularSelectEnderecos('endereco', ENDERECOS);
 }
 
-function popularSelect(id, opcoes, textoInicial = '') {
+function popularSelect(id, opcoes) {
   const select = document.getElementById(id);
   if (!select) return;
   
