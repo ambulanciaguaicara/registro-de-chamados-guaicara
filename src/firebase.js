@@ -1,42 +1,107 @@
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut 
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
 } from "firebase/auth";
-import { 
-  getDatabase, 
-  ref, 
-  push, 
-  onValue, 
-  update, 
-  remove 
-} from "firebase/database";
+import {
+  getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, setDoc,
+  onSnapshot, serverTimestamp, query, orderBy
+} from "firebase/firestore";
 
+// Firebase configuration using environment variables
+// Note: Firebase config keys are safe to expose in client-side code
+// Security is managed through Firebase Security Rules, not config secrecy
 const firebaseConfig = {
-  apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
-  authDomain: "registro-ambulancia192.firebaseapp.com",
-  databaseURL: "https://registro-ambulancia192-default-rtdb.firebaseio.com",
-  projectId: "registro-ambulancia192",
-  storageBucket: "registro-ambulancia192.appspot.com",
-  messagingSenderId: "549498386461",
-  appId: "1:549498386461:web:94d6ac364a54a7d4216ef4"
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getDatabase(app);
+export const db = getFirestore(app);
 
-// Funções exportadas para uso no main.js
-export function login(email, senha) {
-  return signInWithEmailAndPassword(auth, email, senha);
+// ========== AUTENTICAÇÃO ==========
+export function watchAuth(callback) {
+  return onAuthStateChanged(auth, callback);
 }
 
-export function register(email, senha) {
-  return createUserWithEmailAndPassword(auth, email, senha);
+export async function login(email, password) {
+  return signInWithEmailAndPassword(auth, email, password);
 }
 
-export function logout() {
+export async function logout() {
   return signOut(auth);
+}
+
+// ========== COLLECTIONS ==========
+export const callsCol = collection(db, "chamados");
+export const chatCol = collection(db, "chat");
+export const driversCol = collection(db, "motoristas");
+
+// ========== CHAMADOS ==========
+export async function createCall(data) {
+  return addDoc(callsCol, { 
+    ...data, 
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+}
+
+export async function updateCall(id, data) {
+  return updateDoc(doc(db, "chamados", id), {
+    ...data,
+    updatedAt: serverTimestamp()
+  });
+}
+
+export async function deleteCall(id) {
+  return deleteDoc(doc(db, "chamados", id));
+}
+
+export function watchCalls(callback) {
+  const q = query(callsCol, orderBy("createdAt", "desc"));
+  return onSnapshot(q, callback);
+}
+
+// ========== CHAT ==========
+export async function sendMessage({ text, user }) {
+  return addDoc(chatCol, { 
+    text, 
+    user, 
+    createdAt: serverTimestamp() 
+  });
+}
+
+export function watchChat(callback) {
+  const q = query(chatCol, orderBy("createdAt", "asc"));
+  return onSnapshot(q, callback);
+}
+
+// ========== MOTORISTAS ==========
+export async function setDriverStatus(driverName, status) {
+  const driverRef = doc(db, "motoristas", driverName);
+  return setDoc(driverRef, {
+    nome: driverName,
+    status: status,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
+
+export async function addDriver(driverName) {
+  return setDriverStatus(driverName, "Disponível na unidade");
+}
+
+export async function deleteDriver(driverName) {
+  return deleteDoc(doc(db, "motoristas", driverName));
+}
+
+export function watchDrivers(callback) {
+  return onSnapshot(driversCol, callback);
+}
+
+export function setDriverOnDuty(driverName, patientName) {
+  return setDriverStatus(driverName, `Em atendimento - ${patientName}`);
 }
