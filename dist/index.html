@@ -3,142 +3,18 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Registro de Chamados – Ambulância Municipal – Guaicara/SP</title>
-
+  <title>Registro de Chamados – Ambulância Municipal – Guaíçara/SP</title>
+  
   <link rel="manifest" href="/assets/manifest-D12d4-hY.json"/>
-  <link rel="stylesheet" href="src/style.css"/>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" crossorigin src="/assets/index-BGHd9d-v.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CIIHRMO1.css">
+  <script type="module" crossorigin src="/assets/index-CnzKGqCO.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CjpXoX62.css">
 </head>
 <body>
-  <header>
-    🚑 REGISTRO DE CHAMADOS – AMBULÂNCIA MUNICIPAL – GUAICARA/SP
-  </header>
-
-  <div class="layout">
-    <!-- Painel lateral fixo -->
-    <aside class="sidebar">
-      <h3>Prontuários</h3>
-      <div id="prontuariosLista"></div>
-
-      <h3>Relatório mensal</h3>
-      <button class="btn-add" id="btnRelatorioMensal">Gerar relatório</button>
-      <canvas id="graficoMensal" height="160"></canvas>
-
-      <h3>Motoristas</h3>
-      <button class="btn-add" onclick="adicionarMotorista()">Adicionar motorista</button>
-      <table class="motoristas-tabela">
-        <thead>
-          <tr><th>Motorista</th><th>Status</th></tr>
-        </thead>
-        <tbody id="tabelaMotoristas"></tbody>
-      </table>
-    </aside>
-
-    <!-- Conteúdo principal -->
-    <div class="container">
-      <h2>Novo Chamado</h2>
-
-      <label>Atendente</label>
-      <input type="text" id="atendente" placeholder="Nome do atendente"/>
-      <small>Somente o atendente que criou pode editar este chamado.</small>
-
-      <label>Data</label>
-      <input type="date" id="data">
-
-      <label>Horário</label>
-      <input type="time" id="horario">
-
-      <label>Paciente</label>
-      <input type="text" id="paciente">
-
-      <label>Endereço</label>
-      <select id="endereco">
-        <option value="">Selecione o endereço</option>
-
-        <optgroup label="Centro">
-          <option value="Rua Rio Branco">Rua Rio Branco</option>
-          <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
-          <option value="Av. Duque de Caxias">Av. Duque de Caxias</option>
-          <option value="Av. Nove de Julho">Av. Nove de Julho</option>
-          <option value="Rua Tiradentes">Rua Tiradentes</option>
-          <option value="Rua Floriano Peixoto">Rua Floriano Peixoto</option>
-          <option value="Rua Osvaldo Cruz">Rua Osvaldo Cruz</option>
-        </optgroup>
-
-        <optgroup label="Bairro São João">
-          <option value="Rua Pedro Bertolino">Rua Pedro Bertolino</option>
-          <option value="Rua Rosa Grande">Rua Rosa Grande</option>
-          <option value="Rua Rubens Puorro">Rua Rubens Puorro</option>
-          <option value="Rua Sebastião de Souza">Rua Sebastião de Souza</option>
-          <option value="Rua João Pacífico da Silva">Rua João Pacífico da Silva</option>
-          <option value="Rua José Francisco Moco">Rua José Francisco Moco</option>
-          <option value="Rua São João">Rua São João</option>
-        </optgroup>
-
-        <optgroup label="Bairro Amizade">
-          <option value="Rua Da Amizade">Rua Da Amizade</option>
-          <option value="Rua Adão Afonso Costa">Rua Adão Afonso Costa</option>
-          <option value="Rua Dirce Camargo Vaz">Rua Dirce Camargo Vaz</option>
-          <option value="Rua Vicente de Paula">Rua Vicente de Paula</option>
-        </optgroup>
-
-        <optgroup label="Outros Endereços">
-          <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
-          <option value="Av. Roberto Lima Alves">Av. Roberto Lima Alves</option>
-          <option value="Rua Professora Adelaide Baptista Pereira Cruz">Rua Professora Adelaide Baptista Pereira Cruz</option>
-          <option value="Rua Rogê Ferreira">Rua Rogê Ferreira</option>
-          <option value="Rua Roman Garcia Echeto">Rua Roman Garcia Echeto</option>
-          <option value="Rua Sunao Katsuki">Rua Sunao Katsuki</option>
-          <option value="Rua Yoshi Sato">Rua Yoshi Sato</option>
-          <option value="Rua Frei Henrique">Rua Frei Henrique</option>
-          <option value="Rua José do Patrocínio">Rua José do Patrocínio</option>
-          <option value="Rua Ayrton Alves dos Santos">Rua Ayrton Alves dos Santos</option>
-          <option value="Rua Antônio Prado">Rua Antônio Prado</option>
-          <option value="Rua Benjamin Constant">Rua Benjamin Constant</option>
-          <option value="Rua Campos Salles">Rua Campos Salles</option>
-          <option value="Rua Cel. Joaquim Anselmo Martins">Rua Cel. Joaquim Anselmo Martins</option>
-          <option value="Rua Dom Pedro II">Rua Dom Pedro II</option>
-          <option value="Rua Francisco Sanches">Rua Francisco Sanches</option>
-          <option value="Rua Manoel Bento">Rua Manoel Bento</option>
-          <option value="Rua Marechal Deodoro">Rua Marechal Deodoro</option>
-          <option value="Rua Miguel Jorge">Rua Miguel Jorge</option>
-          <option value="Rua Nelson Ferreira">Rua Nelson Ferreira</option>
-          <option value="Rua Pedro Dutra Sobrinho">Rua Pedro Dutra Sobrinho</option>
-          <option value="Rua Sabino">Rua Sabino</option>
-        </optgroup>
-      </select>
-      <button type="button" onclick="adicionarEndereco()">Adicionar +</button>
-
-      <label>Nº</label>
-      <input type="text" id="numero">
-
-      <label>Destino</label>
-      <select id="destino">
-        <option value="">Selecione o destino</option>
-        <option value="CAPS">CAPS</option>
-        <option value="HGP">HGP</option>
-        <option value="SANTA CASA">SANTA CASA</option>
-        <option value="UNIMED">UNIMED</option>
-        <option value="FISIOTERAPIA PARTICULAR">FISIOTERAPIA PARTICULAR</option>
-        <option value="HAPVIDA">HAPVIDA</option>
-        <option value="AME">AME</option>
-      </select>
-
-      <!-- ... resto do formulário ... -->
-
+  <div id="app">
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+      <p>Carregando sistema...</p>
     </div>
   </div>
-
-  <footer>
-    <div id="statusConexao">Status: <span class="status-offline">Offline</span></div>
-    <div id="usuarioLogado">Usuário: —</div>
-    <div id="ultimaSync">Última sync: —</div>
-    <div>Versão: 1.0.0</div>
-    <button class="btn-del" onclick="logout()">Sair</button>
-  </footer>
   
 </body>
 </html>
