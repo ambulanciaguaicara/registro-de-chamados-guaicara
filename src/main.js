@@ -5,7 +5,10 @@ let chamados = [];
 let tipoSelecionado = "normal";
 let filtroTexto = "";
 const prontuarios = new Map(); // Map<paciente, Array<chamados>>
-let motoristas = [];
+let motoristas = [
+  { nome: "Motorista 1", status: "Disponível na unidade" },
+  { nome: "Motorista 2", status: "Disponível na unidade" }
+];
 
 // Tipo de chamado
 function tipoChamado(tipo) {
@@ -82,6 +85,10 @@ function adicionarChamado() {
 // Renderização de chamados com busca
 function renderChamados() {
   const corpo = document.getElementById("corpoTabela");
+  if (!corpo) {
+    console.error("Elemento corpoTabela não encontrado");
+    return;
+  }
   corpo.innerHTML = "";
 
   const listaFiltrada = chamados.filter(c => {
@@ -287,7 +294,12 @@ function abrirProntuario(nome) {
 
 // MOTORISTAS (lateral editável)
 function exibirMotoristas() {
+  console.log("exibirMotoristas() chamado - motoristas:", motoristas.length);
   const tabela = document.getElementById("tabelaMotoristas");
+  if (!tabela) {
+    console.error("Elemento tabelaMotoristas não encontrado");
+    return;
+  }
   tabela.innerHTML = "";
 
   motoristas.forEach((motorista) => {
@@ -310,6 +322,7 @@ function exibirMotoristas() {
 }
 
 function alterarStatus(nome, novoStatus) {
+  console.log("alterarStatus() chamado:", nome, novoStatus);
   const motorista = motoristas.find(m => m.nome === nome);
   if (motorista) {
     motorista.status = novoStatus;
@@ -318,6 +331,7 @@ function alterarStatus(nome, novoStatus) {
 }
 
 function adicionarMotorista() {
+  console.log("adicionarMotorista() chamado");
   const nome = prompt("Digite o nome do motorista:");
   if (!nome) return;
   
@@ -362,9 +376,7 @@ function gerarRelatorioMensal() {
   });
 }
 
-// Inicialização
-renderChamados();
-exibirMotoristas();
+// Inicialização - removida daqui, movida para DOMContentLoaded
 
 // Expor funções no escopo global para os onclick do HTML
 window.tipoChamado = tipoChamado;
@@ -381,7 +393,7 @@ window.aplicarBusca = aplicarBusca;
 window.abrirProntuario = abrirProntuario;
 window.adicionarMotorista = adicionarMotorista;
 window.alterarStatus = alterarStatus;
-window.adicionarNovoEndereco = function adicionarNovoEndereco() {
+window.adicionarEndereco = function adicionarEndereco() {
   const novoEndereco = prompt("Digite o novo endereço:");
   if (novoEndereco) {
     const select = document.getElementById("endereco");
@@ -395,6 +407,13 @@ window.adicionarNovoEndereco = function adicionarNovoEndereco() {
 
 // Event listener para relatório mensal
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOMContentLoaded - Inicializando aplicação");
+  
+  // Inicializar renderização
+  renderChamados();
+  exibirMotoristas();
+  
+  // Configurar botão de relatório mensal
   const btnRelatorio = document.getElementById("btnRelatorioMensal");
   if (btnRelatorio) {
     btnRelatorio.addEventListener("click", gerarRelatorioMensal);
