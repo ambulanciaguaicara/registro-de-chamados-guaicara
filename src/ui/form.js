@@ -87,12 +87,16 @@ export function mountForm(el) {
     </section>
   `;
 
+  // Helper function to get current datetime in local format
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+  };
+
   // Set default datetime to now
-  const now = new Date();
-  const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 16);
-  el.querySelector("#dataHora").value = localDateTime;
+  el.querySelector("#dataHora").value = getCurrentDateTime();
 
   el.querySelector("#chamadoForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -125,8 +129,8 @@ export function mountForm(el) {
       await setDriverOnDuty(data.motorista, data.paciente);
       form.reset();
       
-      // Reset datetime to now
-      el.querySelector("#dataHora").value = localDateTime;
+      // Reset datetime to current time
+      el.querySelector("#dataHora").value = getCurrentDateTime();
       
       notifySuccess(`Chamado ${docRef.id.slice(0,8)}... registrado com sucesso!`);
     } catch (error) {

@@ -1,4 +1,6 @@
 import { watchCalls, deleteCall, createCall } from "../firebase.js";
+import { getDocs, query as firestoreQuery } from "firebase/firestore";
+import { callsCol } from "../firebase.js";
 import { notifySuccess, notifyError } from "../utils/notifications.js";
 import { formatDateTime } from "../utils/formatters.js";
 
@@ -130,15 +132,10 @@ export function mountTable(el) {
     }
 
     try {
-      // Get the selected call data
-      const snapshot = await new Promise((resolve) => {
-        const unsubscribe = watchCalls((snap) => {
-          unsubscribe();
-          resolve(snap);
-        });
-      });
-
+      // Use getDocs to fetch data without setting up a listener
+      const snapshot = await getDocs(firestoreQuery(callsCol));
       const docToReplicate = snapshot.docs.find(doc => doc.id === selected.value);
+      
       if (!docToReplicate) {
         notifyError("Chamado não encontrado");
         return;

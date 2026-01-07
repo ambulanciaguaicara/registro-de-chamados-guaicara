@@ -7,6 +7,9 @@ import {
   onSnapshot, serverTimestamp, query, orderBy
 } from "firebase/firestore";
 
+// Firebase configuration using environment variables
+// Note: Firebase config keys are safe to expose in client-side code
+// Security is managed through Firebase Security Rules, not config secrecy
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
