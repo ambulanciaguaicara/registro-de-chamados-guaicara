@@ -11,7 +11,8 @@ import {
   push, 
   onValue, 
   update, 
-  remove 
+  remove,
+  set
 } from "firebase/database";
 
 const firebaseConfig = {
@@ -28,7 +29,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
 
-// Funções exportadas para uso no main.js
+// ========== Autenticação ==========
 export function login(email, senha) {
   return signInWithEmailAndPassword(auth, email, senha);
 }
@@ -39,4 +40,52 @@ export function register(email, senha) {
 
 export function logout() {
   return signOut(auth);
+}
+
+// ========== Chamados ==========
+export function createCall(data) {
+  const callsRef = ref(db, 'chamados');
+  return push(callsRef, {
+    ...data,
+    timestamp: Date.now(),
+    createdAt: new Date().toISOString()
+  });
+}
+
+export function updateCall(callId, data) {
+  const callRef = ref(db, `chamados/${callId}`);
+  return update(callRef, data);
+}
+
+export function deleteCall(callId) {
+  const callRef = ref(db, `chamados/${callId}`);
+  return remove(callRef);
+}
+
+export function onCallsChange(callback) {
+  const callsRef = ref(db, 'chamados');
+  return onValue(callsRef, (snapshot) => {
+    const data = snapshot.val();
+    const calls = data ? Object.entries(data).map(([id, value]) => ({ id, ...value })) : [];
+    callback(calls);
+  });
+}
+
+// ========== Motoristas ==========
+export function setDriverStatus(driverName, status) {
+  const driverRef = ref(db, `motoristas/${driverName}`);
+  return set(driverRef, {
+    nome: driverName,
+    status: status,
+    updatedAt: new Date().toISOString()
+  });
+}
+
+export function onDriversChange(callback) {
+  const driversRef = ref(db, 'motoristas');
+  return onValue(driversRef, (snapshot) => {
+    const data = snapshot.val();
+    const drivers = data ? Object.values(data) : [];
+    callback(drivers);
+  });
 }
