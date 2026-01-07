@@ -4,10 +4,37 @@ import { onCallsChange } from "./firebase.js";
 
 // Inicialização
 document.addEventListener("DOMContentLoaded", () => {
-  // Montar componentes
   const formContainer = document.querySelector(".container");
   const sidebar = document.querySelector(".sidebar");
 
+  // Montar motoristas primeiro (para que o form possa acessar a lista)
+  if (sidebar) {
+    // Encontrar e substituir apenas a seção de motoristas
+    const motoristasSection = sidebar.querySelector("h3:last-of-type");
+    if (motoristasSection && motoristasSection.textContent === "Motoristas") {
+      // Criar container para motoristas
+      const motoristasContainer = document.createElement("div");
+      motoristasContainer.id = "motoristasSection";
+      
+      // Substituir tudo após o h3 de Motoristas
+      const nextElements = [];
+      let current = motoristasSection.nextElementSibling;
+      while (current) {
+        nextElements.push(current);
+        current = current.nextElementSibling;
+      }
+      
+      // Remover elementos antigos
+      nextElements.forEach(el => el.remove());
+      motoristasSection.remove();
+      
+      // Adicionar novo container
+      sidebar.appendChild(motoristasContainer);
+      mountDrivers(motoristasContainer);
+    }
+  }
+
+  // Montar formulário depois dos motoristas
   if (formContainer) {
     // Limpar container e adicionar form
     formContainer.innerHTML = "";
@@ -39,32 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
     formContainer.appendChild(tableSection);
   }
 
-  if (sidebar) {
-    // Encontrar e substituir apenas a seção de motoristas
-    const motoristasSection = sidebar.querySelector("h3:last-of-type");
-    if (motoristasSection && motoristasSection.textContent === "Motoristas") {
-      // Criar container para motoristas
-      const motoristasContainer = document.createElement("div");
-      motoristasContainer.id = "motoristasSection";
-      
-      // Substituir tudo após o h3 de Motoristas
-      const nextElements = [];
-      let current = motoristasSection.nextElementSibling;
-      while (current) {
-        nextElements.push(current);
-        current = current.nextElementSibling;
-      }
-      
-      // Remover elementos antigos
-      nextElements.forEach(el => el.remove());
-      motoristasSection.remove();
-      
-      // Adicionar novo container
-      sidebar.appendChild(motoristasContainer);
-      mountDrivers(motoristasContainer);
-    }
-  }
-
   // Escutar mudanças nos chamados
   onCallsChange((calls) => {
     renderCalls(calls);
@@ -78,16 +79,23 @@ function renderCalls(calls) {
   tbody.innerHTML = calls.map(call => `
     <tr>
       <td>${new Date(call.dataHora).toLocaleString('pt-BR')}</td>
-      <td>${call.paciente}</td>
-      <td>${call.endereco}, ${call.numero}</td>
-      <td>${call.destino}</td>
-      <td>${call.motorista}</td>
-      <td>${call.prioridade}</td>
-      <td>${Array.isArray(call.sinais) ? call.sinais.join(', ') : call.sinais || '—'}</td>
-      <td>${call.finalidade}</td>
-      <td>${call.obito}</td>
-      <td>${call.observacoes || '—'}</td>
-      <td>${call.tipoChamado}</td>
+      <td>${escapeHtml(call.paciente)}</td>
+      <td>${escapeHtml(call.endereco)}, ${escapeHtml(call.numero)}</td>
+      <td>${escapeHtml(call.destino)}</td>
+      <td>${escapeHtml(call.motorista)}</td>
+      <td>${escapeHtml(call.prioridade)}</td>
+      <td>${Array.isArray(call.sinais) ? call.sinais.map(s => escapeHtml(s)).join(', ') : escapeHtml(call.sinais || '—')}</td>
+      <td>${escapeHtml(call.finalidade)}</td>
+      <td>${escapeHtml(call.obito)}</td>
+      <td>${escapeHtml(call.observacoes || '—')}</td>
+      <td>${escapeHtml(call.tipoChamado)}</td>
     </tr>
   `).join('');
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }

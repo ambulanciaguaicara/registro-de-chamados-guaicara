@@ -1,9 +1,20 @@
 import { DESTINOS, PRIORIDADES, SINAIS_SINTOMAS, FINALIDADES, TIPO_CHAMADO } from "../data/constants.js";
 import { STREETS } from "../data/streets.js";
 import { createCall } from "../firebase.js";
-import { setDriverOnDuty, getDrivers } from "./drivers.js";
+import { setDriverOnDuty, onDriversUpdate } from "./drivers.js";
 
 export function mountForm(el) {
+  renderForm(el, []);
+
+  // Atualizar lista de motoristas quando mudarem
+  onDriversUpdate((drivers) => {
+    updateDriverSelect(drivers);
+  });
+
+  setupFormSubmit(el);
+}
+
+function renderForm(el, drivers) {
   el.innerHTML = `
     <h2>Novo Chamado</h2>
     <form id="chamadoForm">
@@ -32,7 +43,7 @@ export function mountForm(el) {
         <label>Motorista
           <select id="motorista" required>
             <option value="">Selecione o motorista</option>
-            ${getDrivers().map(d => `<option value="${d.nome}">${d.nome}</option>`).join("")}
+            ${drivers.map(d => `<option value="${escapeHtml(d.nome)}">${escapeHtml(d.nome)}</option>`).join("")}
           </select>
         </label>
         <label>Chegada do Motorista
@@ -75,10 +86,31 @@ export function mountForm(el) {
       <button type="submit" class="btn-add">Adicionar chamado</button>
     </form>
   `;
+}
 
-  el.querySelector("#chamadoForm").addEventListener("submit", async (e) => {
+function updateDriverSelect(drivers) {
+  const select = document.querySelector("#motorista");
+  if (!select) return;
+
+  const currentValue = select.value;
+  select.innerHTML = `
+    <option value="">Selecione o motorista</option>
+    ${drivers.map(d => `<option value="${escapeHtml(d.nome)}">${escapeHtml(d.nome)}</option>`).join("")}
+  `;
+  
+  // Restaurar valor selecionado se ainda existe
+  if (currentValue && drivers.some(d => d.nome === currentValue)) {
+    select.value = currentValue;
+  }
+}
+
+function setupFormSubmit(root) {
+  const form = root.querySelector("#chamadoForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const data = collectFormData(el);
+    const data = collectFormData(root);
     
     try {
       const docRef = await createCall(data);
@@ -111,4 +143,10 @@ function collectFormData(root) {
     observacoes: get("observacoes").value,
     tipoChamado: get("tipoChamado").value,
   };
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
