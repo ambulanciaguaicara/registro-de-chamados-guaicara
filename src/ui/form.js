@@ -289,8 +289,7 @@ function setupFormEvents(root) {
       familia: form.querySelector("#familia").value,
       obs: form.querySelector("#obs").value,
       criadoPor: currentUser.uid || "sistema",
-      criadoPorNome: currentUser.nome || "Sistema",
-      criadoEm: new Date().toISOString()
+      criadoPorNome: currentUser.nome || "Sistema"
     };
 
     try {

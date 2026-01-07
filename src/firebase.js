@@ -30,6 +30,10 @@ import {
   remove 
 } from "firebase/database";
 
+// Configuração do Firebase
+// NOTA: Estas credenciais são seguras para exposição em código client-side.
+// Firebase usa regras de segurança do Firestore/Database para controle de acesso.
+// As chaves de API aqui servem apenas para identificar o projeto Firebase.
 const firebaseConfig = {
   apiKey: "AIzaSyCoSPb1WMrH2MMuM1AdR2YEAX60XVgO3WE",
   authDomain: "registro-ambulancia192.firebaseapp.com",

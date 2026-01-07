@@ -236,8 +236,12 @@ function setupAuthEvents(root) {
 }
 
 // Função auxiliar para enviar SMS (integração externa necessária)
+// NOTA: Esta é uma função placeholder. Para produção, integrar com:
+// - Twilio (https://www.twilio.com/)
+// - AWS SNS (https://aws.amazon.com/sns/)
+// - Ou outro serviço de SMS
 async function enviarSMS(telefone, mensagem) {
-  // Implementar integração com Twilio, AWS SNS ou similar
+  // TODO: Implementar integração com serviço de SMS real
   console.log(`SMS para ${telefone}: ${mensagem}`);
   // Por enquanto apenas simula envio
   return Promise.resolve();

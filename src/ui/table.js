@@ -164,6 +164,8 @@ function renderCalls(searchTerm = "") {
 }
 
 // Exportar função para edição (chamada via onclick)
+// Nota: A edição preenche o formulário e cria um novo registro ao salvar,
+// preservando o histórico original para fins de auditoria
 window.editCall = function(callId) {
   const call = allCalls.find(c => c.id === callId);
   if (!call) return;
@@ -187,5 +189,5 @@ window.editCall = function(callId) {
   // Rolar para o formulário
   document.querySelector("#chamadoForm").scrollIntoView({ behavior: "smooth" });
   
-  alert("Edite os campos e clique em 'Adicionar Chamado' para salvar. Nota: isso criará um novo registro.");
+  alert("Edite os campos e clique em 'Adicionar Chamado' para salvar. Nota: isso criará um novo registro para manter o histórico.");
 };
