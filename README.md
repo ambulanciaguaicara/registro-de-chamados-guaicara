@@ -4,6 +4,41 @@ Sistema web completo e profissional para registro e gerenciamento de chamados da
 
 ---
 
+## 🚀 Configuração Rápida
+
+### Primeira vez clonando o projeto?
+
+**Linux/Mac:**
+```bash
+chmod +x cleanup.sh setup.sh
+./setup.sh
+```
+
+**Windows:**
+```batch
+setup.bat
+```
+
+### Ou manualmente:
+
+```bash
+# 1. Limpar arquivos desnecessários
+./cleanup.sh  # ou cleanup.bat no Windows
+
+# 2. Instalar dependências
+npm install
+
+# 3. Rodar projeto
+npm run dev
+
+# 4. Acessar no tablet (opcional)
+npm run dev -- --host
+```
+
+📖 **Para mais detalhes, consulte o [SETUP_GUIDE.md](./SETUP_GUIDE.md)**
+
+---
+
 ## 🆕 Novas Funcionalidades (v2.0.0)
 
 ### 🔐 Sistema de Autenticação
