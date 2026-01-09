@@ -31,7 +31,7 @@ Este script irá:
 1. ✅ Remover todos os arquivos desnecessários
 2. ✅ Instalar dependências corretas
 3. ✅ Gerar build de produção
-4. ✅ Fazer commit e push das alterações
+4. ✅ Perguntar se deseja fazer push das alterações
 
 ### Opção 2: Manual
 
