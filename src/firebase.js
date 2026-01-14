@@ -40,11 +40,22 @@ export const driversCol = collection(db, "motoristas");
 
 // ========== CHAMADOS ==========
 export async function createCall(data) {
-  return addDoc(callsCol, { 
+  const docRef = await addDoc(callsCol, { 
     ...data, 
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   });
+  // Salvar também no prontuário do paciente
+  if (data.paciente) {
+    const prontuarioCol = collection(db, "prontuarios", data.paciente, "chamados");
+    await addDoc(prontuarioCol, {
+      ...data,
+      chamadoId: docRef.id,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+  }
+  return docRef;
 }
 
 export async function updateCall(id, data) {
@@ -80,11 +91,24 @@ export function watchChat(callback) {
 // ========== MOTORISTAS ==========
 export async function setDriverStatus(driverName, status) {
   const driverRef = doc(db, "motoristas", driverName);
+  // Salvar histórico
+  await addDoc(collection(driverRef, "historico"), {
+    status,
+    timestamp: serverTimestamp()
+  });
   return setDoc(driverRef, {
     nome: driverName,
     status: status,
     updatedAt: serverTimestamp()
   }, { merge: true });
+}
+
+// Buscar histórico de status do motorista
+export function watchDriverHistory(driverName, callback) {
+  const driverRef = doc(db, "motoristas", driverName);
+  const histCol = collection(driverRef, "historico");
+  const q = query(histCol, orderBy("timestamp", "desc"));
+  return onSnapshot(q, callback);
 }
 
 export async function addDriver(driverName) {
@@ -100,5 +124,14 @@ export function watchDrivers(callback) {
 }
 
 export function setDriverOnDuty(driverName, patientName) {
+  // Vincula o status do motorista ao chamado
   return setDriverStatus(driverName, `Em atendimento - ${patientName}`);
+}
+}
+
+// Buscar chamados/prontuário de um paciente
+export function watchProntuario(paciente, callback) {
+  const prontuarioCol = collection(db, "prontuarios", paciente, "chamados");
+  const q = query(prontuarioCol, orderBy("createdAt", "desc"));
+  return onSnapshot(q, callback);
 }

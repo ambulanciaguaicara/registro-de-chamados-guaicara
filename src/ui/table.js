@@ -1,4 +1,4 @@
-import { watchCalls, deleteCall } from "../firebase.js";
+import { watchCalls, deleteCall, setDriverStatus } from "../firebase.js";
 import { formatDateTime } from "../utils/formatters.js";
 import { notifySuccess, notifyError } from "../utils/notifications.js";
 
@@ -23,6 +23,7 @@ export function mountTable(el) {
               <th>Prioridade</th>
               <th>Sinais</th>
               <th>Finalidade</th>
+              <th>Enfermagem</th>
               <th>Óbito</th>
               <th>Tipo</th>
               <th>Observações</th>
@@ -59,7 +60,32 @@ export function mountTable(el) {
     if (!confirm(`Excluir ${selected.length} chamado(s)?`)) return;
 
     try {
+      // Buscar os chamados antes de excluir para restaurar status do motorista
+      const chamados = [];
+      selected.forEach(id => {
+        const tr = tbody.querySelector(`input[data-id='${id}']`).closest('tr');
+        const motorista = tr.children[6]?.textContent;
+        chamados.push({ id, motorista });
+      });
       await Promise.all(selected.map(id => deleteCall(id)));
+      // Restaurar status dos motoristas apenas se não houver outro chamado em atendimento para o mesmo motorista
+      for (const { motorista } of chamados) {
+        if (motorista && motorista.trim()) {
+          // Verifica se o motorista ainda está em atendimento em outro chamado
+          let aindaEmAtendimento = false;
+          tbody.querySelectorAll('tr').forEach(tr => {
+            if (tr.children[6]?.textContent === motorista) {
+              const status = tr.children[6]?.textContent;
+              if (status && status.includes('Em atendimento')) {
+                aindaEmAtendimento = true;
+              }
+            }
+          });
+          if (!aindaEmAtendimento) {
+            await setDriverStatus(motorista, "Disponível na unidade");
+          }
+        }
+      }
       notifySuccess(`${selected.length} chamado(s) excluído(s)`);
     } catch (error) {
       console.error(error);
@@ -99,6 +125,7 @@ export function mountTable(el) {
         <td>${data.prioridade || "—"}</td>
         <td>${sinaisText}</td>
         <td>${data.finalidade || "—"}</td>
+        <td>${data.enfermagem || "—"}</td>
         <td>${data.obito}</td>
         <td><span class="badge badge-${data.tipoChamado?.toLowerCase() || 'normal'}">${data.tipoChamado || "Normal"}</span></td>
         <td>${data.observacoes || "—"}</td>

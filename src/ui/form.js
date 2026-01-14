@@ -18,10 +18,13 @@ export function mountForm(el) {
         </label>
         <label>
           Endereço
-          <select id="endereco" required>
-            <option value="">Selecione...</option>
-            ${STREETS.map(s => `<option value="${s}">${s}</option>`).join("")}
-          </select>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <select id="endereco" required style="flex:1;">
+              <option value="">Selecione...</option>
+              ${STREETS.map(s => `<option value="${s}">${s}</option>`).join("")}
+            </select>
+            <button type="button" id="addEndereco" class="btn-add" title="Adicionar novo endereço" style="padding: 6px 10px;">+</button>
+          </div>
         </label>
         <label>
           Número
@@ -29,35 +32,51 @@ export function mountForm(el) {
         </label>
         <label>
           Destino
-          <select id="destino" required>
-            <option value="">Selecione...</option>
-            ${DESTINOS.map(d => `<option value="${d}">${d}</option>`).join("")}
-          </select>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <select id="destino" required style="flex:1;">
+              <option value="">Selecione...</option>
+              ${DESTINOS.map(d => `<option value="${d}">${d}</option>`).join("")}
+            </select>
+            <button type="button" id="addDestino" class="btn-add" title="Adicionar novo destino" style="padding: 6px 10px;">+</button>
+          </div>
         </label>
         <label>
           Motorista
           <input type="text" id="motorista" required>
         </label>
         <label>
+          Enfermagem
+          <input type="text" id="enfermagem" placeholder="Nome da enfermagem">
+        </label>
+        <label>
           Prioridade
-          <select id="prioridade" required>
-            <option value="">Selecione...</option>
-            ${PRIORIDADES.map(p => `<option value="${p}">${p}</option>`).join("")}
-          </select>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <select id="prioridade" required style="flex:1;">
+              <option value="">Selecione...</option>
+              ${PRIORIDADES.map(p => `<option value="${p}">${p}</option>`).join("")}
+            </select>
+            <button type="button" id="addPrioridade" class="btn-add" title="Adicionar nova prioridade" style="padding: 6px 10px;">+</button>
+          </div>
         </label>
         <label>
           Sinais/Sintomas
-          <select id="sinais" multiple>
-            ${SINAIS_SINTOMAS.map(s => `<option value="${s}">${s}</option>`).join("")}
-          </select>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <select id="sinais" multiple style="flex:1;">
+              ${SINAIS_SINTOMAS.map(s => `<option value="${s}">${s}</option>`).join("")}
+            </select>
+            <button type="button" id="addSinal" class="btn-add" title="Adicionar novo sinal/sintoma" style="padding: 6px 10px;">+</button>
+          </div>
           <small>Ctrl+clique para múltiplos</small>
         </label>
         <label>
           Finalidade
-          <select id="finalidade" required>
-            <option value="">Selecione...</option>
-            ${FINALIDADES.map(f => `<option value="${f}">${f}</option>`).join("")}
-          </select>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <select id="finalidade" required style="flex:1;">
+              <option value="">Selecione...</option>
+              ${FINALIDADES.map(f => `<option value="${f}">${f}</option>`).join("")}
+            </select>
+            <button type="button" id="addFinalidade" class="btn-add" title="Adicionar nova finalidade" style="padding: 6px 10px;">+</button>
+          </div>
         </label>
         <label>
           Óbito
@@ -83,6 +102,62 @@ export function mountForm(el) {
       </form>
     </section>
   `;
+  // Botões de adicionar dinâmico
+  el.querySelector('#addEndereco').onclick = () => {
+    const novo = prompt('Digite o novo endereço:');
+    if (novo) {
+      const select = el.querySelector('#endereco');
+      const opt = document.createElement('option');
+      opt.value = novo;
+      opt.textContent = novo;
+      select.appendChild(opt);
+      select.value = novo;
+    }
+  };
+  el.querySelector('#addDestino').onclick = () => {
+    const novo = prompt('Digite o novo destino:');
+    if (novo) {
+      const select = el.querySelector('#destino');
+      const opt = document.createElement('option');
+      opt.value = novo;
+      opt.textContent = novo;
+      select.appendChild(opt);
+      select.value = novo;
+    }
+  };
+  el.querySelector('#addPrioridade').onclick = () => {
+    const novo = prompt('Digite a nova prioridade:');
+    if (novo) {
+      const select = el.querySelector('#prioridade');
+      const opt = document.createElement('option');
+      opt.value = novo;
+      opt.textContent = novo;
+      select.appendChild(opt);
+      select.value = novo;
+    }
+  };
+  el.querySelector('#addFinalidade').onclick = () => {
+    const novo = prompt('Digite a nova finalidade:');
+    if (novo) {
+      const select = el.querySelector('#finalidade');
+      const opt = document.createElement('option');
+      opt.value = novo;
+      opt.textContent = novo;
+      select.appendChild(opt);
+      select.value = novo;
+    }
+  };
+  el.querySelector('#addSinal').onclick = () => {
+    const novo = prompt('Digite o novo sinal/sintoma:');
+    if (novo) {
+      const select = el.querySelector('#sinais');
+      const opt = document.createElement('option');
+      opt.value = novo;
+      opt.textContent = novo;
+      select.appendChild(opt);
+      opt.selected = true;
+    }
+  };
 
   // Definir data/hora atual
   const now = new Date();
@@ -99,6 +174,7 @@ export function mountForm(el) {
       numero: form.querySelector("#numero").value,
       destino: form.querySelector("#destino").value,
       motorista: form.querySelector("#motorista").value,
+      enfermagem: form.querySelector("#enfermagem").value,
       prioridade: form.querySelector("#prioridade").value,
       sinais: [...form.querySelector("#sinais").selectedOptions].map(o => o.value),
       finalidade: form.querySelector("#finalidade").value,
