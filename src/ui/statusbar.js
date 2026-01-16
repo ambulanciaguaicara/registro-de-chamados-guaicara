@@ -17,9 +17,16 @@ export function mountStatusBar(el) {
   setInterval(updateConnectionStatus, 30000); // Atualizar a cada 30s
 }
 
+import { auth } from "../firebase.js";
+
 function setupStatusBarEvents(root) {
   root.querySelector("#btnLogout").addEventListener("click", async () => {
     if (confirm("Deseja sair do sistema?")) {
+      try {
+        await auth.signOut();
+      } catch (e) {
+        // ignora erro de signOut
+      }
       localStorage.removeItem("currentUser");
       window.location.reload();
     }
