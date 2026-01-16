@@ -52,3 +52,4 @@ Thumbs.db
 ngrok-*.zip*
 "npm run dev"
 "package.jsonnpm*"
+.env*.local
