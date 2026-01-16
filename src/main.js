@@ -5,6 +5,7 @@ import { mountTable } from "./ui/table.js";
 import { mountDrivers } from "./ui/drivers.js";
 import { mountChat } from "./ui/chat.js";
 import { mountStatusBar } from "./ui/statusbar.js";
+import { mountAdminPanel } from "./ui/admin.js";
 import { mountProntuarios } from "./ui/prontuarios.js";
 import { mountReports } from "./ui/reports.js";
 import "./style.css";
@@ -46,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </aside>
           
           <main class="main-content">
+            ${currentUser.funcao === "administrador" ? '<div id="adminPanelSection"></div>' : ''}
             <div id="formSection"></div>
             <div id="tableSection"></div>
             <div id="prontuariosSection"></div>
@@ -64,7 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const prontuariosEl = document.querySelector("#prontuariosSection");
       const reportsEl = document.querySelector("#reportsSection");
       const statusEl = document.querySelector("#statusSection");
-      
+      const adminPanelEl = document.querySelector("#adminPanelSection");
+
       if (driversEl) mountDrivers(driversEl);
       if (chatEl) mountChat(chatEl);
       if (formEl) mountForm(formEl);
@@ -72,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (prontuariosEl) mountProntuarios(prontuariosEl);
       if (reportsEl) mountReports(reportsEl);
       if (statusEl) mountStatusBar(statusEl);
+      if (adminPanelEl) mountAdminPanel(adminPanelEl);
     }
   });
 });
