@@ -1,4 +1,4 @@
-import { watchDrivers, addDriver, updateDriverStatus } from "../firebase.js";
+import { watchDrivers, addDriver, updateDriverStatus, deleteDriver } from "../firebase.js";
 import { notifySuccess, notifyError } from "../utils/notifications.js";
 
 let drivers = [];
@@ -15,6 +15,7 @@ export function mountDrivers(el) {
             <tr>
               <th>Motorista</th>
               <th>Status</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody id="driversBody">
@@ -76,20 +77,37 @@ function renderDrivers() {
           <option value="Sem Ambulância" ${driver.status === "Sem Ambulância" ? "selected" : ""}>Sem Ambulância</option>
         </select>
       </td>
+      <td>
+        <button class="btn-delete-driver" data-id="${driver.id}" title="Excluir motorista">🗑️</button>
+      </td>
     </tr>
-  `).join('');
+  `).join("");
   
   // Adicionar event listeners aos selects
   tbody.querySelectorAll(".driver-status-select").forEach(select => {
     select.addEventListener("change", async (e) => {
       const driverId = e.target.dataset.id;
       const newStatus = e.target.value;
-      
       try {
         await updateDriverStatus(driverId, newStatus);
         notifySuccess("Status atualizado!");
       } catch (error) {
         notifyError(error.message);
+      }
+    });
+  });
+
+  // Adicionar event listeners aos botões de exclusão
+  tbody.querySelectorAll(".btn-delete-driver").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const driverId = e.target.dataset.id;
+      if (confirm("Tem certeza que deseja excluir este motorista?")) {
+        try {
+          await deleteDriver(driverId);
+          notifySuccess("Motorista excluído!");
+        } catch (error) {
+          notifyError(error.message);
+        }
       }
     });
   });

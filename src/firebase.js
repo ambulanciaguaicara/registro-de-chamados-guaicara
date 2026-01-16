@@ -110,6 +110,10 @@ export function watchDrivers(callback) {
   return onSnapshot(q, callback);
 }
 
+export async function deleteDriver(id) {
+  return await deleteDoc(doc(db, "motoristas", id));
+}
+
 export async function setDriverOnDuty(driverName, patientName) {
   const driversRef = collection(db, "motoristas");
   const q = query(driversRef, where("nome", "==", driverName));
