@@ -91,13 +91,12 @@ function setupTableEvents(root) {
     for (const cb of checkboxes) {
       const callId = cb.dataset.id;
       const call = allCalls.find(c => c.id === callId);
-      
-      // Verificar se é o criador
-      if (call && call.criadoPor !== currentUser.uid) {
+      // Permitir exclusão se for o criador OU se for administrador
+      const isAdmin = currentUser.funcao === "administrador";
+      if (call && call.criadoPor !== currentUser.uid && !isAdmin) {
         notifyError(`Você não pode excluir o chamado de ${call.paciente} (criado por ${call.criadoPorNome})`);
         continue;
       }
-      
       try {
         await deleteCall(callId);
       } catch (error) {
