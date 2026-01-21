@@ -1,9 +1,13 @@
 import { watchDrivers, createCall, setDriverOnDuty, addDoc, collection, db } from "../firebase.js";
+import { getDocs, query, where } from "../firebase.js";
 import { notifySuccess, notifyError } from "../utils/notifications.js";
 
 let driversAvailable = [];
 
-export function mountForm(el) {
+export async function mountForm(el) {
+  // Endereços dinâmicos
+  let enderecosAgrupados = [];
+
   el.innerHTML = `
     <section>
       <h2>📋 Novo Chamado</h2>
@@ -25,58 +29,12 @@ export function mountForm(el) {
         
         <label>
           Endereço
+          <input type="text" id="filtroEndereco" placeholder="Filtrar endereço..." autocomplete="off" style="margin-bottom:4px;">
           <select id="endereco" required>
             <option value="">Selecione o endereço</option>
-            <optgroup label="Centro">
-              <option value="Rua Rio Branco">Rua Rio Branco</option>
-              <option value="Rua Rui Barbosa">Rua Rui Barbosa</option>
-              <option value="Av. Duque de Caxias">Av. Duque de Caxias</option>
-              <option value="Av. Nove de Julho">Av. Nove de Julho</option>
-              <option value="Rua Tiradentes">Rua Tiradentes</option>
-              <option value="Rua Floriano Peixoto">Rua Floriano Peixoto</option>
-              <option value="Rua Osvaldo Cruz">Rua Osvaldo Cruz</option>
-            </optgroup>
-            <optgroup label="Bairro São João">
-              <option value="Rua Pedro Bertolino">Rua Pedro Bertolino</option>
-              <option value="Rua Rosa Grande">Rua Rosa Grande</option>
-              <option value="Rua Rubens Puorro">Rua Rubens Puorro</option>
-              <option value="Rua Sebastião de Souza">Rua Sebastião de Souza</option>
-              <option value="Rua João Pacífico da Silva">Rua João Pacífico da Silva</option>
-              <option value="Rua José Francisco Moco">Rua José Francisco Moco</option>
-              <option value="Rua São João">Rua São João</option>
-            </optgroup>
-            <optgroup label="Bairro Amizade">
-              <option value="Rua Da Amizade">Rua Da Amizade</option>
-              <option value="Rua Adão Afonso Costa">Rua Adão Afonso Costa</option>
-              <option value="Rua Dirce Camargo Vaz">Rua Dirce Camargo Vaz</option>
-              <option value="Rua Vicente de Paula">Rua Vicente de Paula</option>
-            </optgroup>
-            <optgroup label="Outros Endereços">
-              <option value="Av. Paulo Xavier Ribeiro">Av. Paulo Xavier Ribeiro</option>
-              <option value="Av. Roberto Lima Alves">Av. Roberto Lima Alves</option>
-              <option value="Rua Professora Adelaide Baptista Pereira Cruz">Rua Professora Adelaide Baptista Pereira Cruz</option>
-              <option value="Rua Rogê Ferreira">Rua Rogê Ferreira</option>
-              <option value="Rua Roman Garcia Echeto">Rua Roman Garcia Echeto</option>
-              <option value="Rua Sunao Katsuki">Rua Sunao Katsuki</option>
-              <option value="Rua Yoshi Sato">Rua Yoshi Sato</option>
-              <option value="Rua Frei Henrique">Rua Frei Henrique</option>
-              <option value="Rua José do Patrocínio">Rua José do Patrocínio</option>
-              <option value="Rua Ayrton Alves dos Santos">Rua Ayrton Alves dos Santos</option>
-              <option value="Rua Antônio Prado">Rua Antônio Prado</option>
-              <option value="Rua Benjamin Constant">Rua Benjamin Constant</option>
-              <option value="Rua Campos Salles">Rua Campos Salles</option>
-              <option value="Rua Cel. Joaquim Anselmo Martins">Rua Cel. Joaquim Anselmo Martins</option>
-              <option value="Rua Dom Pedro II">Rua Dom Pedro II</option>
-              <option value="Rua Francisco Sanches">Rua Francisco Sanches</option>
-              <option value="Rua Manoel Bento">Rua Manoel Bento</option>
-              <option value="Rua Marechal Deodoro">Rua Marechal Deodoro</option>
-              <option value="Rua Miguel Jorge">Rua Miguel Jorge</option>
-              <option value="Rua Nelson Ferreira">Rua Nelson Ferreira</option>
-              <option value="Rua Pedro Dutra Sobrinho">Rua Pedro Dutra Sobrinho</option>
-              <option value="Rua Sabino">Rua Sabino</option>
-            </optgroup>
           </select>
         </label>
+        <!-- resto do formulário permanece igual -->
         
         <label>
           Nº
@@ -180,7 +138,26 @@ export function mountForm(el) {
     </section>
   `;
 
+  await carregarEnderecosCadastrados();
   setupFormEvents(el);
+  // Busca endereços cadastrados no Firestore
+  async function carregarEnderecosCadastrados() {
+    enderecosAgrupados = [];
+    // Buscar todos os endereços cadastrados
+    const q = query(collection(db, "configuracoes"), where("tipo", "==", "enderecos"));
+    const snapshot = await getDocs(q);
+    // Agrupar por grupo se houver campo grupo, senão todos em "Outros Endereços"
+    const grupos = {};
+    snapshot.forEach(doc => {
+      const { valor, grupo } = doc.data();
+      const nomeGrupo = grupo || "Outros Endereços";
+      if (!grupos[nomeGrupo]) grupos[nomeGrupo] = [];
+      grupos[nomeGrupo].push(valor);
+    });
+    for (const grupo in grupos) {
+      enderecosAgrupados.push({ grupo, lista: grupos[grupo] });
+    }
+  }
   
   // Escutar motoristas em tempo real
   watchDrivers((snapshot) => {
@@ -229,6 +206,36 @@ function updateDriverSelect() {
 }
 
 function setupFormEvents(root) {
+    // Filtro de endereços
+    const filtroInput = root.querySelector("#filtroEndereco");
+    const selectEndereco = root.querySelector("#endereco");
+
+    function preencherSelectEnderecos(filtro = "") {
+      selectEndereco.innerHTML = '<option value="">Selecione o endereço</option>';
+      enderecosAgrupados.forEach(grupo => {
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = grupo.grupo;
+        grupo.lista.forEach(end => {
+          if (end.toLowerCase().includes(filtro.toLowerCase())) {
+            const option = document.createElement("option");
+            option.value = end;
+            option.textContent = end;
+            optgroup.appendChild(option);
+          }
+        });
+        if (optgroup.children.length > 0) {
+          selectEndereco.appendChild(optgroup);
+        }
+      });
+    }
+
+    preencherSelectEnderecos();
+    filtroInput.addEventListener("input", (e) => {
+      preencherSelectEnderecos(e.target.value);
+    });
+    selectEndereco.addEventListener("focus", () => {
+      filtroInput.focus();
+    });
   // Adicionar novo destino
   root.querySelector("#btnAddDestino").addEventListener("click", () => {
     const novoDestino = prompt("Digite o novo destino:");

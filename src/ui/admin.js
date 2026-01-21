@@ -6,9 +6,52 @@ export function mountAdminPanel(el) {
     <section class="admin-section">
       <h2>👤 Aprovação de Novos Usuários</h2>
       <div id="pendingUsersContainer">Carregando usuários pendentes...</div>
+      <hr />
+      <h3>Adicionar Novo Usuário</h3>
+      <form id="formNovoUsuario" class="admin-new-user-form">
+        <label>Nome: <input type="text" id="novoNome" required /></label>
+        <label>Status: <input type="text" id="novoStatus" value="aprovado" required /></label>
+        <label>Telefone: <input type="text" id="novoTelefone" required /></label>
+        <label>UID: <input type="text" id="novoUid" required /></label>
+        <label>Unidade: <input type="text" id="novoUnidade" required /></label>
+        <button type="submit" class="btn-add">Adicionar Usuário</button>
+      </form>
     </section>
   `;
   loadPendingUsers();
+  setupNovoUsuarioForm();
+// Função para adicionar novo usuário manualmente
+function setupNovoUsuarioForm() {
+  const form = document.getElementById("formNovoUsuario");
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById("novoNome").value;
+    const status = document.getElementById("novoStatus").value;
+    const telefone = document.getElementById("novoTelefone").value;
+    const uid = document.getElementById("novoUid").value;
+    const unidade = document.getElementById("novoUnidade").value;
+    try {
+      await import("../firebase.js").then(async ({ db, setDoc, doc }) => {
+        await setDoc(doc(db, "usuarios", uid), {
+          nome,
+          status,
+          telefone,
+          uid,
+          unidade,
+          funcao: "atendente", // padrão, pode ser ajustado
+          email: "",
+          createdAt: new Date().toISOString()
+        });
+      });
+      notifySuccess("Usuário adicionado e aprovado!");
+      form.reset();
+      loadPendingUsers();
+    } catch (err) {
+      notifyError("Erro ao adicionar usuário: " + err.message);
+    }
+  });
+}
 }
 
 async function loadPendingUsers() {

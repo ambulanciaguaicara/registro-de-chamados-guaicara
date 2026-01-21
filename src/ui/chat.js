@@ -21,17 +21,22 @@ export function mountChat(el) {
   watchMessages((snapshot) => {
     const chatArea = document.querySelector("#chatArea");
     if (!chatArea) return;
-    
     chatArea.innerHTML = "";
-    
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10); // yyyy-mm-dd
+    const messagesToday = [];
     snapshot.forEach(doc => {
       const msg = doc.data();
+      if (msg.createdAt && msg.createdAt.slice(0, 10) === todayStr) {
+        messagesToday.push(msg);
+      }
+    });
+    messagesToday.forEach(msg => {
       const p = document.createElement("p");
       p.className = "chat-message";
       p.innerHTML = `<strong>${msg.userName}:</strong> ${msg.message}`;
       chatArea.appendChild(p);
     });
-    
     // Scroll to bottom
     chatArea.scrollTop = chatArea.scrollHeight;
   });
